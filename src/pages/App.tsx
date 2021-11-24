@@ -19,6 +19,7 @@ import {
 } from './AddLiquidity/redirects'
 import { Bridge } from './Bridge'
 import Earn from './Earn'
+import Compound from './Compound'
 import Manage from './Earn/Manage'
 import Pool from './Pool'
 import PoolFinder from './PoolFinder'
@@ -117,6 +118,7 @@ export default function App() {
               <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
               <Route exact strict path="/farm" component={Earn} />
+              <Route exact strict path="/compound" component={Compound} />
               <Route exact strict path="/farm/:currencyIdA/:currencyIdB/:stakingAddress" component={Manage} />
               <Route exact strict path="/dualfarm/:currencyIdA/:currencyIdB/:stakingAddress" component={Manage} />
               <Route exact strict path="/bridge" component={Bridge} />
