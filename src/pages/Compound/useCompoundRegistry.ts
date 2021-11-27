@@ -30,8 +30,8 @@ export type CompoundBotSummary = {
 }
 
 const compoundAddresses = [
-  "0x5b186b0c5493bdF5F357f170e30020f5498110c4",
-  "0x3B1E4f872a174a33F89711033Ec133748e92aCa0"
+  "0xA9947051AA9243d72f8f5578d3BFb992b20AD97d",
+  "0x22fdF8332A8AfD169d90606F4Bc9CBf6CE452Da4"
 ]
 
 export const useCompoundRegistry = () => {
