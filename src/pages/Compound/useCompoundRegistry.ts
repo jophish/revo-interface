@@ -5,6 +5,7 @@ import { useMultipleContractSingleData } from '../../state/multicall/hooks'
 import { AbiItem, fromWei, toBN, toWei } from 'web3-utils'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import { ERC20_ABI } from '../../constants/abis/erc20'
+import STAKING_REWARDS_ABI from '../../constants/abis/StakingRewards.json'
 import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import { useLPValue } from '../Earn/useLPValue'
 
@@ -18,11 +19,19 @@ export type CompoundBotSummary = {
   amountUserLP: number
   rewardsAddress: string
   stakingTokenAddress: string
+  totalLP: number
+  totalFP: number
+  exchangeRate: number
   userLPValue: number
+  stakingRewardsAddress: string
+  rewardsRate: number
+  totalLPInFarm: number
+  totalLPSupply: number
 }
 
 const compoundAddresses = [
-  "0x5b186b0c5493bdF5F357f170e30020f5498110c4"
+  "0x5b186b0c5493bdF5F357f170e30020f5498110c4",
+  "0x3B1E4f872a174a33F89711033Ec133748e92aCa0"
 ]
 
 export const useCompoundRegistry = () => {
@@ -37,7 +46,12 @@ export const useCompoundRegistry = () => {
 	compounderAddress
       )
 
-      const amountUserFP = await farmBot.methods.balanceOf(address).call()
+      const totalFP = await farmBot.methods.totalSupply().call()
+      const totalLP = await farmBot.methods.getLpAmount(totalFP).call()
+      const exchangeRate = totalLP/totalFP
+
+      let amountUserFP = await farmBot.methods.balanceOf(address).call()
+      amountUserFP = amountUserFP > 10 ? amountUserFP : 0
       const amountUserLP = await farmBot.methods.getLpAmount(amountUserFP).call()
 
       const stakingTokenAddress = await farmBot.methods.stakingToken().call()
@@ -58,7 +72,18 @@ export const useCompoundRegistry = () => {
 	token1Address
       )
       const token1Name = await token1Contract.methods.symbol().call()
+
       const rewardsAddress = await farmBot.methods.rewardsToken().call()
+
+      const stakingRewardsAddress = await farmBot.methods.stakingRewards().call()
+      const stakingRewardsContract = new kit.web3.eth.Contract(
+	STAKING_REWARDS_ABI,
+	stakingRewardsAddress
+      )
+      const rewardsRate = await stakingRewardsContract.methods.rewardRate().call()
+
+      const totalLPInFarm = await stakingRewardsContract.methods.totalSupply().call()
+      const totalLPSupply = await stakingTokenContract.methods.totalSupply().call()
 
       botSummaries.push({
 	address: compounderAddress,
@@ -68,8 +93,15 @@ export const useCompoundRegistry = () => {
 	token1Address,
 	amountUserFP,
 	amountUserLP,
+	stakingTokenAddress,
+	totalLP,
+	totalFP,
+	exchangeRate,
 	rewardsAddress,
-	stakingTokenAddress
+	stakingRewardsAddress,
+	rewardsRate,
+	totalLPInFarm,
+	totalLPSupply
       })
     }
     setBotSummaries(botSummaries)

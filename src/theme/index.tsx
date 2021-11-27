@@ -227,4 +227,12 @@ body {
       theme.bg1
     )} 100%)`};
 }
+
+.depositLiquidity {
+  width: 100%;
+}
+#depositLiquidity {
+  width: 100%;
+}
 `
+

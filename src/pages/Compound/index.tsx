@@ -30,7 +30,7 @@ const Header: React.FC = ({ children }) => {
 
 export default function Compound() {
   const botSummaries = useCompoundRegistry()
-  console.log(botSummaries)
+
   if (!botSummaries.length) {
     return (
       <div>
@@ -40,19 +40,19 @@ export default function Compound() {
   return (
     <PageWrapper>
       bots!
-    {botSummaries.length > 0 && (
-      <>
+      {botSummaries.length > 0 && (
+        <>
           <Header>yourPools</Header>
           {botSummaries.map((botSummary) => (
             <CompoundWrapper key={botSummary.address}>
               <ErrorBoundary>
-	      <CompoundCard compoundBotSummary={botSummary} />
+	        <CompoundCard compoundBotSummary={botSummary} />
               </ErrorBoundary>
             </CompoundWrapper>
           ))}
         </>
       )}
 
-      </PageWrapper>
+    </PageWrapper>
   )
 }

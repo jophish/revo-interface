@@ -38,6 +38,7 @@ export function useCUSDPrices(tokens?: Token[]): (Price | undefined)[] | undefin
       const start = idx * 3
       const [cUSDPair, celoPair, celoCUSDPair] = [pairs[start], pairs[start + 1], pairs[start + 2]]
 
+      if (!token) return undefined
       // handle cUSD
       if (token.equals(CUSD)) {
         return new Price(CUSD, CUSD, '1', '1')
