@@ -22,7 +22,7 @@ import { useAnnualRewardDollars } from 'state/stake/useAnnualRewardDollars'
 import useStakingInfo from 'state/stake/useStakingInfo'
 import { CELO, cUSD, Fraction, TokenAmount, TradeType } from '@ubeswap/sdk'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
-import Row, { RowBetween, RowFixed, RowFlat } from '../Row'
+import Row, { AutoRow, RowBetween, RowFixed, RowFlat } from '../Row'
 import { Percent } from '@ubeswap/sdk'
 import CurrencyInputPanel from '../CurrencyInputPanel'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
@@ -148,14 +148,13 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
   const stakingToken = useToken(compoundBotSummary.stakingTokenAddress) || undefined
   const userBalance = useCurrencyBalance(account ?? undefined, stakingToken ?? undefined)
   const userLPOwned = userBalance?.numerator / userBalance?.denominator
-  console.log(userBalance)
+
   const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
 
   const [, stakingTokenPair] = usePair(token0, token1)
 
-  console.log(stakingTokenPair)
   const amountStakedToken0 = stakingTokenPair?.tokenAmounts[0]?.numerator / stakingTokenPair?.tokenAmounts[0]?.denominator
   const amountStakedToken1 = stakingTokenPair?.tokenAmounts[1]?.numerator / stakingTokenPair?.tokenAmounts[1]?.denominator
 
@@ -198,31 +197,15 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
   const farmBot = getContract(compoundBotSummary.address, farmBotAbi.abi, library, account)
 
 
-  console.log(compoundBotSummary.amountUserFP, 'FPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
-  console.log(compoundedAPY, rewardApr)
-  console.log(yearlyRewardsValue)
-  console.log(totalStakedCUSD)
-  console.log(CUSDPerStakedLP)
-  console.log(farmbotStakedCUSDValue)
-  console.log(userStakedCUSDValue)
-  console.log(stakingTokenPair)
-  // const rewardToken = useToken(compoundBotSummary.rewardsAddress) || undefined
-  // //const annualFarmRewards = useAnnualRewardDollars([rewardToken], compoundBotSummary.rewardsRate)
-  // console.log(useStakingInfo)
-  // const stakingInfo = useStakingInfo(null, compoundBotSummary.stakingRewardsAddress)
-  // console.log(stakingInfo)
-  // const stakingPoolValue = useStakingPoolValue(stakingInfo, stakingTokenPair)
+  console.log(approvalDeposit, ApprovalState.APPROVED)
+  console.log(approvalDeposit === ApprovalState.APPROVED)
 
-  // //const singleStakingInfo = usePairStakingInfo(stakingTokenPair)
-  // console.log(stakingTokenPair)
-  // //console.log(annualFarmRewards)
-  // console.log(stakingPoolValue)
-
-  const FPMinted = depositValue * compoundBotSummary.exchangeRate
-  const LPReceived = withdrawValue ? Number(fromWei(withdrawValue)) / compoundBotSummary.totalFP * compoundBotSummary.totalLP : 0
+  const FPMinted = compoundBotSummary.exchangeRate ? depositValue / compoundBotSummary.exchangeRate : depositValue
+  const LPReceived = withdrawValue ? Number(fromWei(withdrawValue)) * compoundBotSummary.exchangeRate : 0
 
   const pendingText = `Supplying ${depositValue} LP in exchange for ${FPMinted} FP`
   const pendingWithdrawText = `Depositing ${withdrawValue} FP in exchange for ${LPReceived} LP`
+  const exchangeRateString = compoundBotSummary.exchangeRate ? (' LP (' + Number(compoundBotSummary.exchangeRate).toLocaleString(undefined, {maximumFractionDigits: 2,}) + ' FP/LP)') : ''
 
   async function onAdd() {
     try {
@@ -377,9 +360,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
           statValue={Number(fromWei(compoundBotSummary.totalLP)).toLocaleString(undefined, {
             maximumFractionDigits: 2,
           })
-                     + ' LP (' + Number(compoundBotSummary.exchangeRate).toLocaleString(undefined, {
-                       maximumFractionDigits: 2,
-                     }) + ' FP/LP)'}
+                     + exchangeRateString }
         />
 
         <PoolStatRow
@@ -425,24 +406,28 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
               )}
             </BottomSection>
             <Break />
-            <ButtonError
-              onClick={() => {
-                showDeposit ? setShowDeposit(false) : setShowDeposit(true)
-              }}
-            >
-              <Text fontSize={20} fontWeight={500}>
-                Deposit
-              </Text>
-            </ButtonError>
-            <ButtonError
-              onClick={() => {
-                showWithdraw ? setShowWithdraw(false) : setShowWithdraw(true)
-              }}
-            >
-              <Text fontSize={20} fontWeight={500}>
-                Withdraw
-              </Text>
-            </ButtonError>
+            <AutoRow padding='10px' justify='space-around'>
+              <ButtonError width='45%'
+                           onClick={() => {
+                             showDeposit ? setShowDeposit(false) : setShowDeposit(true)
+                             setShowWithdraw(false)
+                           }}
+              >
+                <Text fontSize={20} fontWeight={500}>
+                  Deposit
+                </Text>
+              </ButtonError>
+              <ButtonError width='45%'
+                           onClick={() => {
+                             showWithdraw ? setShowWithdraw(false) : setShowWithdraw(true)
+                             setShowDeposit(false)
+                           }}
+              >
+                <Text fontSize={20} fontWeight={500}>
+                  Withdraw
+                </Text>
+              </ButtonError>
+            </AutoRow>
           </>
         )}
         {!isStaking && (
@@ -462,7 +447,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         {showDeposit && (
           <>
             <ColumnCenter>
-              <Row>
+              <Row padding='10px'>
                 <CurrencyInputPanel
                   style={{width: '100%'}}
                   className='depositLiquidity'
@@ -476,39 +461,42 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
                   disableCurrencySelect={true}
                 />
               </Row>
-              <Row>
-                <AutoColumn gap="20px">
-                  <ButtonPrimary
-                    onClick={approveDepositCallback}
-                    disabled={approvalDeposit === ApprovalState.PENDING}
-                    width={'100%'}
-                  >
-                    {approvalDeposit === ApprovalState.PENDING ? (
-                      <Dots>Approving {stakingToken?.symbol}</Dots>
-                    ) : (
+              <AutoRow justify='space-between' padding='20px'>
+                <ButtonError
+                  onClick={approveDepositCallback}
+                  disabled={
+                    approvalDeposit === ApprovalState.PENDING ||
+                      approvalDeposit === ApprovalState.APPROVED
+                  }
+                  width='45%'
+                >
+                  {approvalDeposit === ApprovalState.PENDING ? (
+                    <Dots>Approving {stakingToken?.symbol}</Dots>
+                  ) : (approvalDeposit === ApprovalState.APPROVED ? (
+                    'ULP Approved!') : (
                       'Approve ' + stakingToken?.symbol
-                    )}
-                  </ButtonPrimary>
-                  <ButtonError
-                    onClick={() => {
-                      setShowConfirm(true)
-                    }}
-                    disabled={approvalDeposit !== ApprovalState.APPROVED}
-                    error={false}
-                  >
-                    <Text fontSize={20} fontWeight={500}>
-                      Deposit
-                    </Text>
-                  </ButtonError>
-                </AutoColumn>
-              </Row>
+                    ))}
+                </ButtonError>
+                <ButtonError
+                  width='45%'
+                  onClick={() => {
+                    setShowConfirm(true)
+                  }}
+                  disabled={approvalDeposit !== ApprovalState.APPROVED || !depositValue}
+                  error={false}
+                >
+                  <Text>
+                    Deposit
+                  </Text>
+                </ButtonError>
+              </AutoRow>
             </ColumnCenter>
           </>
         )}
         {showWithdraw &&
          <>
            <ColumnCenter>
-             <Row>
+             <Row padding='10px'>
                <CurrencyInputPanel
                  style={{width: '100%'}}
                  className='depositLiquidity'
@@ -522,19 +510,18 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
                  disableCurrencySelect={true}
                />
              </Row>
-             <Row>
-               <AutoColumn gap="20px">
-                 <ButtonError
-                   onClick={() => {
-                     setShowWithdrawConfirm(true)
-                   }}
-                   error={false}
-                 >
-                   <Text fontSize={20} fontWeight={500}>
-                     Withdraw
-                   </Text>
-                 </ButtonError>
-               </AutoColumn>
+             <Row padding='10px'>
+               <ButtonError width='100%'
+                            onClick={() => {
+                              setShowWithdrawConfirm(true)
+                            }}
+                            error={false}
+                            disabled={!withdrawValue}
+               >
+                 <Text fontSize={20} fontWeight={500}>
+                   Withdraw
+                 </Text>
+               </ButtonError>
              </Row>
            </ColumnCenter>
          </>
