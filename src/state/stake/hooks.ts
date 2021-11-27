@@ -184,6 +184,7 @@ export function useStakingPools(pairToFilterBy?: Pair | null, stakingAddress?: s
   const poolsCount = poolsCountBigNumber?.toNumber() ?? 0
 
   const poolAddresses = useStakingPoolAddresses(poolManagerContract, poolsCount)
+
   const pools = useStakingPoolsInfo(poolManagerContract, poolAddresses)
 
   const stakingTokens = pools.map((p) => p?.stakingToken as string)
