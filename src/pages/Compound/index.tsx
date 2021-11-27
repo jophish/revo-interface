@@ -1,13 +1,15 @@
 import { ErrorBoundary } from '@sentry/react'
+import React from 'react'
 import styled from 'styled-components'
-import { useCompoundRegistry } from './useCompoundRegistry'
+
 import { CompoundCard } from '../../components/compound/CompoundCard'
-import { ExternalLink, TYPE } from '../../theme'
 import { RowBetween } from '../../components/Row'
+import { TYPE } from '../../theme'
+import { useCompoundRegistry } from './useCompoundRegistry'
 
 const PageWrapper = styled.div`
-width: 100%;
-max-width: 640px;
+  width: 100%;
+  max-width: 640px;
 `
 
 const CompoundWrapper = styled.div`
@@ -32,27 +34,22 @@ export default function Compound() {
   const botSummaries = useCompoundRegistry()
 
   if (!botSummaries.length) {
-    return (
-      <div>
-	no bots
-      </div>)
+    return <div>no bots</div>
   }
   return (
     <PageWrapper>
-      bots!
       {botSummaries.length > 0 && (
         <>
-          <Header>yourPools</Header>
+          <Header>Your Pools</Header>
           {botSummaries.map((botSummary) => (
             <CompoundWrapper key={botSummary.address}>
               <ErrorBoundary>
-	        <CompoundCard compoundBotSummary={botSummary} />
+                <CompoundCard compoundBotSummary={botSummary} />
               </ErrorBoundary>
             </CompoundWrapper>
           ))}
         </>
       )}
-
     </PageWrapper>
   )
 }
