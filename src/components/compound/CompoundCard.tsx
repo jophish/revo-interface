@@ -219,8 +219,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
   // console.log(stakingPoolValue)
 
   const FPMinted = depositValue * compoundBotSummary.exchangeRate
-  console.log(withdrawValue, 'aaaaaeeedahfliuhraljhuslkjgtrh')
-  const LPReceived = withdrawValue ? fromWei(withdrawValue).toString()/compoundBotSummary.exchangeRate : 0
+  const LPReceived = withdrawValue ? Number(fromWei(withdrawValue)) / compoundBotSummary.totalFP * compoundBotSummary.totalLP : 0
 
   const pendingText = `Supplying ${depositValue} LP in exchange for ${FPMinted} FP`
   const pendingWithdrawText = `Depositing ${withdrawValue} FP in exchange for ${LPReceived} LP`
@@ -240,6 +239,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   async function onWithdraw() {
     try {
+
       if (new BN(withdrawValue).gt(new BN(compoundBotSummary.amountUserFP).mul(new BN(99)).div(new BN(100)))) {
         const response = await doTransaction(farmBot, 'withdrawAll', {
           args: []
