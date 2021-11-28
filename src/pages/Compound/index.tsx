@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 import { AutoColumn } from '../../components/Column'
 import { CompoundCard } from '../../components/compound/CompoundCard'
-import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
+import { Break, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { useCompoundRegistry } from './useCompoundRegistry'
@@ -16,7 +16,7 @@ const PageWrapper = styled.div`
 `
 
 const CompoundWrapper = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 `
 
 const DataRow = styled(RowBetween)`
@@ -45,6 +45,13 @@ export default function Compound() {
   if (!botSummaries.length) {
     return <div>no bots</div>
   }
+
+  const botSummariesStakedIn = botSummaries.filter((botsummary) => {
+    return botsummary.amountUserLP > 0
+  })
+  const otherBotSummaries = botSummaries.filter((botsummary) => {
+    return botsummary.amountUserLP <= 0
+  })
   return (
     <PageWrapper>
       {botSummaries.length > 0 && (
@@ -64,11 +71,21 @@ export default function Compound() {
             <CardNoise />
           </VoteCard>
           <Header>Your Pools</Header>
-          {botSummaries.map((botSummary) => (
+          {botSummariesStakedIn.map((botSummary) => (
             <CompoundWrapper key={botSummary.address}>
               <ErrorBoundary>
                 <CompoundCard compoundBotSummary={botSummary} />
               </ErrorBoundary>
+              <Break />
+            </CompoundWrapper>
+          ))}
+          <Header>Other Pools</Header>
+          {otherBotSummaries.map((botSummary) => (
+            <CompoundWrapper key={botSummary.address}>
+              <ErrorBoundary>
+                <CompoundCard compoundBotSummary={botSummary} />
+              </ErrorBoundary>
+              <Break />
             </CompoundWrapper>
           ))}
         </>

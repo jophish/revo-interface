@@ -318,7 +318,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
       </TopSection>
 
       <StatContainer>
-        <PoolStatRow
+        {/* <PoolStatRow
           statName={'Total supply (FP)'}
           statValue={
             Number(fromWei(compoundBotSummary.totalFP)).toLocaleString(undefined, {
@@ -333,9 +333,9 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
               maximumFractionDigits: 2,
             }) + exchangeRateString
           }
-        />
+        /> */}
 
-        <PoolStatRow
+        {/* <PoolStatRow
           statName={'TVL (underlying yield farm)'}
           statValue={
             Number(fromWei(compoundBotSummary.totalLPInFarm)).toLocaleString(undefined, {
@@ -347,9 +347,9 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
             }) +
             ')'
           }
-        />
+        /> */}
 
-        <PoolStatRow
+        {/* <PoolStatRow
           statName={'TVL (in autocompounder)'}
           statValue={
             Number(fromWei(compoundBotSummary.totalLP)).toLocaleString(undefined, {
@@ -361,9 +361,9 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
             }) +
             ')'
           }
-        />
+        /> */}
 
-        <PoolStatRow statName={'Autocompounded APY'} statValue={displayedAPY} />
+        <PoolStatRow statName={'APY'} statValue={displayedAPY} />
         {isStaking && (
           <>
             <Break />
