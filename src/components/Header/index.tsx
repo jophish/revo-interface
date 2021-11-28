@@ -1,24 +1,20 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
 import { CELO, ChainId as UbeswapChainId, TokenAmount } from '@ubeswap/sdk'
-import { CardNoise } from 'components/earn/styled'
 import Modal from 'components/Modal'
 import usePrevious from 'hooks/usePrevious'
 import { darken } from 'polished'
 import React, { useState } from 'react'
 import { isMobile } from 'react-device-detect'
-import { Moon, Sun } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useAggregateUbeBalance, useTokenBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
-import { TYPE } from 'theme'
 import { ExternalLink } from 'theme/components'
-import { CountUp } from 'use-count-up'
 
-import Icon from '../../assets/svg/icon-revo.svg'
 import Logo from '../../assets/svg/logo.svg'
 import LogoDark from '../../assets/svg/revo.png'
+import Icon from '../../assets/svg/revo-market-icon.svg'
 import { useDarkModeManager } from '../../state/user/hooks'
 import { YellowCard } from '../Card'
 import Menu from '../Menu'
@@ -168,9 +164,6 @@ const UbeIcon = styled.div`
   :hover {
     transform: rotate(-5deg);
   }
-  @media (max-width: 385px) {
-    display: none;
-  }
 `
 
 const activeClassName = 'ACTIVE'
@@ -295,8 +288,8 @@ export default function Header() {
         <Title to="/">
           <UbeIcon>
             <img
-              width={isMobile ? '32px' : '215px'}
-              height={isMobile ? '36px' : '40px'}
+              width={isMobile ? '100px' : '215px'}
+              height={isMobile ? '86px' : '40px'}
               src={isMobile ? Icon : darkMode ? LogoDark : Logo}
               alt="Revo.Finance"
             />
@@ -341,33 +334,6 @@ export default function Header() {
             )}
           </HideSmall>
 
-          {aggregateBalance && (
-            <UBEWrapper onClick={() => setShowUbeBalanceModal(true)}>
-              <UBEAmount active={!!account} style={{ pointerEvents: 'auto' }}>
-                {account && (
-                  <HideSmall>
-                    <TYPE.white
-                      style={{
-                        paddingRight: '.4rem',
-                      }}
-                    >
-                      <CountUp
-                        key={countUpValue}
-                        isCounting
-                        start={parseFloat(countUpValuePrevious)}
-                        end={parseFloat(countUpValue)}
-                        thousandsSeparator={','}
-                        duration={1}
-                      />
-                    </TYPE.white>
-                  </HideSmall>
-                )}
-                UBE
-              </UBEAmount>
-              <CardNoise />
-            </UBEWrapper>
-          )}
-
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userCELOBalance ? (
               <BalanceText style={{ flexShrink: 0 }} pl="0.75rem" pr="0.5rem" fontWeight={500}>
@@ -378,9 +344,6 @@ export default function Header() {
           </AccountElement>
         </HeaderElement>
         <HeaderElementWrap>
-          <StyledMenuButton onClick={() => toggleDarkMode()}>
-            {darkMode ? <Moon size={20} /> : <Sun size={20} />}
-          </StyledMenuButton>
           <Menu />
         </HeaderElementWrap>
       </HeaderControls>

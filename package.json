@@ -1,6 +1,6 @@
 {
-  "name": "@ubeswap/interface",
-  "description": "Ubeswap Interface",
+  "name": "@revo/interface",
+  "description": "Revo Market Interface",
   "homepage": ".",
   "private": true,
   "devDependencies": {
