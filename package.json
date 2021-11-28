@@ -134,6 +134,7 @@
     "@ethersproject/solidity": "^5.3.0",
     "@ethersproject/strings": "^5.3.0",
     "@ethersproject/units": "^5.3.0",
+    "@fontsource/dm-sans": "^4.5.0",
     "@ledgerhq/errors": "^6.0.2",
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
     "@pedrouid/environment": "^1.0.1",

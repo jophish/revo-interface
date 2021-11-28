@@ -1,3 +1,5 @@
+import '@fontsource/dm-sans/index.css'
+
 import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import { Text, TextProps } from 'rebass'
@@ -8,6 +10,7 @@ import styled, {
   ThemeProvider as StyledComponentsThemeProvider,
 } from 'styled-components'
 
+import bgImage from '../assets/images/gradient_bg.png'
 import { useIsDarkMode } from '../state/user/hooks'
 import { Colors } from './styled'
 
@@ -60,11 +63,11 @@ export function colors(darkMode: boolean): Colors {
     advancedBG: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
 
     //primary colors
-    primary1: darkMode ? '#8878C3' : '#8878C3',
+    primary1: darkMode ? '#E4BC04' : '#8878C3',
     primary2: darkMode ? '#E3DFF3' : '#FF8CC3',
     primary3: darkMode ? '#BFB7DE' : '#FF99C9',
     primary4: darkMode ? '#6D619A' : '#F6DDE8',
-    primary5: darkMode ? '#6D619A70' : '#E3DFF3',
+    primary5: darkMode ? '#B79700' : '#E3DFF3',
 
     // color text
     primaryText1: darkMode ? '#E3DFF3' : '#8878C3',
@@ -179,7 +182,7 @@ export const TYPE = {
 
 export const FixedGlobalStyle = createGlobalStyle`
 html, input, textarea, button {
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-display: fallback;
 }
 
@@ -190,7 +193,7 @@ body {
 }
 
  a {
-   color: ${colors(false).blue1}; 
+   color: ${colors(false).blue1};
  }
 
 * {
@@ -214,7 +217,11 @@ html {
 export const ThemedGlobalStyle = createGlobalStyle`
 html {
   color: ${({ theme }) => theme.text1};
-  background-color: ${({ theme }) => theme.bg2};
+  background: url(${bgImage});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  background-color: #0d0415;
 }
 
 body {
@@ -235,4 +242,3 @@ body {
   width: 100%;
 }
 `
-
