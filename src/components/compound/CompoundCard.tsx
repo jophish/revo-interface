@@ -371,14 +371,12 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
               {userValueCUSD && (
                 <RowBetween>
                   <TYPE.black color={'white'} fontWeight={500}>
-                    <span>Your stake</span>
+                    <span>Total Deposited</span>
                   </TYPE.black>
 
                   <RowFixed>
                     <TYPE.black style={{ textAlign: 'right' }} color={'white'} fontWeight={500}>
-                      {Number(fromWei(compoundBotSummary.amountUserLP)).toFixed(2)} LP /{' '}
-                      {Number(fromWei(compoundBotSummary.amountUserFP)).toFixed(2)} FP ($
-                      {userValueCUSD.toFixed(2, { groupSeparator: ',' })})
+                      (${userValueCUSD.toFixed(2, { groupSeparator: ',' })})
                     </TYPE.black>
                   </RowFixed>
                 </RowBetween>

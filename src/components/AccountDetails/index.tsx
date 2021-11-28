@@ -21,8 +21,8 @@ import Transaction from './Transaction'
 const HeaderRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap};
   padding: 1rem 1rem;
-  font-weight: 500;
-  color: ${(props) => (props.color === 'blue' ? ({ theme }) => theme.primary1 : 'inherit')};
+  font-weight: 800;
+  color: ${({ theme }) => theme.text3};
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 1rem;
   `};
@@ -30,7 +30,7 @@ const HeaderRow = styled.div`
 
 const UpperSection = styled.div`
   position: relative;
-
+  background-color: #ffe15d;
   h5 {
     margin: 0;
     margin-bottom: 0.5rem;
@@ -63,7 +63,7 @@ const AccountGroupingRow = styled.div`
   justify-content: space-between;
   align-items: center;
   font-weight: 400;
-  color: ${({ theme }) => theme.text1};
+  color: white;
 
   div {
     ${({ theme }) => theme.flexRowNoWrap}
@@ -72,7 +72,7 @@ const AccountGroupingRow = styled.div`
 `
 
 const AccountSection = styled.div`
-  background-color: ${({ theme }) => theme.bg1};
+  background-color: #ffe15d;
   padding: 0rem 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`padding: 0rem 1rem 1.5rem 1rem;`};
 `
@@ -190,6 +190,7 @@ const WalletAction = styled(ButtonSecondary)`
     cursor: pointer;
     text-decoration: underline;
   }
+  color: ${({ theme }) => theme.text3};
 `
 
 function renderTransactions(transactions: string[]) {

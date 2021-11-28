@@ -70,24 +70,32 @@ export default function Compound() {
             </CardSection>
             <CardNoise />
           </VoteCard>
-          <Header>Your Pools</Header>
-          {botSummariesStakedIn.map((botSummary) => (
-            <CompoundWrapper key={botSummary.address}>
-              <ErrorBoundary>
-                <CompoundCard compoundBotSummary={botSummary} />
-              </ErrorBoundary>
-              <Break />
-            </CompoundWrapper>
-          ))}
-          <Header>Other Pools</Header>
-          {otherBotSummaries.map((botSummary) => (
-            <CompoundWrapper key={botSummary.address}>
-              <ErrorBoundary>
-                <CompoundCard compoundBotSummary={botSummary} />
-              </ErrorBoundary>
-              <Break />
-            </CompoundWrapper>
-          ))}
+          {botSummariesStakedIn.length > 0 && (
+            <>
+              <Header>Your Pools</Header>
+              {botSummariesStakedIn.map((botSummary) => (
+                <CompoundWrapper key={botSummary.address}>
+                  <ErrorBoundary>
+                    <CompoundCard compoundBotSummary={botSummary} />
+                  </ErrorBoundary>
+                  <Break />
+                </CompoundWrapper>
+              ))}
+            </>
+          )}
+          {otherBotSummaries.length > 0 && (
+            <>
+              <Header>Other Pools</Header>
+              {otherBotSummaries.map((botSummary) => (
+                <CompoundWrapper key={botSummary.address}>
+                  <ErrorBoundary>
+                    <CompoundCard compoundBotSummary={botSummary} />
+                  </ErrorBoundary>
+                  <Break />
+                </CompoundWrapper>
+              ))}
+            </>
+          )}
         </>
       )}
     </PageWrapper>

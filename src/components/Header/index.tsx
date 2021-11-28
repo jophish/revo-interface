@@ -315,6 +315,9 @@ export default function Header() {
           <StyledNavLink id="compound-nav-link" to="/compound">
             {t('compound')}
           </StyledNavLink>
+          {/* <StyledNavLink id="farm-nav-link" to="/farm">
+            {t('farm')}
+          </StyledNavLink> */}
           {/* <StyledNavLink id={`bridge-nav-link`} to={'/bridge'}>
             {t('bridge')}
           </StyledNavLink>
