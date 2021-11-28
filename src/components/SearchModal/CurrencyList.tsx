@@ -155,7 +155,7 @@ function CurrencyRow({
         {isFPToken && compoundedAPY && (
           <>
             <Text ml="0px" fontSize={'12px'} fontWeight={300} color={'yellow'}>
-              {'ZAP IN for '} ${compoundedAPY} {'APY'}
+              {'ZAP IN for '} {compoundedAPY} {'APY'}
             </Text>
             <Break />
           </>
