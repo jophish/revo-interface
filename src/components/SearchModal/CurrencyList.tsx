@@ -1,11 +1,16 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { currencyEquals, Token, TokenAmount } from '@ubeswap/sdk'
+import { useToken } from 'hooks/Tokens'
 import React, { CSSProperties, MutableRefObject, useCallback } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components'
+import { calcAPY } from 'utils/calcAPY'
+import { useCUSDPrices } from 'utils/useCUSDPrice'
 
+import { usePair } from '../../data/Reserves'
 import { useAllInactiveTokens, useIsUserAddedToken } from '../../hooks/Tokens'
+import { CompoundBotSummary, useCompoundRegistry } from '../../pages/Compound/useCompoundRegistry'
 import { useCombinedActiveList, WrappedTokenInfo } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'
@@ -88,12 +93,14 @@ function CurrencyRow({
   isSelected,
   otherSelected,
   style,
+  botSummaries,
 }: {
   currency: Token
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
+  botSummaries: CompoundBotSummary[]
 }) {
   const { address: account } = useContractKit()
 
@@ -104,6 +111,30 @@ function CurrencyRow({
   const balance = useCurrencyBalance(account ?? undefined, currency)
 
   const isFPToken = currency.name == 'Farmbot FP Token'
+
+  let botSummary, cusdPrices, stakingTokenPair
+  if (botSummaries.length > 0) {
+    botSummary = botSummaries.filter((summary) => {
+      return summary.address == currency.address
+    })?.[0]
+
+    if (botSummary) {
+      const rewardsToken = useToken(botSummary.rewardsAddress) || undefined
+      const token0 = useToken(botSummary.token0Address) || undefined
+      const token1 = useToken(botSummary.token1Address) || undefined
+      cusdPrices = useCUSDPrices([token0, token1, rewardsToken])
+
+      stakingTokenPair = usePair(token0, token1)?.[1]
+    }
+  }
+
+  let compoundedAPY
+  if (isFPToken && botSummary && cusdPrices && stakingTokenPair) {
+    // TODO: to move the following calculation into a util lib
+
+    compoundedAPY = calcAPY(botSummary, cusdPrices, stakingTokenPair)
+  }
+
   // only show add or remove buttons if not on selected list
   return (
     <MenuItem
@@ -121,12 +152,11 @@ function CurrencyRow({
         <TYPE.gray ml="0px" fontSize={'12px'} fontWeight={300}>
           {currency.name} {!isOnSelectedList && customAdded && '• Added by user'}
         </TYPE.gray>
-        {isFPToken && (
+        {isFPToken && compoundedAPY && (
           <>
             <Text ml="0px" fontSize={'12px'} fontWeight={300} color={'yellow'}>
-              {'ZAP IN for autocompounded APY'}
+              {'ZAP IN for '} {compoundedAPY} {'APY'}
             </Text>
-            {/* <Text fontWeight={500}>zap in</Text> */}
             <Break />
           </>
         )}
@@ -165,6 +195,8 @@ export default function CurrencyList({
     [address: string]: Token
   } = useAllInactiveTokens()
 
+  const botSummaries = useCompoundRegistry()
+
   const Row = useCallback(
     ({ data, index, style }) => {
       const currency: Token = data[index]
@@ -194,6 +226,7 @@ export default function CurrencyList({
             isSelected={isSelected}
             onSelect={handleSelect}
             otherSelected={otherSelected}
+            botSummaries={botSummaries}
           />
         )
       }

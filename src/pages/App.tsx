@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
 import Header from '../components/Header'
 import Polling from '../components/Header/Polling'
-import URLWarning from '../components/Header/URLWarning'
 import Popups from '../components/Popups'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import { getMobileOperatingSystem, Mobile } from '../utils/mobile'
@@ -18,8 +17,8 @@ import {
   RedirectToAddLiquidity,
 } from './AddLiquidity/redirects'
 import { Bridge } from './Bridge'
-import Earn from './Earn'
 import Compound from './Compound'
+import Earn from './Earn'
 import Manage from './Earn/Manage'
 import Pool from './Pool'
 import PoolFinder from './PoolFinder'
@@ -93,7 +92,7 @@ export default function App() {
       <Route component={GoogleAnalyticsReporter} />
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
-        <URLWarning />
+        {/* <URLWarning /> */}
         <HeaderWrapper>
           <Header />
         </HeaderWrapper>
