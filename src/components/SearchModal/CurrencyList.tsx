@@ -12,6 +12,7 @@ import { TYPE } from '../../theme'
 import { isTokenOnList } from '../../utils'
 import Column from '../Column'
 import CurrencyLogo from '../CurrencyLogo'
+import { Break } from '../earn/styled'
 import Loader from '../Loader'
 import { RowFixed } from '../Row'
 import { MouseoverTooltip } from '../Tooltip'
@@ -102,6 +103,7 @@ function CurrencyRow({
   const customAdded = useIsUserAddedToken(currency)
   const balance = useCurrencyBalance(account ?? undefined, currency)
 
+  const isFPToken = currency.name == 'Farmbot FP Token'
   // only show add or remove buttons if not on selected list
   return (
     <MenuItem
@@ -116,9 +118,18 @@ function CurrencyRow({
         <Text title={currency.name} fontWeight={500}>
           {currency.symbol}
         </Text>
-        <TYPE.darkGray ml="0px" fontSize={'12px'} fontWeight={300}>
+        <TYPE.gray ml="0px" fontSize={'12px'} fontWeight={300}>
           {currency.name} {!isOnSelectedList && customAdded && '• Added by user'}
-        </TYPE.darkGray>
+        </TYPE.gray>
+        {isFPToken && (
+          <>
+            <Text ml="0px" fontSize={'12px'} fontWeight={300} color={'yellow'}>
+              {'ZAP IN for autocompounded APY'}
+            </Text>
+            {/* <Text fontWeight={500}>zap in</Text> */}
+            <Break />
+          </>
+        )}
       </Column>
       <TokenTags currency={currency} />
       <RowFixed style={{ justifySelf: 'flex-end' }}>

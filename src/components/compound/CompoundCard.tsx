@@ -7,6 +7,7 @@ import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { Dots } from 'pages/Pool/styleds'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
 import styled, { useTheme } from 'styled-components'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
@@ -23,7 +24,7 @@ import { getContract } from '../../utils'
 import { AutoColumn, ColumnCenter } from '../Column'
 import CurrencyInputPanel from '../CurrencyInputPanel'
 import PoolStatRow from '../earn/PoolStats/PoolStatRow'
-import { Break, CardNoise } from '../earn/styled'
+import { Break, CardNoise, DataCard } from '../earn/styled'
 import Row, { AutoRow, RowBetween, RowFixed, RowFlat } from '../Row'
 import { ConfirmAddCompoundModalBottom } from './ConfirmAddCompoundModalBottom'
 import { ConfirmWithdrawCompoundModalBottom } from './ConfirmWithdrawCompoundModalBottom'
@@ -91,6 +92,11 @@ const TopSection = styled.div`
 };
 `
 
+const VoteCard = styled(DataCard)`
+  background: radial-gradient(76.02% 75.41% at 1.84% 0%, #27ae60 0%, #222 100%);
+  overflow: hidden;
+`
+
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
   border-radius: 12px;
   width: 100%;
@@ -105,6 +111,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
 `
 
 export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
+  const { t } = useTranslation()
   const { address: account } = useContractKit()
   const [showDeposit, setShowDeposit] = useState<boolean>(false)
   const [showWithdraw, setShowWithdraw] = useState<boolean>(false)
@@ -304,14 +311,14 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         {/* commenting out currency logo since we don't have one*/}
         {/* <DoubleCurrencyLogo currency0={token0} currency1={token1} size={24} /> */}
         <PoolInfo style={{ marginLeft: '8px' }}>
-          <TYPE.white fontWeight={'bold'} fontSize={[18, 24]}>
+          <TYPE.white fontWeight={800} fontSize={[22, 24]}>
             {compoundBotSummary.token0Name}-{compoundBotSummary.token1Name}
           </TYPE.white>
         </PoolInfo>
       </TopSection>
 
       <StatContainer>
-        <PoolStatRow
+        {/* <PoolStatRow
           statName={'Total supply (FP)'}
           statValue={
             Number(fromWei(compoundBotSummary.totalFP)).toLocaleString(undefined, {
@@ -326,10 +333,11 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
               maximumFractionDigits: 2,
             }) + exchangeRateString
           }
-        />
+        /> */}
 
         <PoolStatRow
-          statName={'TVL (underlying yield farm)'}
+          statName={'TVL'}
+          helperText={'Total value locked in underlying yield farm'}
           statValue={
             Number(fromWei(compoundBotSummary.totalLPInFarm)).toLocaleString(undefined, {
               maximumFractionDigits: 3,
@@ -341,7 +349,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
             ')'
           }
         />
-
+        {/*
         <PoolStatRow
           statName={'TVL (in autocompounder)'}
           statValue={
@@ -354,9 +362,9 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
             }) +
             ')'
           }
-        />
+        /> */}
 
-        <PoolStatRow statName={'Autocompounded APY'} statValue={displayedAPY} />
+        <PoolStatRow statName={'APY'} statValue={displayedAPY} helperText={'APY is autocompounded'} />
         {isStaking && (
           <>
             <Break />
@@ -364,14 +372,12 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
               {userValueCUSD && (
                 <RowBetween>
                   <TYPE.black color={'white'} fontWeight={500}>
-                    <span>Your stake</span>
+                    <span>Total Deposited</span>
                   </TYPE.black>
 
                   <RowFixed>
                     <TYPE.black style={{ textAlign: 'right' }} color={'white'} fontWeight={500}>
-                      {Number(fromWei(compoundBotSummary.amountUserLP)).toFixed(2)} LP /{' '}
-                      {Number(fromWei(compoundBotSummary.amountUserFP)).toFixed(2)} FP ($
-                      {userValueCUSD.toFixed(2, { groupSeparator: ',' })})
+                      (${userValueCUSD.toFixed(2, { groupSeparator: ',' })})
                     </TYPE.black>
                   </RowFixed>
                 </RowBetween>

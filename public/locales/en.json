@@ -98,6 +98,8 @@
   "liquidityProviderRewards": "Liquidity provider rewards",
   "liquidityProviderRewardsDesc": "Liquidity providers earn a 0.25% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.",
   "liquidityProviderRewardsReadMore": "Read more about providing liquidity",
+  "compoundInterestTitle": "Your earnings are supercharged",
+  "compoundInterestDesc": "We collect and reinvest your earnings. You only need to deposit into our compound pools and we will take care of the rest",
   "liquidityTokens": "liquidity tokens.",
   "Lists": "Lists",
   "Loading": "Loading",
@@ -219,5 +221,6 @@
   "yourUnclaimedRewards": "Your unclaimed rewards",
   "youWillMint": "You will mint",
   "youWillReceive": "You will receive at least",
-  "youWillRemove": "You will remove"
+  "youWillRemove": "You will remove",
+  "Zap": "ZAP IN"
 }
