@@ -40,6 +40,7 @@ const Header: React.FC = ({ children }) => {
 
 export default function Compound() {
   const botSummaries = useCompoundRegistry()
+
   const { t } = useTranslation()
 
   if (!botSummaries.length) {
