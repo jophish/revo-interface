@@ -1,8 +1,11 @@
 import { ErrorBoundary } from '@sentry/react'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import { AutoColumn } from '../../components/Column'
 import { CompoundCard } from '../../components/compound/CompoundCard'
+import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { useCompoundRegistry } from './useCompoundRegistry'
@@ -22,6 +25,11 @@ flex-direction: column;
 `};
 `
 
+const VoteCard = styled(DataCard)`
+  background-color: #8d7c86;
+  overflow: hidden;
+`
+
 const Header: React.FC = ({ children }) => {
   return (
     <DataRow style={{ alignItems: 'baseline', marginBottom: '12px' }}>
@@ -32,6 +40,7 @@ const Header: React.FC = ({ children }) => {
 
 export default function Compound() {
   const botSummaries = useCompoundRegistry()
+  const { t } = useTranslation()
 
   if (!botSummaries.length) {
     return <div>no bots</div>
@@ -40,6 +49,20 @@ export default function Compound() {
     <PageWrapper>
       {botSummaries.length > 0 && (
         <>
+          <VoteCard>
+            <CardNoise />
+            <CardSection>
+              <AutoColumn gap="md">
+                <RowBetween>
+                  <TYPE.white fontWeight={600}>{t('compoundInterestTitle')}</TYPE.white>
+                </RowBetween>
+                <RowBetween>
+                  <TYPE.white fontSize={14}>{t('compoundInterestDesc')}</TYPE.white>
+                </RowBetween>
+              </AutoColumn>
+            </CardSection>
+            <CardNoise />
+          </VoteCard>
           <Header>Your Pools</Header>
           {botSummaries.map((botSummary) => (
             <CompoundWrapper key={botSummary.address}>
