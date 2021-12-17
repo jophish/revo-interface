@@ -12,8 +12,6 @@ import { useAggregateUbeBalance, useTokenBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
 import { ExternalLink } from 'theme/components'
 
-import Logo from '../../assets/svg/logo.svg'
-import LogoDark from '../../assets/svg/revo.png'
 import Icon from '../../assets/svg/revo-market-icon.svg'
 import { useDarkModeManager } from '../../state/user/hooks'
 import { YellowCard } from '../Card'
@@ -289,8 +287,8 @@ export default function Header() {
           <UbeIcon>
             <img
               width={isMobile ? '100px' : '215px'}
-              height={isMobile ? '86px' : '40px'}
-              src={isMobile ? Icon : darkMode ? LogoDark : Logo}
+              height={isMobile ? '86px' : '80px'}
+              src={Icon}
               alt="Revo.Finance"
             />
           </UbeIcon>
