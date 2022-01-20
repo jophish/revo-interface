@@ -113,11 +113,10 @@ ReactDOM.render(
     <FixedGlobalStyle />
     <ContractKitProvider
       dapp={{
-        name: 'Ubeswap',
-        description:
-          'The interface for Ubeswap, a decentralized exchange and automated market maker protocol for Celo assets.',
-        url: 'https://app.ubeswap.org',
-        icon: 'https://info.ubeswap.org/favicon.png',
+        name: 'Revo',
+        description: 'The interface for Revo, a decentralized auto-compounding yield farming platform on Celo.',
+        url: 'https://revo.market',
+        icon: 'https://revo.market/favicon.png',
       }}
       network={CeloMainnet}
       networks={[CeloMainnet, Alfajores]}
