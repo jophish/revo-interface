@@ -17,6 +17,7 @@ const AppWrapper = styled.div`
   align-items: flex-start;
   overflow-x: hidden;
   min-height: 100vh;
+  background-color: ${({ theme }) => theme.bg2};
 `
 
 const HeaderWrapper = styled.div`

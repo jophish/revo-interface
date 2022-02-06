@@ -1,6 +1,5 @@
 import '@fontsource/dm-sans/index.css'
 
-import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import { Text, TextProps } from 'rebass'
 import styled, {
@@ -21,6 +20,8 @@ const MEDIA_WIDTHS = {
   upToMedium: 960,
   upToLarge: 1280,
 }
+
+export const borderRadius = 4
 
 const mediaWidthTemplates: { [width in keyof typeof MEDIA_WIDTHS]: typeof css } = Object.keys(MEDIA_WIDTHS).reduce(
   (accumulator, size) => {
@@ -44,7 +45,7 @@ export function colors(darkMode: boolean): Colors {
     black,
 
     // text
-    text1: darkMode ? '#FFFFFF' : '#000000',
+    text1: darkMode ? '#FFFFFF' : '#003049',
     text2: darkMode ? '#C3C5CB' : '#565A69',
     text3: darkMode ? '#6C7284' : '#888D9B',
     text4: darkMode ? '#565A69' : '#C3C5CB',
@@ -52,7 +53,7 @@ export function colors(darkMode: boolean): Colors {
 
     // backgrounds / greys
     bg1: darkMode ? '#8d7c86' : '#FFFFFF',
-    bg2: darkMode ? '#2C2F36' : '#F7F8FA',
+    bg2: darkMode ? '#2C2F36' : '#FDF0D5',
     bg3: darkMode ? '#40444F' : '#EDEEF2',
     bg4: darkMode ? '#565A69' : '#CED0D9',
     bg5: darkMode ? '#6C7284' : '#888D9B',
@@ -62,11 +63,11 @@ export function colors(darkMode: boolean): Colors {
     advancedBG: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
 
     //primary colors
-    primary1: darkMode ? '#E4BC04' : '#8878C3',
-    primary2: darkMode ? '#E3DFF3' : '#FF8CC3',
-    primary3: darkMode ? '#BFB7DE' : '#FF99C9',
-    primary4: darkMode ? '#6D619A' : '#F6DDE8',
-    primary5: darkMode ? '#B79700' : '#E3DFF3',
+    primary1: darkMode ? '#E4BC04' : '#669BBC',
+    primary2: darkMode ? '#E3DFF3' : '#780000',
+    primary3: darkMode ? '#BFB7DE' : '#669BBC',
+    primary4: darkMode ? '#6D619A' : '#FDF0D5',
+    primary5: darkMode ? '#B79700' : '#C1121F',
 
     // color text
     primaryText1: darkMode ? '#E3DFF3' : '#8878C3',
@@ -217,21 +218,11 @@ html {
 export const ThemedGlobalStyle = createGlobalStyle`
 html {
   color: ${({ theme }) => theme.text1};
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  background-color: ${({ theme }) => theme.bg1};
 }
 
 body {
   min-height: 100vh;
-  background-position: 0 -30vh;
-  background-repeat: no-repeat;
-  background-image: ${({ theme }) =>
-    `radial-gradient(50% 50% at 50% 50%, ${transparentize(0.9, theme.primary1)} 0%, ${transparentize(
-      1,
-      theme.bg1
-    )} 100%)`};
+  background-color: ${({ theme }) => theme.bg1};
 }
 
 .depositLiquidity {
