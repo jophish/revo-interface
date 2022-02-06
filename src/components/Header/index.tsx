@@ -3,6 +3,7 @@ import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
 import Modal from 'components/Modal'
 import { darken } from 'polished'
 import React, { useState } from 'react'
+import { isMobile } from 'react-device-detect'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useTokenBalance } from 'state/wallet/hooks'
@@ -59,7 +60,7 @@ const HeaderControls = styled.div`
     width: 100%;
     z-index: 99;
     height: 72px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 4px 4px 0 0;
     background-color: ${({ theme }) => theme.bg1};
     box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5)
 `};
@@ -275,7 +276,7 @@ export default function Header() {
       </Modal>
       <HeaderRow>
         <Title to="/">
-          <img height={'60px'} src={Icon} alt="Revo.Finance" />
+          <img height={isMobile ? '48px' : '60px'} src={Icon} alt="Revo.Finance" />
         </Title>
       </HeaderRow>
       <HeaderControls>

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo } from 'react'
 import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
+import { borderRadius } from 'theme'
 import { isAddress } from 'web3-utils'
 
 import { NETWORK_CHAIN_NAME } from '../../connectors'
@@ -24,7 +25,7 @@ const Web3StatusGeneric = styled(ButtonSecondary)`
   width: 100%;
   align-items: center;
   padding: 0.5rem;
-  border-radius: 12px;
+  border-radius: ${borderRadius}px;
   cursor: pointer;
   user-select: none;
   :focus {
@@ -92,7 +93,7 @@ const Text = styled.p`
   margin: 0 0.5rem 0 0.25rem;
   font-size: 1rem;
   width: fit-content;
-  font-weight: 500;
+  font-weight: bold;
   color: ${({ theme }) => theme.white};
 `
 

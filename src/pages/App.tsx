@@ -15,7 +15,6 @@ const AppWrapper = styled.div`
   display: flex;
   flex-flow: column;
   align-items: flex-start;
-  overflow-x: hidden;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.bg2};
 `
@@ -24,6 +23,10 @@ const HeaderWrapper = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   width: 100%;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: ${({ theme }) => theme.bg2};
+  z-index: 99;
 `
 
 const BodyWrapper = styled.div`
