@@ -1,17 +1,15 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
-import { CELO, ChainId as UbeswapChainId, TokenAmount } from '@ubeswap/sdk'
+import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
 import Modal from 'components/Modal'
 import { darken } from 'polished'
 import React, { useState } from 'react'
-import { isMobile } from 'react-device-detect'
-import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
-import { useAggregateUbeBalance, useTokenBalance } from 'state/wallet/hooks'
+import { useTokenBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
 import { ExternalLink } from 'theme/components'
 
-import Icon from '../../assets/svg/revo-market-icon.svg'
+import Icon from '../../assets/images/revo-logo.png'
 import { YellowCard } from '../Card'
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
@@ -49,20 +47,21 @@ const HeaderControls = styled.div`
   justify-self: flex-end;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-flex-direction: row;
-justify-content: space-between;
-justify-self: center;
-width: 100%;
-max-width: 960px;
-padding: 1rem;
-position: fixed;
-bottom: 0px;
-left: 0px;
-width: 100%;
-z-index: 99;
-height: 72px;
-border-radius: 12px 12px 0 0;
-background-color: ${({ theme }) => theme.bg1};
+    flex-direction: row;
+    justify-content: space-between;
+    justify-self: center;
+    width: 100%;
+    max-width: 960px;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    z-index: 99;
+    height: 72px;
+    border-radius: 12px 12px 0 0;
+    background-color: ${({ theme }) => theme.bg1};
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5)
 `};
 `
 
@@ -265,11 +264,9 @@ const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
 export default function Header() {
   const { address: account, network } = useContractKit()
   const chainId = network.chainId
-  const { t } = useTranslation()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])
   const [showUbeBalanceModal, setShowUbeBalanceModal] = useState<boolean>(false)
-  const aggregateBalance: TokenAmount | undefined = useAggregateUbeBalance()
 
   return (
     <HeaderFrame>
@@ -278,23 +275,16 @@ export default function Header() {
       </Modal>
       <HeaderRow>
         <Title to="/">
-          <UbeIcon>
-            <img
-              width={isMobile ? '100px' : '215px'}
-              height={isMobile ? '86px' : '80px'}
-              src={Icon}
-              alt="Revo.Finance"
-            />
-          </UbeIcon>
+          <img height={'60px'} src={Icon} alt="Revo.Finance" />
         </Title>
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
-          <HideSmall>
+          {/* <HideSmall>
             {chainId && NETWORK_LABELS[chainId] && (
               <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
             )}
-          </HideSmall>
+          </HideSmall> */}
 
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userCELOBalance ? (
