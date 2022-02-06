@@ -1,21 +1,25 @@
 {
   "files": {
     "main.css": "./static/css/main.739b6508.chunk.css",
-    "main.js": "./static/js/main.d9081324.chunk.js",
-    "main.js.map": "./static/js/main.d9081324.chunk.js.map",
+    "main.js": "./static/js/main.a7a3263e.chunk.js",
+    "main.js.map": "./static/js/main.a7a3263e.chunk.js.map",
     "runtime-main.js": "./static/js/runtime-main.ebd825ec.js",
     "runtime-main.js.map": "./static/js/runtime-main.ebd825ec.js.map",
     "static/css/2.7ec56b49.chunk.css": "./static/css/2.7ec56b49.chunk.css",
-    "static/js/2.7e318807.chunk.js": "./static/js/2.7e318807.chunk.js",
-    "static/js/2.7e318807.chunk.js.map": "./static/js/2.7e318807.chunk.js.map",
+    "static/js/2.e441f60b.chunk.js": "./static/js/2.e441f60b.chunk.js",
+    "static/js/2.e441f60b.chunk.js.map": "./static/js/2.e441f60b.chunk.js.map",
     "index.html": "./index.html",
     "static/css/2.7ec56b49.chunk.css.map": "./static/css/2.7ec56b49.chunk.css.map",
     "static/css/main.739b6508.chunk.css.map": "./static/css/main.739b6508.chunk.css.map",
-    "static/js/2.7e318807.chunk.js.LICENSE.txt": "./static/js/2.7e318807.chunk.js.LICENSE.txt",
+    "static/js/2.e441f60b.chunk.js.LICENSE.txt": "./static/js/2.e441f60b.chunk.js.LICENSE.txt",
     "static/media/big_unicorn.be45c251.png": "./static/media/big_unicorn.be45c251.png",
+    "static/media/blue-loader.249140da.svg": "./static/media/blue-loader.249140da.svg",
     "static/media/index.css": "./static/media/dm-sans-latin-ext-400-normal.652b69da.woff2",
+    "static/media/dropdown.fef18eeb.svg": "./static/media/dropdown.fef18eeb.svg",
+    "static/media/gradient_bg.358e80bc.png": "./static/media/gradient_bg.358e80bc.png",
+    "static/media/menu.79681e1f.svg": "./static/media/menu.79681e1f.svg",
     "static/media/noise.495f2eb8.webp": "./static/media/noise.495f2eb8.webp",
-    "static/media/revo-logo.395d0cf0.png": "./static/media/revo-logo.395d0cf0.png",
+    "static/media/revo-market-icon.a752903b.svg": "./static/media/revo-market-icon.a752903b.svg",
     "static/media/token-logo.52c26801.png": "./static/media/token-logo.52c26801.png",
     "static/media/x.33076876.svg": "./static/media/x.33076876.svg",
     "static/media/xl_uni.89be1dda.png": "./static/media/xl_uni.89be1dda.png"
@@ -23,8 +27,8 @@
   "entrypoints": [
     "static/js/runtime-main.ebd825ec.js",
     "static/css/2.7ec56b49.chunk.css",
-    "static/js/2.7e318807.chunk.js",
+    "static/js/2.e441f60b.chunk.js",
     "static/css/main.739b6508.chunk.css",
-    "static/js/main.d9081324.chunk.js"
+    "static/js/main.a7a3263e.chunk.js"
   ]
 }
