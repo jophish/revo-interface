@@ -10,7 +10,6 @@ import styled, {
   ThemeProvider as StyledComponentsThemeProvider,
 } from 'styled-components'
 
-import bgImage from '../assets/images/gradient_bg.png'
 import { useIsDarkMode } from '../state/user/hooks'
 import { Colors } from './styled'
 
@@ -218,11 +217,10 @@ html {
 export const ThemedGlobalStyle = createGlobalStyle`
 html {
   color: ${({ theme }) => theme.text1};
-  background: url(${bgImage});
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
-  background-color: #0d0415;
+  background-color: ${({ theme }) => theme.bg1};
 }
 
 body {

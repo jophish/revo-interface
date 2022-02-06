@@ -1,7 +1,6 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
 import { CELO, ChainId as UbeswapChainId, TokenAmount } from '@ubeswap/sdk'
 import Modal from 'components/Modal'
-import usePrevious from 'hooks/usePrevious'
 import { darken } from 'polished'
 import React, { useState } from 'react'
 import { isMobile } from 'react-device-detect'
@@ -13,9 +12,7 @@ import styled from 'styled-components'
 import { ExternalLink } from 'theme/components'
 
 import Icon from '../../assets/svg/revo-market-icon.svg'
-import { useDarkModeManager } from '../../state/user/hooks'
 import { YellowCard } from '../Card'
-import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import UbeBalanceContent from './UbeBalanceContent'
@@ -271,11 +268,8 @@ export default function Header() {
   const { t } = useTranslation()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])
-  const [darkMode, toggleDarkMode] = useDarkModeManager()
   const [showUbeBalanceModal, setShowUbeBalanceModal] = useState<boolean>(false)
   const aggregateBalance: TokenAmount | undefined = useAggregateUbeBalance()
-  const countUpValue = aggregateBalance?.toFixed(0) ?? '0'
-  const countUpValuePrevious = usePrevious(countUpValue) ?? '0'
 
   return (
     <HeaderFrame>
@@ -293,39 +287,6 @@ export default function Header() {
             />
           </UbeIcon>
         </Title>
-        <HeaderLinks>
-          <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
-            {'Zap In'}
-          </StyledNavLink>
-          <StyledNavLink
-            id={`pool-nav-link`}
-            to={'/pool'}
-            isActive={(match, { pathname }) =>
-              Boolean(match) ||
-              pathname.startsWith('/add') ||
-              pathname.startsWith('/remove') ||
-              pathname.startsWith('/create') ||
-              pathname.startsWith('/find')
-            }
-          >
-            {t('pool')}
-          </StyledNavLink>
-          <StyledNavLink id="compound-nav-link" to="/compound">
-            {t('compound')}
-          </StyledNavLink>
-          {/* <StyledNavLink id="farm-nav-link" to="/farm">
-            {t('farm')}
-          </StyledNavLink> */}
-          {/* <StyledNavLink id={`bridge-nav-link`} to={'/bridge'}>
-            {t('bridge')}
-          </StyledNavLink>
-          <StyledNavLink id={`stake-nav-link`} to={'/stake'}>
-            {t('stake')}
-          </StyledNavLink>
-          <StyledExternalLink id={`stake-nav-link`} href={'https://info.ubeswap.org'}>
-            {t('charts')} <span style={{ fontSize: '11px' }}>↗</span>
-          </StyledExternalLink> */}
-        </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
@@ -344,31 +305,7 @@ export default function Header() {
             <Web3Status />
           </AccountElement>
         </HeaderElement>
-        <HeaderElementWrap>
-          <Menu />
-        </HeaderElementWrap>
       </HeaderControls>
     </HeaderFrame>
   )
 }
-
-const UBEAmount = styled(AccountElement)`
-  color: white;
-  padding: 4px 8px;
-  height: 36px;
-  font-weight: 500;
-  background-color: ${({ theme }) => theme.bg3};
-  background: radial-gradient(174.47% 188.91% at 1.84% 0%, ${({ theme }) => theme.primary1} 0%, #2172e5 100%), #edeef2;
-`
-
-const UBEWrapper = styled.span`
-  width: fit-content;
-  position: relative;
-  cursor: pointer;
-  :hover {
-    opacity: 0.8;
-  }
-  :active {
-    opacity: 0.9;
-  }
-`
