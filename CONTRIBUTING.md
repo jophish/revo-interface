@@ -38,4 +38,4 @@ The following points should help guide your development:
 ## Finding a first issue
 
 Start with issues with the label
-[`good first issue`](https://github.com/revo-market/revo-arbitrage-bot/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
+[`good first issue`](https://github.com/revo-market/revo-interface/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
