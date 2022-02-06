@@ -7,13 +7,7 @@ Thank you for your interest in contributing to the Revo interface! ⚡
 
 ## Running the interface locally
 
-1. `yarn install`
-1. `yarn start`
-
-## Creating a production build
-
-1. `yarn install`
-1. `yarn build`
+See [README](https://github.com/revo-market/revo-interface#run).
 
 ## Engineering standards
 
