@@ -1,18 +1,17 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
 import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
 import Modal from 'components/Modal'
-import { darken } from 'polished'
+import { NETWORK_CHAIN_ID } from 'connectors'
 import React, { useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useTokenBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
-import { ExternalLink } from 'theme/components'
+import { borderRadius } from 'theme'
 
 import Icon from '../../assets/images/revo-logo.png'
-import { YellowCard } from '../Card'
-import Row, { RowFixed } from '../Row'
+import { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import UbeBalanceContent from './UbeBalanceContent'
 
@@ -81,22 +80,9 @@ align-items: center;
 `};
 `
 
-const HeaderElementWrap = styled.div`
-  display: flex;
-  align-items: center;
-`
-
 const HeaderRow = styled(RowFixed)`
   ${({ theme }) => theme.mediaWidth.upToMedium`
 width: 100%;
-`};
-`
-
-const HeaderLinks = styled(Row)`
-  justify-content: center;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-padding: 1rem 0 1rem 1rem;
-justify-content: flex-end;
 `};
 `
 
@@ -121,17 +107,15 @@ display: none;
 `};
 `
 
-const NetworkCard = styled(YellowCard)`
-  border-radius: 12px;
+const NetworkCard = styled.div`
+  border-radius: ${borderRadius}px;
   padding: 8px 12px;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-margin: 0;
-margin-right: 0.5rem;
-width: initial;
-overflow: hidden;
-text-overflow: ellipsis;
-flex-shrink: 1;
-`};
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  border: 1px solid ${({ theme }) => theme.yellow2};
+  color: ${({ theme }) => theme.yellow2};
+  font-weight: 500;
+  opacity: 0.6;
 `
 
 const BalanceText = styled(Text)`
@@ -152,77 +136,6 @@ justify-self: center;
   :hover {
     cursor: pointer;
   }
-`
-
-const UbeIcon = styled.div`
-  transition: transform 0.3s ease;
-  :hover {
-    transform: rotate(-5deg);
-  }
-`
-
-const activeClassName = 'ACTIVE'
-
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName,
-})`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 1rem;
-  width: fit-content;
-  margin: 0 12px;
-  font-weight: 500;
-
-  &.${activeClassName} {
-    border-radius: 12px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.text1};
-  }
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-
-  @media (max-width: 320px) {
-    margin: 0 8px;
-  }
-`
-
-const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName,
-})<{ isActive?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 1rem;
-  width: fit-content;
-  margin: 0 12px;
-  font-weight: 500;
-
-  &.${activeClassName} {
-    border-radius: 12px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.text1};
-  }
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-display: none;
-`}
 `
 
 export const StyledMenuButton = styled.button`
@@ -258,13 +171,12 @@ const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.CeloMainnet]: 'Celo',
   [ChainId.Alfajores]: 'Alfajores',
   [ChainId.Baklava]: 'Baklava',
-  [ChainId.EthereumMainnet]: 'Ethereum',
-  [ChainId.Kovan]: 'Kovan',
 }
 
+const chainId = NETWORK_CHAIN_ID
+
 export default function Header() {
-  const { address: account, network } = useContractKit()
-  const chainId = network.chainId
+  const { address: account } = useContractKit()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])
   const [showUbeBalanceModal, setShowUbeBalanceModal] = useState<boolean>(false)
@@ -281,11 +193,11 @@ export default function Header() {
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
-          {/* <HideSmall>
-            {chainId && NETWORK_LABELS[chainId] && (
+          <HideSmall>
+            {NETWORK_LABELS[chainId] && (
               <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
             )}
-          </HideSmall> */}
+          </HideSmall>
 
           <AccountElement active={!!account} style={{ pointerEvents: 'auto' }}>
             {account && userCELOBalance ? (
