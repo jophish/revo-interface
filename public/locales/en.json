@@ -222,5 +222,6 @@
   "youWillMint": "You will mint",
   "youWillReceive": "You will receive at least",
   "youWillRemove": "You will remove",
-  "Zap": "ZAP IN"
+  "zap": "Zap in",
+  "zapInAmount": "Zap in amount"
 }
