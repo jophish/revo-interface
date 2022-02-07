@@ -47,6 +47,17 @@ const BodyWrapper = styled.div`
   z-index: 1;
 `
 
+const ConstructionBanner = styled.div`
+  width: 100%;
+  padding: 6px 6px;
+  background-color: ${({ theme }) => theme.red3};
+  color: white;
+  font-size: 14px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+`
+
 const Marginer = styled.div`
   margin-top: 5rem;
 `
@@ -77,6 +88,7 @@ export default function App() {
     <Suspense fallback={null}>
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
+        <ConstructionBanner>Hey there! This site is under construction!</ConstructionBanner>
         <HeaderWrapper>
           <Header />
         </HeaderWrapper>
