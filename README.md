@@ -1,5 +1,7 @@
 # Revo Market Interface
 
+The user interface for Revo, a DeFi platform that makes yield farming easy and profitable for everyone.
+
 ## Development
 
 ### Install Dependencies
