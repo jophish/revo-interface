@@ -223,5 +223,7 @@
   "youWillReceive": "You will receive at least",
   "youWillRemove": "You will remove",
   "zap": "Zap in",
-  "zapInAmount": "Zap in amount"
+  "zapInAmount": "Zap in amount",
+  "fees": "Fees",
+  "feesInfo": "Some explanation about where the fees come from"
 }

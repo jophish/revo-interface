@@ -14,7 +14,6 @@ const QuestionWrapper = styled.div`
   outline: none;
   cursor: default;
   border-radius: 36px;
-  background-color: ${({ theme }) => theme.bg2};
   color: ${({ theme }) => theme.text2};
 
   :hover,

@@ -7,17 +7,16 @@ import { useToken } from 'hooks/Tokens'
 import { useStakingContract } from 'hooks/useContract'
 import { FarmSummary } from 'pages/Earn/useFarmRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { updateUserAprMode } from 'state/user/actions'
 import { useIsAprMode } from 'state/user/hooks'
-import styled from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
 import { fromWei, toBN, toWei } from 'web3-utils'
-
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonPrimary } from '../Button'
+import { ButtonPrimary, ButtonLight } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed } from '../Row'
@@ -97,6 +96,7 @@ const COMPOUNDS_PER_YEAR = 2
 
 export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
   const { t } = useTranslation()
+  const theme = useContext(ThemeContext)
   const { address } = useContractKit()
   const userAprMode = useIsAprMode()
   const dispatch = useDispatch()
@@ -247,10 +247,20 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
             otherCurrency={null}
             id="zap-in-currency-input"
           />
-          {/* TODO: add fees(find out how to get fees), route(?), price conversion(?) */}
-          <ButtonPrimary onClick={handleZapIn} padding="8px">
+          <RowBetween>
+            <RowFixed>
+              <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+                {t('fees')}
+              </TYPE.black>
+              <QuestionHelper text={t('feesInfo')} />
+            </RowFixed>
+            <TYPE.black fontSize={14} color={theme.text1}>
+              {'TODO: calculate fee'}
+            </TYPE.black>
+          </RowBetween>
+          <ButtonLight onClick={handleZapIn} padding="8px">
             {t('approve')}
-          </ButtonPrimary>
+          </ButtonLight>
         </PoolDetailsContainer>
       )}
     </Wrapper>
