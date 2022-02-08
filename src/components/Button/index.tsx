@@ -3,6 +3,7 @@ import React from 'react'
 import { ChevronDown } from 'react-feather'
 import { Button as RebassButton, ButtonProps } from 'rebass/styled-components'
 import styled from 'styled-components'
+import { borderRadius } from 'theme'
 
 import { RowBetween } from '../Row'
 
@@ -16,7 +17,7 @@ const Base = styled(RebassButton)<{
   width: ${({ width }) => (width ? width : '100%')};
   font-weight: 500;
   text-align: center;
-  border-radius: 20px;
+  border-radius: ${borderRadius}px;
   border-radius: ${({ borderRadius }) => borderRadius && borderRadius};
   outline: none;
   border: 1px solid transparent;
@@ -40,6 +41,7 @@ const Base = styled(RebassButton)<{
 
 export const ButtonPrimary = styled(Base)`
   background-color: ${({ theme }) => theme.primary1};
+  font-weight: bold;
   color: white;
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
@@ -62,6 +64,7 @@ export const ButtonPrimary = styled(Base)`
     border: 1px solid transparent;
     outline: none;
     opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.5' : '1')};
+    border-radius: ${borderRadius}px;
   }
 `
 
@@ -114,7 +117,7 @@ export const ButtonSecondary = styled(Base)`
   color: ${({ theme }) => theme.primary1};
   background-color: transparent;
   font-size: 16px;
-  border-radius: 12px;
+  border-radius: ${borderRadius}px;
   padding: ${({ padding }) => (padding ? padding : '10px')};
 
   &:focus {

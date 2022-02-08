@@ -1,6 +1,5 @@
 import '@fontsource/dm-sans/index.css'
 
-import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import { Text, TextProps } from 'rebass'
 import styled, {
@@ -10,7 +9,6 @@ import styled, {
   ThemeProvider as StyledComponentsThemeProvider,
 } from 'styled-components'
 
-import bgImage from '../assets/images/gradient_bg.png'
 import { useIsDarkMode } from '../state/user/hooks'
 import { Colors } from './styled'
 
@@ -22,6 +20,8 @@ const MEDIA_WIDTHS = {
   upToMedium: 960,
   upToLarge: 1280,
 }
+
+export const borderRadius = 4
 
 const mediaWidthTemplates: { [width in keyof typeof MEDIA_WIDTHS]: typeof css } = Object.keys(MEDIA_WIDTHS).reduce(
   (accumulator, size) => {
@@ -45,7 +45,7 @@ export function colors(darkMode: boolean): Colors {
     black,
 
     // text
-    text1: darkMode ? '#FFFFFF' : '#000000',
+    text1: darkMode ? '#FFFFFF' : '#171C60',
     text2: darkMode ? '#C3C5CB' : '#565A69',
     text3: darkMode ? '#6C7284' : '#888D9B',
     text4: darkMode ? '#565A69' : '#C3C5CB',
@@ -53,7 +53,7 @@ export function colors(darkMode: boolean): Colors {
 
     // backgrounds / greys
     bg1: darkMode ? '#8d7c86' : '#FFFFFF',
-    bg2: darkMode ? '#2C2F36' : '#F7F8FA',
+    bg2: darkMode ? '#2C2F36' : '#F2ECDE',
     bg3: darkMode ? '#40444F' : '#EDEEF2',
     bg4: darkMode ? '#565A69' : '#CED0D9',
     bg5: darkMode ? '#6C7284' : '#888D9B',
@@ -63,11 +63,11 @@ export function colors(darkMode: boolean): Colors {
     advancedBG: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.6)',
 
     //primary colors
-    primary1: darkMode ? '#E4BC04' : '#8878C3',
-    primary2: darkMode ? '#E3DFF3' : '#FF8CC3',
-    primary3: darkMode ? '#BFB7DE' : '#FF99C9',
-    primary4: darkMode ? '#6D619A' : '#F6DDE8',
-    primary5: darkMode ? '#B79700' : '#E3DFF3',
+    primary1: darkMode ? '#E4BC04' : '#FF9023',
+    primary2: darkMode ? '#E3DFF3' : '#00C9C9',
+    primary3: darkMode ? '#BFB7DE' : '#171C60',
+    primary4: darkMode ? '#6D619A' : '#FF9023',
+    primary5: darkMode ? '#B79700' : '#EC008C',
 
     // color text
     primaryText1: darkMode ? '#E3DFF3' : '#8878C3',
@@ -82,7 +82,7 @@ export function colors(darkMode: boolean): Colors {
     red2: '#F82D3A',
     red3: '#D60000',
     green1: '#27AE60',
-    yellow1: '#FFE270',
+    yellow1: '#FF9023',
     yellow2: '#F3841E',
     blue1: '#35D07F',
 
@@ -218,22 +218,11 @@ html {
 export const ThemedGlobalStyle = createGlobalStyle`
 html {
   color: ${({ theme }) => theme.text1};
-  background: url(${bgImage});
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  background-color: #0d0415;
 }
 
 body {
   min-height: 100vh;
-  background-position: 0 -30vh;
-  background-repeat: no-repeat;
-  background-image: ${({ theme }) =>
-    `radial-gradient(50% 50% at 50% 50%, ${transparentize(0.9, theme.primary1)} 0%, ${transparentize(
-      1,
-      theme.bg1
-    )} 100%)`};
+  background-color: ${({ theme }) => theme.bg1};
 }
 
 .depositLiquidity {

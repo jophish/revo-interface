@@ -32,11 +32,11 @@ const LightQuestionWrapper = styled.div`
   background: none;
   outline: none;
   cursor: default;
-  border-radius: 36px;
+  border-radius: 12px;
   width: 24px;
   height: 24px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: ${({ theme }) => theme.white};
+  background-color: rgba(0, 0, 0, 0.1);
+  color: ${({ theme }) => theme.text1};
 
   :hover,
   :focus {

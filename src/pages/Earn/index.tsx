@@ -1,7 +1,6 @@
 import { ErrorBoundary } from '@sentry/react'
 import { Token } from '@ubeswap/sdk'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
-import TokenSelect from 'components/CurrencyInputPanel/TokenSelect'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
 import React, { useMemo, useState } from 'react'
@@ -11,9 +10,8 @@ import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { PoolCard } from '../../components/earn/PoolCard'
-import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
-import { ExternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import { useFarmRegistry } from './useFarmRegistry'
 
 const PageWrapper = styled.div`
@@ -72,38 +70,15 @@ export default function Earn() {
     return <ChangeNetworkModal />
   }
 
+  // TODO add info for new users
+
   return (
     <PageWrapper>
-      {stakedFarms.length === 0 && (
-        <TopSection gap="md">
-          <DataCard>
-            <CardNoise />
-            <CardSection>
-              <AutoColumn gap="md">
-                <RowBetween>
-                  <TYPE.white fontWeight={600}>Ubeswap {t('liquidityMining')}</TYPE.white>
-                </RowBetween>
-                <RowBetween>
-                  <TYPE.white fontSize={14}>{t('liquidityMiningDesc')}</TYPE.white>
-                </RowBetween>{' '}
-                <ExternalLink
-                  style={{ color: 'white', textDecoration: 'underline' }}
-                  href="https://docs.ubeswap.org/faq"
-                  target="_blank"
-                >
-                  <TYPE.white fontSize={14}>{t('liquidityMiningReadMore')}</TYPE.white>
-                </ExternalLink>
-              </AutoColumn>
-            </CardSection>
-            <CardNoise />
-          </DataCard>
-        </TopSection>
-      )}
-      <TopSection gap="md">
+      {/* <TopSection gap="md">
         <AutoColumn>
           <TokenSelect onTokenSelect={setFilteringToken} token={filteringToken} />
         </AutoColumn>
-      </TopSection>
+      </TopSection> */}
       <ColumnCenter>
         {farmSummaries.length > 0 && filteredFarms.length == 0 && `No Farms for ${filteringToken?.symbol}`}
         {farmSummaries.length === 0 && <Loader size="48px" />}

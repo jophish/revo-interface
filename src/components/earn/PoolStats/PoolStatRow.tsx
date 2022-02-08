@@ -13,10 +13,10 @@ export default function PoolStatRow({ helperText, statName, statValue }: PoolRew
   return (
     <RowBetween>
       <RowFixed>
-        <TYPE.white>{statName}</TYPE.white>
+        <TYPE.black>{statName}</TYPE.black>
         {helperText && <LightQuestionHelper text={helperText} />}
       </RowFixed>
-      <TYPE.white>{statValue ? statValue : '-'}</TYPE.white>
+      <TYPE.black>{statValue ? statValue : '-'}</TYPE.black>
     </RowBetween>
   )
 }
