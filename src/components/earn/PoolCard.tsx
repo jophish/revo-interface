@@ -15,8 +15,9 @@ import { updateUserAprMode } from 'state/user/actions'
 import { useIsAprMode } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { fromWei, toBN, toWei } from 'web3-utils'
+
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonPrimary, ButtonLight } from '../Button'
+import { ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed } from '../Row'
@@ -69,13 +70,13 @@ const BottomSection = styled.div<{ showBackground: boolean }>`
   z-index: 1;
 `
 
-const PoolDetailsContainer = styled.div`
+const PoolDetailsContainer = styled.div<{ $expanded: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding-top: 1rem;
-  margin-top: 1rem;
-  border-top: 1px solid ${({ theme }) => theme.primary3};
+  max-height: ${({ $expanded }) => ($expanded ? '610px' : '0')};
+  transition: max-height 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
+  overflow: hidden;
 `
 
 interface Props {
@@ -235,34 +236,32 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
         </>
       )}
 
-      {expanded && (
-        <PoolDetailsContainer>
-          <CurrencyInputPanel
-            value={zapInAmount}
-            onUserInput={setZapInAmount}
-            label={t('zapInAmount')}
-            showMaxButton={false}
-            currency={zapInCurrency}
-            onCurrencySelect={setZapInCurrency}
-            otherCurrency={null}
-            id="zap-in-currency-input"
-          />
-          <RowBetween>
-            <RowFixed>
-              <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
-                {t('fees')}
-              </TYPE.black>
-              <QuestionHelper text={t('feesInfo')} />
-            </RowFixed>
-            <TYPE.black fontSize={14} color={theme.text1}>
-              {'TODO: calculate fee'}
+      <PoolDetailsContainer $expanded={expanded}>
+        <CurrencyInputPanel
+          value={zapInAmount}
+          onUserInput={setZapInAmount}
+          label={t('zapInAmount')}
+          showMaxButton={false}
+          currency={zapInCurrency}
+          onCurrencySelect={setZapInCurrency}
+          otherCurrency={null}
+          id="zap-in-currency-input"
+        />
+        <RowBetween>
+          <RowFixed>
+            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+              {t('fees')}
             </TYPE.black>
-          </RowBetween>
-          <ButtonLight onClick={handleZapIn} padding="8px">
-            {t('approve')}
-          </ButtonLight>
-        </PoolDetailsContainer>
-      )}
+            <QuestionHelper text={t('feesInfo')} />
+          </RowFixed>
+          <TYPE.black fontSize={14} color={theme.text1}>
+            {'TODO: calculate fee'}
+          </TYPE.black>
+        </RowBetween>
+        <ButtonLight onClick={handleZapIn} padding="8px">
+          {t('approve')}
+        </ButtonLight>
+      </PoolDetailsContainer>
     </Wrapper>
   )
 }
