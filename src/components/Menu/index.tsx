@@ -124,7 +124,7 @@ export default function Menu() {
             <Info size={14} />
             About
           </MenuItem>
-          <MenuItem id="link" href="https://docs.ubeswap.org/">
+          <MenuItem id="link" href="https://docs.revo.market/">
             <BookOpen size={14} />
             Docs
           </MenuItem>
