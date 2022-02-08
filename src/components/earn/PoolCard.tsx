@@ -56,6 +56,7 @@ const TopSection = styled.div`
   z-index: 1;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     grid-template-columns: 48px 1fr 96px;
+    padding-bottom: 0;
   `};
 `
 
