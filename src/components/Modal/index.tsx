@@ -7,12 +7,13 @@ import { isMobile } from 'react-device-detect'
 import { animated, useSpring, useTransition } from 'react-spring'
 import { useGesture } from 'react-use-gesture'
 import styled, { css } from 'styled-components'
+import { borderRadius } from 'theme'
 
 const AnimatedDialogOverlay = animated(DialogOverlay)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
   &[data-reach-dialog-overlay] {
-    z-index: 2;
+    z-index: 99;
     background-color: transparent;
     overflow: hidden;
 
@@ -57,7 +58,7 @@ const StyledDialogContent = styled(({ minHeight, maxHeight, mobile, isOpen, ...r
         min-height: ${minHeight}vh;
       `}
     display: flex;
-    border-radius: 20px;
+    border-radius: ${borderRadius}px;
     ${({ theme }) => theme.mediaWidth.upToMedium`
       width: 65vw;
       margin: 0;
@@ -68,7 +69,7 @@ const StyledDialogContent = styled(({ minHeight, maxHeight, mobile, isOpen, ...r
         mobile &&
         css`
           width: 100vw;
-          border-radius: 20px;
+          border-radius: ${borderRadius}px;
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
         `

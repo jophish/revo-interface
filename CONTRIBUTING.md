@@ -1,4 +1,3 @@
-
 # Contributing
 
 Thank you for your interest in contributing to the Revo interface! ⚡
@@ -11,8 +10,8 @@ See [README](https://github.com/revo-market/revo-interface#run).
 
 ## Engineering standards
 
-Code merged into the `main` branch of this repository should adhere to high standards of correctness and maintainability. 
-Use your best judgment when applying these standards.  If code is in the critical path, will be frequently visited, or 
+Code merged into the `main` branch of this repository should adhere to high standards of correctness and maintainability.
+Use your best judgment when applying these standards. If code is in the critical path, will be frequently visited, or
 makes large architectural changes, consider following all the standards.
 
 - Have at least one engineer approve of large code refactorings
@@ -32,7 +31,7 @@ The following points should help guide your development:
   - Avoid adding steps to the development/build processes
   - The build must be deterministic, i.e. a particular commit hash always produces the same build
 - Decentralization: anyone can run the interface
-  - A Celo node should be the only critical dependency 
+  - A Celo node should be the only critical dependency
   - All other external dependencies should only enhance the UX ([graceful degradation](https://developer.mozilla.org/en-US/docs/Glossary/Graceful_degradation))
 
 ## Finding a first issue

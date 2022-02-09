@@ -1,22 +1,23 @@
 import { gql, useQuery } from '@apollo/client'
 import { useContractKit } from '@celo-tools/use-contractkit'
-import { Percent } from '@ubeswap/sdk'
+import { Percent, Token } from '@ubeswap/sdk'
+import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import QuestionHelper from 'components/QuestionHelper'
 import { useToken } from 'hooks/Tokens'
 import { useStakingContract } from 'hooks/useContract'
 import { FarmSummary } from 'pages/Earn/useFarmRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { updateUserAprMode } from 'state/user/actions'
 import { useIsAprMode } from 'state/user/hooks'
-import styled, { useTheme } from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
 import { fromWei, toBN, toWei } from 'web3-utils'
 
-import { borderRadius, StyledInternalLink, TYPE } from '../../theme'
-import { ButtonPrimary } from '../Button'
+import { borderRadius, TYPE } from '../../theme'
+import { ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed } from '../Row'
@@ -28,9 +29,6 @@ const StatContainer = styled.div`
   justify-content: space-between;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  margin-left: 1rem;
   ${({ theme }) => theme.mediaWidth.upToSmall`
   display: none;
 `};
@@ -41,6 +39,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   width: 100%;
   overflow: hidden;
   position: relative;
+  padding: 1rem;
   background: ${({ theme }) => theme.bg1};
   ${({ showBackground }) =>
     showBackground &&
@@ -53,10 +52,11 @@ const TopSection = styled.div`
   grid-template-columns: 48px 1fr 120px;
   grid-gap: 0px;
   align-items: center;
-  padding: 1rem;
+  padding-bottom: 1rem;
   z-index: 1;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     grid-template-columns: 48px 1fr 96px;
+    padding-bottom: 0;
   `};
 `
 
@@ -69,6 +69,15 @@ const BottomSection = styled.div<{ showBackground: boolean }>`
   justify-content: space-between;
   gap: 12px;
   z-index: 1;
+`
+
+const PoolDetailsContainer = styled.div<{ $expanded: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: ${({ $expanded }) => ($expanded ? '610px' : '0')};
+  transition: max-height 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
+  overflow: hidden;
 `
 
 interface Props {
@@ -89,6 +98,7 @@ const COMPOUNDS_PER_YEAR = 2
 
 export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
   const { t } = useTranslation()
+  const theme = useContext(ThemeContext)
   const { address } = useContractKit()
   const userAprMode = useIsAprMode()
   const dispatch = useDispatch()
@@ -97,7 +107,10 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
   const { data, loading, error } = useQuery(pairDataGql, {
     variables: { id: farmSummary.lpAddress.toLowerCase() },
   })
-  const theme = useTheme()
+
+  const [expanded, setExpanded] = useState(false)
+  const [zapInAmount, setZapInAmount] = useState('')
+  const [zapInCurrency, setZapInCurrency] = useState<Token | undefined>()
 
   const stakingContract = useStakingContract(farmSummary.stakingAddress)
   const stakedAmount = useSingleCallResult(stakingContract, 'balanceOf', [address || undefined]).result?.[0]
@@ -127,6 +140,14 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
     console.error('apy calc overflow', farmSummary.farmName, e)
   }
 
+  const handleToggleExpanded = () => {
+    setExpanded((prev) => !prev)
+  }
+
+  const handleZapIn = () => {
+    // do something
+  }
+
   const displayedPercentageReturn =
     apr.denominator.toString() !== '0'
       ? `${userAprMode ? apr.toFixed(0, { groupSeparator: ',' }) : compoundedAPY}%`
@@ -154,12 +175,9 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
           )}
         </PoolInfo>
 
-        <StyledInternalLink
-          to={`/farm/${token0?.address}/${token1?.address}/${farmSummary.stakingAddress}`}
-          style={{ width: '100%' }}
-        >
-          <ButtonPrimary padding="8px">{isStaking ? t('manage') : t('deposit')}</ButtonPrimary>
-        </StyledInternalLink>
+        <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
+          {isStaking ? t('manage') : t('zap')}
+        </ButtonPrimary>
       </TopSection>
 
       <StatContainer>
@@ -218,6 +236,33 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
           </BottomSection>
         </>
       )}
+
+      <PoolDetailsContainer $expanded={expanded}>
+        <CurrencyInputPanel
+          value={zapInAmount}
+          onUserInput={setZapInAmount}
+          label={t('zapInAmount')}
+          showMaxButton={false}
+          currency={zapInCurrency}
+          onCurrencySelect={setZapInCurrency}
+          otherCurrency={null}
+          id="zap-in-currency-input"
+        />
+        <RowBetween>
+          <RowFixed>
+            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+              {t('fees')}
+            </TYPE.black>
+            <QuestionHelper text={t('feesInfo')} />
+          </RowFixed>
+          <TYPE.black fontSize={14} color={theme.text1}>
+            {'TODO: calculate fee'}
+          </TYPE.black>
+        </RowBetween>
+        <ButtonLight onClick={handleZapIn} padding="8px">
+          {t('approve')}
+        </ButtonLight>
+      </PoolDetailsContainer>
     </Wrapper>
   )
 }
