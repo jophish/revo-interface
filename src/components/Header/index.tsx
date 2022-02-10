@@ -61,7 +61,7 @@ const HeaderControls = styled.div`
     height: 72px;
     border-radius: 4px 4px 0 0;
     background-color: ${({ theme }) => theme.bg1};
-    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5)
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.2)
 `};
 `
 
