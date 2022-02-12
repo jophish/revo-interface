@@ -49,7 +49,7 @@ export const useZapFunctions = () => {
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode)
 
-  const handleZapIn = useCallback(() => {
+  const onZap = useCallback(() => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
       return
     }
@@ -75,7 +75,7 @@ export const useZapFunctions = () => {
   return {
     showApproveFlow,
     approval,
-    onZapIn: handleZapIn,
+    onZap,
     approveCallback,
     approvalSubmitted,
     currencies,

@@ -81,6 +81,14 @@ const PoolDetailsContainer = styled.div<{ $expanded: boolean }>`
   overflow: hidden;
 `
 
+const ManageMenu = styled.div<{ $expanded: boolean }>`
+  display: flex;
+  gap: 1rem;
+  max-height: ${({ $expanded }) => ($expanded ? '610px' : '0')};
+  transition: max-height 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
+  overflow: hidden;
+`
+
 interface Props {
   compoundBotSummary: CompoundBotSummary
 }
@@ -97,6 +105,8 @@ const pairDataGql = gql`
 `
 const COMPOUNDS_PER_YEAR = 2
 
+type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
+
 export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
@@ -109,15 +119,19 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const farmbotToken = useToken(compoundBotSummary.address) || undefined
 
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
-  const { approval, approveCallback, onZapIn, showApproveFlow, currencies, approvalSubmitted } = useZapFunctions()
 
   // const { data, loading, error } = useQuery(pairDataGql, {
   //   variables: { id: compoundBotSummary.stakingTokenAddress.toLowerCase() },
   // })
 
-  const [expanded, setExpanded] = useState(false)
-  const [zapInAmount, setZapInAmount] = useState('')
-  const [zapInCurrency, setZapInCurrency] = useState<Token | undefined>()
+  const [zapType, setZapType] = useState<ZapType | null>(null)
+  const [showManageMenu, setShowManageMenu] = useState(false)
+
+  // TODO: these 2 are not needed anymore, can get them from redux
+  const [zapAmount, setZapInAmount] = useState('')
+  const [zapCurrency, setZapInCurrency] = useState<Token | undefined>()
+
+  const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } = useZapFunctions()
 
   const isStaking = compoundBotSummary.amountUserLP > 0
 
@@ -152,13 +166,32 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   // }
 
   const handleToggleExpanded = () => {
-    setExpanded((prev) => !prev)
+    if (isStaking) {
+      setShowManageMenu((prev) => !prev)
+      setZapType(null)
+    } else {
+      setZapType((prev) => (prev ? null : 'zapIn'))
+    }
   }
 
   const handleCurrencySelect = (inputToken: Token) => {
     setZapInCurrency(inputToken)
-    onCurrencySelection(Field.INPUT, inputToken)
-    onCurrencySelection(Field.OUTPUT, farmbotToken!)
+    if (zapType === 'zapIn') {
+      onCurrencySelection(Field.INPUT, inputToken)
+      onCurrencySelection(Field.OUTPUT, farmbotToken!)
+    } else if (zapType === 'zapOut') {
+      onCurrencySelection(Field.OUTPUT, inputToken)
+      onCurrencySelection(Field.INPUT, farmbotToken!)
+    }
+  }
+
+  const handleSetZapType = (type: ZapType) => {
+    setZapType(type)
+    onCurrencySelection(Field.INPUT, null)
+    onCurrencySelection(Field.OUTPUT, null)
+    onUserInput(Field.INPUT, '')
+    setZapInAmount('')
+    setZapInCurrency(undefined)
   }
 
   const handleUserInput = (amount: string) => {
@@ -258,16 +291,25 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
         </RowBetween>
       )}
 
-      <PoolDetailsContainer $expanded={expanded}>
+      <ManageMenu $expanded={showManageMenu}>
+        <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px">
+          {t('zap')}
+        </ButtonPrimary>
+        <ButtonPrimary onClick={() => handleSetZapType('zapOut')} padding="8px">
+          {t('zapOut')}
+        </ButtonPrimary>
+      </ManageMenu>
+
+      <PoolDetailsContainer $expanded={!!zapType}>
         <CurrencyInputPanel
-          value={zapInAmount}
+          value={zapAmount}
           onUserInput={handleUserInput}
-          label={t('zapInAmount')}
+          label={zapType === 'zapIn' ? t('zapInAmount') : t('zapOutAmount')}
           showMaxButton={false}
-          currency={zapInCurrency}
+          currency={zapCurrency}
           onCurrencySelect={handleCurrencySelect}
           otherCurrency={null}
-          id="zap-in-currency-input"
+          id="zap-currency-input"
         />
         <RowBetween>
           <RowFixed>
@@ -301,7 +343,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
               )}
             </ButtonConfirmed>
           )}
-          <ButtonLight onClick={onZapIn} padding="8px">
+          <ButtonLight onClick={onZap} padding="8px">
             {t('approve')}
           </ButtonLight>
         </RowBetween>
