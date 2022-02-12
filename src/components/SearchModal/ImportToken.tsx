@@ -152,7 +152,6 @@ export function ImportToken({ tokens, onBack, onDismiss, handleCurrencySelect }:
         <ButtonPrimary
           disabled={!confirmed}
           altDisabledStyle={true}
-          borderRadius="20px"
           padding="10px 1rem"
           onClick={() => {
             tokens.map((token) => addToken(token))

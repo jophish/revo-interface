@@ -1,23 +1,29 @@
 import { gql } from '@apollo/client'
-import { useContractKit } from '@celo-tools/use-contractkit'
-import { Percent, Token } from '@ubeswap/sdk'
+import { Percent, Token, Trade } from '@ubeswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
+import confirmPriceImpactWithoutFee from 'components/swap/confirmPriceImpactWithoutFee'
+import { useTradeCallback } from 'components/swap/routing/useTradeCallback'
 import { useToken } from 'hooks/Tokens'
+import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
-import React, { useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
+import { Field } from 'state/swap/actions'
+import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
 import { updateUserAprMode } from 'state/user/actions'
-import { useIsAprMode } from 'state/user/hooks'
+import { useExpertModeManager, useIsAprMode, useUserSlippageTolerance } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
+import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonLight, ButtonPrimary } from '../Button'
+import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
-import { RowBetween, RowFixed } from '../Row'
+import { AutoRow, RowBetween, RowFixed } from '../Row'
 
 const StatContainer = styled.div`
   display: flex;
@@ -94,11 +100,53 @@ const COMPOUNDS_PER_YEAR = 2
 export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
-  const { address } = useContractKit()
   const userAprMode = useIsAprMode()
   const dispatch = useDispatch()
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
+  const farmbotToken = useToken(compoundBotSummary.address) || undefined
+
+  const [approvalSubmitted, setApprovalSubmitted] = useState(false)
+
+  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const {
+    v2Trade: trade,
+    currencyBalances,
+    parsedAmount,
+    currencies,
+    inputError: swapInputError,
+    showRamp,
+  } = useDerivedSwapInfo()
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+  const [allowedSlippage] = useUserSlippageTolerance()
+  const [isExpertMode] = useExpertModeManager()
+  const { callback: swapCallback, error: swapCallbackError } = useTradeCallback(trade, allowedSlippage, null)
+  const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
+    showConfirm: boolean
+    tradeToConfirm: Trade | undefined
+    attemptingTxn: boolean
+    swapErrorMessage: string | undefined
+    txHash: string | undefined
+  }>({
+    showConfirm: false,
+    tradeToConfirm: undefined,
+    attemptingTxn: false,
+    swapErrorMessage: undefined,
+    txHash: undefined,
+  })
+
+  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+
+  // show approve flow when: no error on inputs, not approved or pending, or approved in current session
+  // never show if price impact is above threshold in non expert mode
+  const showApproveFlow =
+    !swapInputError &&
+    (approval === ApprovalState.NOT_APPROVED ||
+      approval === ApprovalState.PENDING ||
+      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
+    !(priceImpactSeverity > 3 && !isExpertMode)
+
   // const { data, loading, error } = useQuery(pairDataGql, {
   //   variables: { id: compoundBotSummary.stakingTokenAddress.toLowerCase() },
   // })
@@ -115,9 +163,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     lpAddress: compoundBotSummary.stakingTokenAddress,
   })
 
-  console.log('=======userValueCUSD', userValueCUSD?.toSignificant(6))
-
-  const swapRewardsUSDPerYear = 0
+  // const swapRewardsUSDPerYear = 0
   // if (!loading && !error && data) {
   //   const lastDayVolumeUsd = data.pair.pairHourData.reduce(
   //     (acc: number, curr: { hourlyVolumeUSD: string }) => acc + Number(curr.hourlyVolumeUSD),
@@ -145,8 +191,38 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     setExpanded((prev) => !prev)
   }
 
-  const handleZapIn = () => {
-    // do something
+  const handleZapIn = useCallback(() => {
+    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
+      return
+    }
+    if (!swapCallback) {
+      return
+    }
+    setSwapState({ attemptingTxn: true, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: undefined })
+    swapCallback()
+      .then((hash) => {
+        setSwapState({ attemptingTxn: false, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: hash })
+      })
+      .catch((error) => {
+        setSwapState({
+          attemptingTxn: false,
+          tradeToConfirm,
+          showConfirm,
+          swapErrorMessage: error.message,
+          txHash: undefined,
+        })
+      })
+  }, [priceImpactWithoutFee, swapCallback, tradeToConfirm, showConfirm, trade])
+
+  const handleCurrencySelect = (inputToken: Token) => {
+    setZapInCurrency(inputToken)
+    onCurrencySelection(Field.INPUT, inputToken)
+    onCurrencySelection(Field.OUTPUT, farmbotToken!)
+  }
+
+  const handleUserInput = (amount: string) => {
+    setZapInAmount(amount)
+    onUserInput(Field.INPUT, amount)
   }
 
   const displayedPercentageReturn =
@@ -234,11 +310,11 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
       <PoolDetailsContainer $expanded={expanded}>
         <CurrencyInputPanel
           value={zapInAmount}
-          onUserInput={setZapInAmount}
+          onUserInput={handleUserInput}
           label={t('zapInAmount')}
           showMaxButton={false}
           currency={zapInCurrency}
-          onCurrencySelect={setZapInCurrency}
+          onCurrencySelect={handleCurrencySelect}
           otherCurrency={null}
           id="zap-in-currency-input"
         />
@@ -253,9 +329,31 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
             {'TODO: calculate fee'}
           </TYPE.black>
         </RowBetween>
-        <ButtonLight onClick={handleZapIn} padding="8px">
-          {t('approve')}
-        </ButtonLight>
+
+        <RowBetween gap="12px">
+          {showApproveFlow && (
+            <ButtonConfirmed
+              padding="8px"
+              onClick={approveCallback}
+              disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
+              altDisabledStyle={approval === ApprovalState.PENDING} // show solid button while waiting
+              confirmed={approval === ApprovalState.APPROVED}
+            >
+              {approval === ApprovalState.PENDING ? (
+                <AutoRow gap="6px" justify="center">
+                  Approving <Loader stroke="white" />
+                </AutoRow>
+              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                'Approved'
+              ) : (
+                'Approve ' + currencies[Field.INPUT]?.symbol
+              )}
+            </ButtonConfirmed>
+          )}
+          <ButtonLight onClick={handleZapIn} padding="8px">
+            {t('approve')}
+          </ButtonLight>
+        </RowBetween>
       </PoolDetailsContainer>
     </Wrapper>
   )

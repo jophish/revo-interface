@@ -2,10 +2,11 @@ import React from 'react'
 import { CardProps, Text } from 'rebass'
 import { Box } from 'rebass/styled-components'
 import styled from 'styled-components'
+import { borderRadius } from 'theme'
 
 const Card = styled(Box)<{ width?: string; padding?: string; border?: string; borderRadius?: string }>`
   width: ${({ width }) => width ?? '100%'};
-  border-radius: 16px;
+  border-radius: ${borderRadius}px;
   padding: 1.25rem;
   padding: ${({ padding }) => padding};
   border: ${({ border }) => border};
