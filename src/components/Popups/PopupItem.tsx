@@ -28,7 +28,7 @@ export const Popup = styled.div`
   padding: 20px;
   padding-right: 35px;
   overflow: hidden;
-  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2)
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3)
     ${({ theme }) => theme.mediaWidth.upToSmall`
     min-width: 290px;
     &:not(:last-of-type) {

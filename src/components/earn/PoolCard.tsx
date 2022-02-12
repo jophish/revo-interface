@@ -40,6 +40,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   position: relative;
   padding: 1rem;
   background: ${({ theme }) => theme.bg1};
+  min-height: 110px;
   ${({ showBackground }) =>
     showBackground &&
     `  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
@@ -100,6 +101,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const theme = useContext(ThemeContext)
   const userAprMode = useIsAprMode()
   const dispatch = useDispatch()
+
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
   const farmbotToken = useToken(compoundBotSummary.address) || undefined
@@ -166,6 +168,14 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     apr && apr.denominator.toString() !== '0'
       ? `${userAprMode ? apr.toFixed(0, { groupSeparator: ',' }) : compoundedAPY}%`
       : '-'
+
+  if (!token0 || !token1) {
+    return (
+      <Wrapper showBackground>
+        <Loader centered size="24px" />
+      </Wrapper>
+    )
+  }
 
   return (
     <Wrapper showBackground>
