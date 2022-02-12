@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { useContractKit } from '@celo-tools/use-contractkit'
 import { Percent, Token } from '@ubeswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import Loader from 'components/Loader'
@@ -100,6 +101,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
   const userAprMode = useIsAprMode()
+  const { address } = useContractKit()
   const dispatch = useDispatch()
 
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
@@ -199,9 +201,11 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           )}
         </PoolInfo>
 
-        <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
-          {isStaking ? t('manage') : t('zap')}
-        </ButtonPrimary>
+        {address && (
+          <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
+            {isStaking ? t('manage') : t('zap')}
+          </ButtonPrimary>
+        )}
       </TopSection>
 
       <StatContainer>
