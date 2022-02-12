@@ -10,9 +10,14 @@ import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { PoolCard } from '../../components/earn/PoolCard'
+import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 import { useFarmRegistry } from './useFarmRegistry'
+
+const VoteCard = styled(DataCard)`
+  overflow: hidden;
+`
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -97,6 +102,20 @@ export default function Earn() {
       )}
       {unstakedFarms.length > 0 && (
         <>
+          <VoteCard>
+            <CardNoise />
+            <CardSection>
+              <AutoColumn gap="md">
+                <RowBetween>
+                  <TYPE.white fontWeight={600}>{t('ZapInEdu')}</TYPE.white>
+                </RowBetween>
+                <RowBetween>
+                  <TYPE.white fontSize={14}>{t('ZapInEduDesc')}</TYPE.white>
+                </RowBetween>
+              </AutoColumn>
+            </CardSection>
+            <CardNoise />
+          </VoteCard>
           <Header>{t('availablePools')}</Header>
           {unstakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.stakingAddress}>

@@ -225,5 +225,7 @@
   "zap": "Zap in",
   "zapInAmount": "Zap in amount",
   "fees": "Fees",
-  "feesInfo": "Some explanation about where the fees come from"
+  "feesInfo": "Some explanation about where the fees come from",
+  "ZapInEdu": "What is Zap in?",
+  "ZapInEduDesc": "Zap in is a simplication of the normally complicated yield farming process. You can simply swap any token to a auto-compounding yield farming token in one click."
 }
