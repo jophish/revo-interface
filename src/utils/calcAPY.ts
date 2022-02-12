@@ -31,7 +31,6 @@ export function calcAPY(compoundBotSummary: CompoundBotSummary, cusdPrices, stak
   let rewardApr, compoundedAPY
   try {
     rewardApr = new Percent(Math.round(yearlyRewardsValue), Math.round(stakedCUSDInFarm))
-    console.log(yearlyRewardsValue, stakedCUSDInFarm)
     const compoundsPerYear = 365 * 24
     compoundedAPY = annualizedPercentageYield(rewardApr, compoundsPerYear)
   } catch (e) {
