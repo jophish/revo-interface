@@ -42,7 +42,7 @@ export const useCompoundRegistry = () => {
       const totalLP = await farmBot.methods.getLpAmount(totalFP).call()
       const exchangeRate = totalLP / totalFP
 
-      let amountUserFP = await farmBot.methods.balanceOf(address).call()
+      let amountUserFP = address ? await farmBot.methods.balanceOf(address).call() : 0
       amountUserFP = amountUserFP > 10 ? amountUserFP : 0
       const amountUserLP = await farmBot.methods.getLpAmount(amountUserFP).call()
 
