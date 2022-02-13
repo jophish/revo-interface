@@ -112,21 +112,16 @@ function CurrencyRow({
 
   const isFPToken = currency.name == 'Farmbot FP Token'
 
-  let botSummary, cusdPrices, stakingTokenPair
-  if (botSummaries.length > 0) {
-    botSummary = botSummaries.filter((summary) => {
-      return summary.address == currency.address
-    })?.[0]
+  const botSummary = botSummaries?.filter((summary) => {
+    return summary.address == currency.address
+  })?.[0]
 
-    if (botSummary) {
-      const rewardsToken = useToken(botSummary.rewardsAddress) || undefined
-      const token0 = useToken(botSummary.token0Address) || undefined
-      const token1 = useToken(botSummary.token1Address) || undefined
-      cusdPrices = useCUSDPrices([token0, token1, rewardsToken])
-
-      stakingTokenPair = usePair(token0, token1)?.[1]
-    }
-  }
+  const rewardsToken = useToken(botSummary.rewardsAddress) || undefined
+  const token0 = useToken(botSummary.token0Address) || undefined
+  const token1 = useToken(botSummary.token1Address) || undefined
+  const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
+  const cusdPrices = useCUSDPrices(tokens)
+  const stakingTokenPair = usePair(token0, token1)?.[1]
 
   let compoundedAPY
   if (isFPToken && botSummary && cusdPrices && stakingTokenPair) {

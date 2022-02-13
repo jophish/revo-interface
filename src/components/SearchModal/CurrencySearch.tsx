@@ -1,5 +1,4 @@
 import { ChainId } from '@celo-tools/use-contractkit'
-import Portal from '@reach/portal'
 import { ChainId as UbeswapChainId, cUSD, Token } from '@ubeswap/sdk'
 import { ButtonLight } from 'components/Button'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
