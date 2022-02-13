@@ -88,7 +88,9 @@ export default function App() {
     <Suspense fallback={null}>
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
-        <ConstructionBanner>Hey there! This site is under construction!</ConstructionBanner>
+        <ConstructionBanner>
+          Warning: Our smart contracts are not fully audited yet. please use with caution!
+        </ConstructionBanner>
         <HeaderWrapper>
           <Header />
         </HeaderWrapper>
