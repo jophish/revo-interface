@@ -24,7 +24,7 @@ import { getContract } from '../../utils'
 import { AutoColumn, ColumnCenter } from '../Column'
 import CurrencyInputPanel from '../CurrencyInputPanel'
 import PoolStatRow from '../earn/PoolStats/PoolStatRow'
-import { Break, CardNoise, DataCard } from '../earn/styled'
+import { Break, CardNoise } from '../earn/styled'
 import Row, { AutoRow, RowBetween, RowFixed, RowFlat } from '../Row'
 import { ConfirmAddCompoundModalBottom } from './ConfirmAddCompoundModalBottom'
 import { ConfirmWithdrawCompoundModalBottom } from './ConfirmWithdrawCompoundModalBottom'
@@ -65,15 +65,6 @@ const StatContainer = styled.div`
 };
 `
 
-const DepositApprove = styled.div`
-  .depositLiquidity {
-    width: 100%;
-  }
-  #depositLiquidity {
-    width: 100%;
-  }
-`
-
 const PoolInfo = styled.div`
   .apr {
     margin-top: 4px;
@@ -90,11 +81,6 @@ const TopSection = styled.div`
   padding: 1rem;
   z-index: 1;
 };
-`
-
-const VoteCard = styled(DataCard)`
-  background: radial-gradient(76.02% 75.41% at 1.84% 0%, #27ae60 0%, #222 100%);
-  overflow: hidden;
 `
 
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
@@ -164,9 +150,6 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   const stakedCUSDInFarm = fromWei(compoundBotSummary.totalLPInFarm) * CUSDPerStakedLP
 
-  const farmbotStakedCUSDValue = fromWei(compoundBotSummary.totalLP) * CUSDPerStakedLP
-  const userStakedCUSDValue = fromWei(compoundBotSummary.amountUserLP) * CUSDPerStakedLP
-
   const yearlyRewards = fromWei(compoundBotSummary.rewardsRate) * 60 * 60 * 24 * 365
   const yearlyRewardsValue = yearlyRewards * rewardsTokenPrice
 
@@ -195,11 +178,11 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   const pendingText = `Supplying ${depositValue} LP in exchange for ${FPMinted} FP`
   const pendingWithdrawText = `Depositing ${withdrawValue} FP in exchange for ${LPReceived} LP`
-  const exchangeRateString = compoundBotSummary.exchangeRate
-    ? ' LP (' +
-      Number(compoundBotSummary.exchangeRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) +
-      ' FP/LP)'
-    : ''
+  // const exchangeRateString = compoundBotSummary.exchangeRate
+  //   ? ' LP (' +
+  //     Number(compoundBotSummary.exchangeRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) +
+  //     ' FP/LP)'
+  //   : ''
 
   async function onAdd() {
     try {
