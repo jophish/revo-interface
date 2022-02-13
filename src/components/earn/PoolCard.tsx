@@ -12,7 +12,7 @@ import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Field } from 'state/swap/actions'
-import { useSwapActionHandlers } from 'state/swap/hooks'
+import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
 import { updateUserAprMode } from 'state/user/actions'
 import { useIsAprMode } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
@@ -113,6 +113,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const userAprMode = useIsAprMode()
   const { address } = useContractKit()
   const dispatch = useDispatch()
+  const { inputError: swapInputError } = useDerivedSwapInfo()
 
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
@@ -336,7 +337,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
               )}
             </ButtonConfirmed>
           )}
-          <ButtonLight onClick={onZap} padding="8px">
+          <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
             {t('approve')}
           </ButtonLight>
         </RowBetween>
