@@ -27,4 +27,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run linters
-        run: yarn eslint . --max-warnings 0
+        run: yarn eslint .
