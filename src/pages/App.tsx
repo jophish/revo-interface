@@ -89,7 +89,7 @@ export default function App() {
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
         <ConstructionBanner>
-          Warning: Our smart contracts are not fully audited yet. please use with caution!
+          Warning: Revo's smart contracts are pending full audits. Please use with caution!
         </ConstructionBanner>
         <HeaderWrapper>
           <Header />
