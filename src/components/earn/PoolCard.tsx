@@ -297,10 +297,10 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
       )}
 
       <ManageMenu $expanded={showManageMenu}>
-        <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px">
+        <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px" disabled={zapType === 'zapIn'}>
           {t('zap')}
         </ButtonPrimary>
-        <ButtonPrimary onClick={() => handleSetZapType('zapOut')} padding="8px">
+        <ButtonPrimary onClick={() => handleSetZapType('zapOut')} padding="8px" disabled={zapType === 'zapOut'}>
           {t('zapOut')}
         </ButtonPrimary>
       </ManageMenu>
