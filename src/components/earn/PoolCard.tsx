@@ -131,7 +131,11 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const [zapAmount, setZapInAmount] = useState('')
   const [zapCurrency, setZapInCurrency] = useState<Token | undefined>()
 
-  const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } = useZapFunctions()
+  const onZapSubmitted = (): void => {
+    setZapType(null)
+  }
+  const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } =
+    useZapFunctions(onZapSubmitted)
 
   const isStaking = compoundBotSummary.amountUserLP > 0
 
@@ -311,17 +315,6 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           otherCurrency={null}
           id="zap-currency-input"
         />
-        <RowBetween>
-          <RowFixed>
-            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
-              {t('fees')}
-            </TYPE.black>
-            <QuestionHelper text={t('feesInfo')} />
-          </RowFixed>
-          <TYPE.black fontSize={14} color={theme.text1}>
-            {'TODO: calculate fee'}
-          </TYPE.black>
-        </RowBetween>
 
         <RowBetween gap="12px">
           {showApproveFlow && (
