@@ -201,7 +201,12 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const handleUserInput = (amount: string) => {
     setZapInAmount(amount)
-    onUserInput(Field.INPUT, amount)
+
+    if (zapType === 'zapIn') {
+      onUserInput(Field.INPUT, amount)
+    } else if (zapType === 'zapOut') {
+      onUserInput(Field.OUTPUT, amount)
+    }
   }
 
   const displayedPercentageReturn =
