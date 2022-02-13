@@ -225,5 +225,6 @@
   "zap": "Zap in",
   "zapInAmount": "Zap in amount",
   "fees": "Fees",
-  "feesInfo": "Some explanation about where the fees come from"
+  "feesInfo": "Some explanation about where the fees come from",
+  "APYInfo": "APY is calculated based on assumption of auto-accompounding once per hour"
 }
