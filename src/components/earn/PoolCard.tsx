@@ -315,7 +315,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
             </ButtonConfirmed>
           )}
           <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
-            {t('approve')}
+            {t('zap')}
           </ButtonLight>
         </RowBetween>
       </PoolDetailsContainer>
