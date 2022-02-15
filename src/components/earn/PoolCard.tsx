@@ -243,7 +243,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
             <PoolStatRow
               helperText={
                 <>
-                  <small>APY assumes auto-compounding once per hour</small>
+                  <small>{t('APYInfo')}</small>
                   <br />
                 </>
               }
