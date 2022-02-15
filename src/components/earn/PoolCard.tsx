@@ -121,7 +121,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
   const farmbotToken = useToken(compoundBotSummary.address) || undefined
-  console.log(farmbotToken)
+
   const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
   const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
   const cusdPrices = useCUSDPrices(tokens)
@@ -315,7 +315,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
             </ButtonConfirmed>
           )}
           <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
-            {t('zap')}
+            {zapType === 'zapIn' ? t('zap') : t('zapOut')}
           </ButtonLight>
         </RowBetween>
       </PoolDetailsContainer>
