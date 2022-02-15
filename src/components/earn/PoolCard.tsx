@@ -223,7 +223,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
         {address && (
           <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
-            {isStaking ? t('manage') : t('zap')}
+            {isStaking ? t('manage') : t('zapIn')}
           </ButtonPrimary>
         )}
       </TopSection>
@@ -275,7 +275,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
       <ManageMenu $expanded={showManageMenu}>
         <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px" disabled={zapType === 'zapIn'}>
-          {t('zap')}
+          {t('zapIn')}
         </ButtonPrimary>
         <ButtonPrimary onClick={() => handleSetZapType('zapOut')} padding="8px" disabled={zapType === 'zapOut'}>
           {t('zapOut')}
