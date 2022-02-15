@@ -5,10 +5,8 @@ import React, { CSSProperties, MutableRefObject, useCallback } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components'
-import { calcAPY } from 'utils/calcAPY'
-import { useCUSDPrices } from 'utils/useCUSDPrice'
+import { useCalcAPY } from 'utils/calcAPY'
 
-import { usePair } from '../../data/Reserves'
 import { useAllInactiveTokens, useIsUserAddedToken } from '../../hooks/Tokens'
 import { CompoundBotSummary, useCompoundRegistry } from '../../pages/Compound/useCompoundRegistry'
 import { useCombinedActiveList, WrappedTokenInfo } from '../../state/lists/hooks'
@@ -120,15 +118,8 @@ function CurrencyRow({
   const token0 = useToken(botSummary?.token0Address) || undefined
   const token1 = useToken(botSummary?.token1Address) || undefined
   const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
-  const cusdPrices = useCUSDPrices(tokens)
 
-  const stakingTokenPair = usePair(token0, token1)?.[1]
-
-  let compoundedAPY
-  if (isFPToken && botSummary && cusdPrices && stakingTokenPair) {
-    // TODO: to move the following calculation into a util lib
-    compoundedAPY = calcAPY(botSummary, cusdPrices, stakingTokenPair)
-  }
+  const compoundedAPY = useCalcAPY(botSummary)
 
   // only show add or remove buttons if not on selected list
   return (

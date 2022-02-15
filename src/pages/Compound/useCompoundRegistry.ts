@@ -5,7 +5,8 @@ import { AbiItem } from 'web3-utils'
 
 import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
-import STAKING_REWARDS_ABI from '../../constants/abis/StakingRewards.json'
+import MOOLA_STAKING_REWARDS_ABI from '../../constants/abis/moola/MoolaStakingRewards.json'
+import { useFarmRegistry } from '../Earn/useFarmRegistry'
 
 export type CompoundBotSummary = {
   address: string
@@ -15,23 +16,25 @@ export type CompoundBotSummary = {
   token1Address: string
   amountUserFP: number
   amountUserLP: number
-  rewardsAddress: string
   stakingTokenAddress: string
   totalLP: number
   totalFP: number
   exchangeRate: number
   // userLPValue: number
   stakingRewardsAddress: string
-  rewardsRate: number
+  rewardsUSDPerYear: string
+  tvlUSD: string
   totalLPInFarm: number
   totalLPSupply: number
 }
 
-const compoundAddresses = ['0xA9947051AA9243d72f8f5578d3BFb992b20AD97d', '0x22fdF8332A8AfD169d90606F4Bc9CBf6CE452Da4']
+const compoundAddresses = ['0xc6686060A1BFa583566Ebca400A2C8771b20Cb8C']
 
 export const useCompoundRegistry = () => {
   const { address, kit } = useContractKit()
   const [botSummaries, setBotSummaries] = useState<CompoundBotSummary[]>([])
+
+  const farmSummaries = useFarmRegistry()
 
   const call = useCallback(async () => {
     const botSummaries: CompoundBotSummary[] = []
@@ -57,12 +60,12 @@ export const useCompoundRegistry = () => {
       const token1Contract = new kit.web3.eth.Contract(ERC20_ABI, token1Address)
       const token1Name = await token1Contract.methods.symbol().call()
 
-      const rewardsAddress = await farmBot.methods.rewardsToken().call()
-
       const stakingRewardsAddress = await farmBot.methods.stakingRewards().call()
-      const stakingRewardsContract = new kit.web3.eth.Contract(STAKING_REWARDS_ABI, stakingRewardsAddress)
-      const rewardsRate = await stakingRewardsContract.methods.rewardRate().call()
+      const farmSummary = farmSummaries.find((farm) => farm.stakingAddress == stakingRewardsAddress)
+      const rewardsUSDPerYear = farmSummary?.rewardsUSDPerYear
+      const tvlUSD = farmSummary?.tvlUSD
 
+      const stakingRewardsContract = new kit.web3.eth.Contract(MOOLA_STAKING_REWARDS_ABI, stakingRewardsAddress)
       const totalLPInFarm = await stakingRewardsContract.methods.totalSupply().call()
       const totalLPSupply = await stakingTokenContract.methods.totalSupply().call()
 
@@ -78,16 +81,16 @@ export const useCompoundRegistry = () => {
         totalLP,
         totalFP,
         exchangeRate,
-        rewardsAddress,
         stakingRewardsAddress,
-        rewardsRate,
+        rewardsUSDPerYear,
+        tvlUSD,
         totalLPInFarm,
         totalLPSupply,
       }
       botSummaries.push(botSummary)
     }
     setBotSummaries(botSummaries)
-  }, [kit.web3.eth, address])
+  }, [kit.web3.eth, address, farmSummaries])
 
   useEffect(() => {
     call()
