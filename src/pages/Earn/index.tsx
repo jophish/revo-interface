@@ -53,6 +53,7 @@ export default function Earn() {
     return botsummary.amountUserLP <= 0
   })
 
+  console.log(stakedFarms)
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
   }

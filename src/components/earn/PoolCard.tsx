@@ -1,9 +1,10 @@
 import { gql } from '@apollo/client'
 import { useContractKit } from '@celo-tools/use-contractkit'
-import { Percent, Token } from '@ubeswap/sdk'
+import { Token } from '@ubeswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
+import { usePair } from 'data/Reserves'
 import { useToken } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
@@ -13,15 +14,18 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Field } from 'state/swap/actions'
 import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
-import { updateUserAprMode } from 'state/user/actions'
 import { useIsAprMode } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
+import { useCalcAPY } from 'utils/calcAPY'
+import { useCUSDPrices } from 'utils/useCUSDPrice'
+import { fromWei, toBN } from 'web3-utils'
 
 import { borderRadius, TYPE } from '../../theme'
 import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
+import PoolStatRow from './PoolStats/PoolStatRow'
 import { useZapFunctions } from './useZapFunctions'
 
 const StatContainer = styled.div`
@@ -103,7 +107,6 @@ const pairDataGql = gql`
     }
   }
 `
-const COMPOUNDS_PER_YEAR = 2
 
 type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
 
@@ -118,6 +121,13 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
   const farmbotToken = useToken(compoundBotSummary.address) || undefined
+  console.log(farmbotToken)
+  const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
+  const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
+  const cusdPrices = useCUSDPrices(tokens)
+  const stakingTokenPair = usePair(token0, token1)?.[1]
+
+  const compoundedAPY = useCalcAPY(compoundBotSummary)
 
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
 
@@ -145,30 +155,6 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     token1Address: compoundBotSummary.token1Address,
     lpAddress: compoundBotSummary.stakingTokenAddress,
   })
-
-  // const swapRewardsUSDPerYear = 0
-  // if (!loading && !error && data) {
-  //   const lastDayVolumeUsd = data.pair.pairHourData.reduce(
-  //     (acc: number, curr: { hourlyVolumeUSD: string }) => acc + Number(curr.hourlyVolumeUSD),
-  //     0
-  //   )
-  //   swapRewardsUSDPerYear = Math.floor(lastDayVolumeUsd * 365 * 0.0025)
-  // }
-  // const rewardApr = new Percent(farmSummary.rewardsUSDPerYear, farmSummary.tvlUSD)
-  // const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), farmSummary.tvlUSD)
-  // const apr = new Percent(
-  //   toBN(toWei(swapRewardsUSDPerYear.toString())).add(toBN(farmSummary.rewardsUSDPerYear)).toString(),
-  //   farmSummary.tvlUSD
-  // )
-
-  const compoundedAPY: React.ReactNode | undefined = <>🤯</>
-  let apr: any
-  // try {
-  //   compoundedAPY = annualizedPercentageYield(apr, COMPOUNDS_PER_YEAR)
-  // } catch (e) {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   console.error('apy calc overflow', `${compoundBotSummary.token0Address} - ${compoundBotSummary.token1Address}`, e)
-  // }
 
   const handleToggleExpanded = () => {
     if (isStaking) {
@@ -209,11 +195,6 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     }
   }
 
-  const displayedPercentageReturn =
-    apr && apr.denominator.toString() !== '0'
-      ? `${userAprMode ? apr.toFixed(0, { groupSeparator: ',' }) : compoundedAPY}%`
-      : '-'
-
   if (!token0 || !token1) {
     return (
       <Wrapper showBackground>
@@ -230,17 +211,13 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           <TYPE.black fontWeight={600} fontSize={[18, 24]}>
             {token0?.symbol}-{token1?.symbol}
           </TYPE.black>
-          {apr && apr.greaterThan('0') && (
-            <span
-              aria-label="Toggle APR/APY"
-              onClick={() => dispatch(updateUserAprMode({ userAprMode: !userAprMode }))}
-            >
-              <TYPE.black>
-                <TYPE.small className="apr" fontWeight={400} fontSize={14}>
-                  {displayedPercentageReturn} {userAprMode ? 'APR' : 'APY'}
-                </TYPE.small>
-              </TYPE.black>
-            </span>
+          {compoundedAPY && (
+            <TYPE.darkGray style={{ display: 'flex' }}>
+              <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
+                APY: {compoundedAPY}
+              </TYPE.small>
+              <QuestionHelper text={t('APYInfo')} />
+            </TYPE.darkGray>
           )}
         </PoolInfo>
 
@@ -252,32 +229,27 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
       </TopSection>
 
       <StatContainer>
-        {/* <PoolStatRow
+        <PoolStatRow
           statName={t('totalDeposited')}
-          statValue={Number(fromWei(farmSummary.tvlUSD)).toLocaleString(undefined, {
+          // statValue={'0'}
+          statValue={Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
             style: 'currency',
             currency: 'USD',
             maximumFractionDigits: 0,
           })}
-        /> */}
-        {apr && apr.greaterThan('0') && (
-          <div aria-label="Toggle APR/APY" onClick={() => dispatch(updateUserAprMode({ userAprMode: !userAprMode }))}>
-            {/* <PoolStatRow
+        />
+        {compoundedAPY && (
+          <div>
+            <PoolStatRow
               helperText={
-                farmSummary.tvlUSD === '0' ? (
-                  'Pool is empty'
-                ) : (
-                  <>
-                    Reward APR: {rewardApr?.greaterThan('0') && rewardApr?.toSignificant(4)}%<br />
-                    Swap APR: {swapApr?.greaterThan('0') && swapApr?.toSignificant(4)}%<br />
-                    <small>APY assumes compounding {COMPOUNDS_PER_YEAR}/year</small>
-                    <br />
-                  </>
-                )
+                <>
+                  <small>APY assumes auto-compounding once per hour</small>
+                  <br />
+                </>
               }
-              statName={`${userAprMode ? 'APR' : 'APY'}`}
-              statValue={displayedPercentageReturn}
-            /> */}
+              statName={'APY'}
+              statValue={compoundedAPY}
+            />
           </div>
         )}
       </StatContainer>
@@ -290,7 +262,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
           <RowFixed>
             <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-              ${userValueCUSD.toSignificant(6, { groupSeparator: ',' })}
+              ${userValueCUSD.toFixed(2, { groupSeparator: ',' })}
             </TYPE.black>
             <QuestionHelper
               text={`${userAmountTokenA?.toSignificant(6, { groupSeparator: ',' })} ${
@@ -349,16 +321,6 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
       </PoolDetailsContainer>
     </Wrapper>
   )
-}
-
-// formula is 1 + ((nom/compoundsPerYear)^compoundsPerYear) - 1
-function annualizedPercentageYield(nominal: Percent, compounds: number) {
-  const ONE = 1
-
-  const divideNominalByNAddOne = Number(nominal.divide(BigInt(compounds)).add(BigInt(ONE)).toFixed(10))
-
-  // multiply 100 to turn decimal into percent, to fixed since we only display integer
-  return ((divideNominalByNAddOne ** compounds - ONE) * 100).toFixed(0)
 }
 
 const PoolInfo = styled.div`
