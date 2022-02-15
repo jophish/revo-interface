@@ -10,27 +10,17 @@ import styled, { ThemeContext } from 'styled-components'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
 import { AppDispatch } from '../../state'
 import { clearAllTransactions } from '../../state/transactions/actions'
-import { ExternalLink, LinkStyledButton, TYPE } from '../../theme'
+import { borderRadius, ExternalLink, LinkStyledButton, TYPE } from '../../theme'
 import { shortenAddress } from '../../utils'
-import { ButtonSecondary } from '../Button'
+import { ButtonLight } from '../Button'
 import Identicon from '../Identicon'
 import { AutoRow } from '../Row'
 import Copy from './Copy'
 import Transaction from './Transaction'
 
-const HeaderRow = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap};
-  padding: 1rem 1rem;
-  font-weight: 800;
-  color: ${({ theme }) => theme.text3};
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 1rem;
-  `};
-`
-
 const UpperSection = styled.div`
   position: relative;
-  background-color: #ffe15d;
+  background-color: ${({ theme }) => theme.bg2};
   h5 {
     margin: 0;
     margin-bottom: 0.5rem;
@@ -50,8 +40,8 @@ const UpperSection = styled.div`
 
 const InfoCard = styled.div`
   padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.bg3};
-  border-radius: 20px;
+  border: 1px solid ${({ theme }) => theme.primary2};
+  border-radius: ${borderRadius}px;
   position: relative;
   display: grid;
   grid-row-gap: 12px;
@@ -72,7 +62,7 @@ const AccountGroupingRow = styled.div`
 `
 
 const AccountSection = styled.div`
-  background-color: #ffe15d;
+  background-color: ${({ theme }) => theme.bg2};
   padding: 0rem 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`padding: 0rem 1rem 1.5rem 1rem;`};
 `
@@ -95,8 +85,6 @@ const LowerSection = styled.div`
   flex-grow: 1;
   overflow: auto;
   background-color: ${({ theme }) => theme.bg2};
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
 
   h5 {
     margin: 0;
@@ -124,6 +112,7 @@ const AccountControl = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: ${({ theme }) => theme.text1};
   }
 `
 
@@ -138,20 +127,20 @@ const AddressLink = styled(ExternalLink)<{ hasENS: boolean; isENS: boolean }>`
   }
 `
 
-const CloseIcon = styled.div`
-  position: absolute;
-  right: 1rem;
-  top: 14px;
+const CloseColor = styled(Close)`
+  path {
+    stroke: ${({ theme }) => theme.text4};
+  }
   &:hover {
     cursor: pointer;
     opacity: 0.6;
   }
 `
 
-const CloseColor = styled(Close)`
-  path {
-    stroke: ${({ theme }) => theme.text4};
-  }
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
 `
 
 const WalletName = styled.div`
@@ -180,7 +169,7 @@ const TransactionListWrapper = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap};
 `
 
-const WalletAction = styled(ButtonSecondary)`
+const WalletAction = styled(ButtonLight)`
   width: fit-content;
   font-weight: 400;
   margin-left: 8px;
@@ -190,7 +179,6 @@ const WalletAction = styled(ButtonSecondary)`
     cursor: pointer;
     text-decoration: underline;
   }
-  color: ${({ theme }) => theme.text3};
 `
 
 function renderTransactions(transactions: string[]) {
@@ -254,10 +242,10 @@ export default function AccountDetails({
   return (
     <>
       <UpperSection>
-        <CloseIcon onClick={toggleWalletModal}>
-          <CloseColor />
-        </CloseIcon>
-        <HeaderRow>Account</HeaderRow>
+        <HeaderRow>
+          <TYPE.mediumHeader>Account</TYPE.mediumHeader>
+          <CloseColor onClick={toggleWalletModal} />
+        </HeaderRow>
         <AccountSection>
           <YourAccount>
             <InfoCard>

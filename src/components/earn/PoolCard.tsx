@@ -1,28 +1,32 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { useContractKit } from '@celo-tools/use-contractkit'
-import { Percent, Token } from '@ubeswap/sdk'
+import { Token } from '@ubeswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
+import { usePair } from 'data/Reserves'
 import { useToken } from 'hooks/Tokens'
-import { useStakingContract } from 'hooks/useContract'
-import { FarmSummary } from 'pages/Earn/useFarmRegistry'
+import { ApprovalState } from 'hooks/useApproveCallback'
+import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import React, { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { useSingleCallResult } from 'state/multicall/hooks'
-import { updateUserAprMode } from 'state/user/actions'
+import { Field } from 'state/swap/actions'
+import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
 import { useIsAprMode } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
-import { fromWei, toBN, toWei } from 'web3-utils'
+import { useCalcAPY } from 'utils/calcAPY'
+import { useCUSDPrices } from 'utils/useCUSDPrice'
+import { fromWei, toBN } from 'web3-utils'
 
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonLight, ButtonPrimary } from '../Button'
+import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
-import { RowBetween, RowFixed } from '../Row'
+import { AutoRow, RowBetween, RowFixed } from '../Row'
 import PoolStatRow from './PoolStats/PoolStatRow'
-import { Break } from './styled'
+import { useZapFunctions } from './useZapFunctions'
 
 const StatContainer = styled.div`
   display: flex;
@@ -41,6 +45,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   position: relative;
   padding: 1rem;
   background: ${({ theme }) => theme.bg1};
+  min-height: 110px;
   ${({ showBackground }) =>
     showBackground &&
     `  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
@@ -80,8 +85,16 @@ const PoolDetailsContainer = styled.div<{ $expanded: boolean }>`
   overflow: hidden;
 `
 
+const ManageMenu = styled.div<{ $expanded: boolean }>`
+  display: flex;
+  gap: 1rem;
+  max-height: ${({ $expanded }) => ($expanded ? '610px' : '0')};
+  transition: max-height 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
+  overflow: hidden;
+`
+
 interface Props {
-  farmSummary: FarmSummary
+  compoundBotSummary: CompoundBotSummary
 }
 
 const pairDataGql = gql`
@@ -94,64 +107,101 @@ const pairDataGql = gql`
     }
   }
 `
-const COMPOUNDS_PER_YEAR = 2
 
-export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
+type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
+
+export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
-  const { address } = useContractKit()
   const userAprMode = useIsAprMode()
+  const { address } = useContractKit()
   const dispatch = useDispatch()
-  const token0 = useToken(farmSummary.token0Address) || undefined
-  const token1 = useToken(farmSummary.token1Address) || undefined
-  const { data, loading, error } = useQuery(pairDataGql, {
-    variables: { id: farmSummary.lpAddress.toLowerCase() },
+  const { inputError: swapInputError } = useDerivedSwapInfo()
+
+  const token0 = useToken(compoundBotSummary.token0Address) || undefined
+  const token1 = useToken(compoundBotSummary.token1Address) || undefined
+  const farmbotToken = useToken(compoundBotSummary.address) || undefined
+  console.log(farmbotToken)
+  const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
+  const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
+  const cusdPrices = useCUSDPrices(tokens)
+  const stakingTokenPair = usePair(token0, token1)?.[1]
+
+  const compoundedAPY = useCalcAPY(compoundBotSummary)
+
+  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
+
+  // const { data, loading, error } = useQuery(pairDataGql, {
+  //   variables: { id: compoundBotSummary.stakingTokenAddress.toLowerCase() },
+  // })
+
+  const [zapType, setZapType] = useState<ZapType | null>(null)
+  const [showManageMenu, setShowManageMenu] = useState(false)
+
+  // TODO: these 2 are not needed anymore, can get them from redux
+  const [zapAmount, setZapInAmount] = useState('')
+  const [zapCurrency, setZapInCurrency] = useState<Token | undefined>()
+
+  const onZapSubmitted = (): void => {
+    setZapType(null)
+  }
+  const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } =
+    useZapFunctions(onZapSubmitted)
+
+  const isStaking = compoundBotSummary.amountUserLP > 0
+
+  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(compoundBotSummary.amountUserLP ?? 0, {
+    token0Address: compoundBotSummary.token0Address,
+    token1Address: compoundBotSummary.token1Address,
+    lpAddress: compoundBotSummary.stakingTokenAddress,
   })
 
-  const [expanded, setExpanded] = useState(false)
-  const [zapInAmount, setZapInAmount] = useState('')
-  const [zapInCurrency, setZapInCurrency] = useState<Token | undefined>()
-
-  const stakingContract = useStakingContract(farmSummary.stakingAddress)
-  const stakedAmount = useSingleCallResult(stakingContract, 'balanceOf', [address || undefined]).result?.[0]
-  const isStaking = Boolean(stakedAmount && stakedAmount.gt('0'))
-
-  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(stakedAmount ?? 0, farmSummary)
-  let swapRewardsUSDPerYear = 0
-  if (!loading && !error && data) {
-    const lastDayVolumeUsd = data.pair.pairHourData.reduce(
-      (acc: number, curr: { hourlyVolumeUSD: string }) => acc + Number(curr.hourlyVolumeUSD),
-      0
-    )
-    swapRewardsUSDPerYear = Math.floor(lastDayVolumeUsd * 365 * 0.0025)
-  }
-  const rewardApr = new Percent(farmSummary.rewardsUSDPerYear, farmSummary.tvlUSD)
-  const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), farmSummary.tvlUSD)
-  const apr = new Percent(
-    toBN(toWei(swapRewardsUSDPerYear.toString())).add(toBN(farmSummary.rewardsUSDPerYear)).toString(),
-    farmSummary.tvlUSD
-  )
-
-  let compoundedAPY: React.ReactNode | undefined = <>🤯</>
-  try {
-    compoundedAPY = annualizedPercentageYield(apr, COMPOUNDS_PER_YEAR)
-  } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    console.error('apy calc overflow', farmSummary.farmName, e)
-  }
-
   const handleToggleExpanded = () => {
-    setExpanded((prev) => !prev)
+    if (isStaking) {
+      setShowManageMenu((prev) => !prev)
+      setZapType(null)
+    } else {
+      setZapType((prev) => (prev ? null : 'zapIn'))
+    }
   }
 
-  const handleZapIn = () => {
-    // do something
+  const handleCurrencySelect = (inputToken: Token) => {
+    setZapInCurrency(inputToken)
+    if (zapType === 'zapIn') {
+      onCurrencySelection(Field.INPUT, inputToken)
+      onCurrencySelection(Field.OUTPUT, farmbotToken!)
+    } else if (zapType === 'zapOut') {
+      onCurrencySelection(Field.OUTPUT, inputToken)
+      onCurrencySelection(Field.INPUT, farmbotToken!)
+    }
   }
 
-  const displayedPercentageReturn =
-    apr.denominator.toString() !== '0'
-      ? `${userAprMode ? apr.toFixed(0, { groupSeparator: ',' }) : compoundedAPY}%`
-      : '-'
+  const handleSetZapType = (type: ZapType) => {
+    setZapType(type)
+    onCurrencySelection(Field.INPUT, null)
+    onCurrencySelection(Field.OUTPUT, null)
+    onUserInput(Field.INPUT, '')
+    setZapInAmount('')
+    setZapInCurrency(undefined)
+  }
+
+  const handleUserInput = (amount: string) => {
+    setZapInAmount(amount)
+
+    if (zapType === 'zapIn') {
+      onUserInput(Field.INPUT, amount)
+    } else if (zapType === 'zapOut') {
+      onUserInput(Field.OUTPUT, amount)
+    }
+  }
+
+  if (!token0 || !token1) {
+    return (
+      <Wrapper showBackground>
+        <Loader centered size="24px" />
+      </Wrapper>
+    )
+  }
 
   return (
     <Wrapper showBackground>
@@ -161,120 +211,116 @@ export const PoolCard: React.FC<Props> = ({ farmSummary }: Props) => {
           <TYPE.black fontWeight={600} fontSize={[18, 24]}>
             {token0?.symbol}-{token1?.symbol}
           </TYPE.black>
-          {apr && apr.greaterThan('0') && (
-            <span
-              aria-label="Toggle APR/APY"
-              onClick={() => dispatch(updateUserAprMode({ userAprMode: !userAprMode }))}
-            >
-              <TYPE.black>
-                <TYPE.small className="apr" fontWeight={400} fontSize={14}>
-                  {displayedPercentageReturn} {userAprMode ? 'APR' : 'APY'}
-                </TYPE.small>
-              </TYPE.black>
-            </span>
+          {compoundedAPY && (
+            <TYPE.darkGray style={{ display: 'flex' }}>
+              <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
+                APY: {compoundedAPY}
+              </TYPE.small>
+              <QuestionHelper text={t('APYInfo')} />
+            </TYPE.darkGray>
           )}
         </PoolInfo>
 
-        <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
-          {isStaking ? t('manage') : t('zap')}
-        </ButtonPrimary>
+        {address && (
+          <ButtonPrimary onClick={handleToggleExpanded} padding="8px">
+            {isStaking ? t('manage') : t('zap')}
+          </ButtonPrimary>
+        )}
       </TopSection>
 
       <StatContainer>
         <PoolStatRow
           statName={t('totalDeposited')}
-          statValue={Number(fromWei(farmSummary.tvlUSD)).toLocaleString(undefined, {
+          // statValue={'0'}
+          statValue={Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
             style: 'currency',
             currency: 'USD',
             maximumFractionDigits: 0,
           })}
         />
-        {apr && apr.greaterThan('0') && (
-          <div aria-label="Toggle APR/APY" onClick={() => dispatch(updateUserAprMode({ userAprMode: !userAprMode }))}>
+        {compoundedAPY && (
+          <div>
             <PoolStatRow
               helperText={
-                farmSummary.tvlUSD === '0' ? (
-                  'Pool is empty'
-                ) : (
-                  <>
-                    Reward APR: {rewardApr?.greaterThan('0') && rewardApr?.toSignificant(4)}%<br />
-                    Swap APR: {swapApr?.greaterThan('0') && swapApr?.toSignificant(4)}%<br />
-                    <small>APY assumes compounding {COMPOUNDS_PER_YEAR}/year</small>
-                    <br />
-                  </>
-                )
+                <>
+                  <small>{t('APYInfo')}</small>
+                  <br />
+                </>
               }
-              statName={`${userAprMode ? 'APR' : 'APY'}`}
-              statValue={displayedPercentageReturn}
+              statName={'APY'}
+              statValue={compoundedAPY}
             />
           </div>
         )}
       </StatContainer>
 
-      {isStaking && (
-        <>
-          <Break />
-          <BottomSection showBackground={true}>
-            {userValueCUSD && (
-              <RowBetween>
-                <TYPE.black fontWeight={500}>
-                  <span>Your stake</span>
-                </TYPE.black>
+      {isStaking && userValueCUSD && (
+        <RowBetween padding="8px 0">
+          <TYPE.black fontWeight={500}>
+            <span>Your stake</span>
+          </TYPE.black>
 
-                <RowFixed>
-                  <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-                    ${userValueCUSD.toFixed(0, { groupSeparator: ',' })}
-                  </TYPE.black>
-                  <QuestionHelper
-                    text={`${userAmountTokenA?.toFixed(0, { groupSeparator: ',' })} ${
-                      userAmountTokenA?.token.symbol
-                    }, ${userAmountTokenB?.toFixed(0, { groupSeparator: ',' })} ${userAmountTokenB?.token.symbol}`}
-                  />
-                </RowFixed>
-              </RowBetween>
-            )}
-          </BottomSection>
-        </>
+          <RowFixed>
+            <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
+              ${userValueCUSD.toFixed(2, { groupSeparator: ',' })}
+            </TYPE.black>
+            <QuestionHelper
+              text={`${userAmountTokenA?.toSignificant(6, { groupSeparator: ',' })} ${
+                userAmountTokenA?.token.symbol
+              }, ${userAmountTokenB?.toSignificant(6, { groupSeparator: ',' })} ${userAmountTokenB?.token.symbol}`}
+            />
+          </RowFixed>
+        </RowBetween>
       )}
 
-      <PoolDetailsContainer $expanded={expanded}>
+      <ManageMenu $expanded={showManageMenu}>
+        <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px" disabled={zapType === 'zapIn'}>
+          {t('zap')}
+        </ButtonPrimary>
+        <ButtonPrimary onClick={() => handleSetZapType('zapOut')} padding="8px" disabled={zapType === 'zapOut'}>
+          {t('zapOut')}
+        </ButtonPrimary>
+      </ManageMenu>
+
+      <PoolDetailsContainer $expanded={!!zapType}>
         <CurrencyInputPanel
-          value={zapInAmount}
-          onUserInput={setZapInAmount}
-          label={t('zapInAmount')}
+          value={zapAmount}
+          onUserInput={handleUserInput}
+          label={zapType === 'zapIn' ? t('zapInAmount') : t('zapOutAmount')}
           showMaxButton={false}
-          currency={zapInCurrency}
-          onCurrencySelect={setZapInCurrency}
+          currency={zapCurrency}
+          onCurrencySelect={handleCurrencySelect}
           otherCurrency={null}
-          id="zap-in-currency-input"
+          id="zap-currency-input"
         />
-        <RowBetween>
-          <RowFixed>
-            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
-              {t('fees')}
-            </TYPE.black>
-            <QuestionHelper text={t('feesInfo')} />
-          </RowFixed>
-          <TYPE.black fontSize={14} color={theme.text1}>
-            {'TODO: calculate fee'}
-          </TYPE.black>
+
+        <RowBetween gap="12px">
+          {showApproveFlow && (
+            <ButtonConfirmed
+              padding="8px"
+              onClick={approveCallback}
+              disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
+              altDisabledStyle={approval === ApprovalState.PENDING} // show solid button while waiting
+              confirmed={approval === ApprovalState.APPROVED}
+            >
+              {approval === ApprovalState.PENDING ? (
+                <AutoRow gap="6px" justify="center">
+                  Approving <Loader stroke="white" />
+                </AutoRow>
+              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                'Approved'
+              ) : (
+                'Approve ' + currencies[Field.INPUT]?.symbol
+              )}
+            </ButtonConfirmed>
+          )}
+          <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
+            {t('zap')}
+          </ButtonLight>
         </RowBetween>
-        <ButtonLight onClick={handleZapIn} padding="8px">
-          {t('approve')}
-        </ButtonLight>
       </PoolDetailsContainer>
     </Wrapper>
   )
-}
-
-// formula is 1 + ((nom/compoundsPerYear)^compoundsPerYear) - 1
-function annualizedPercentageYield(nominal: Percent, compounds: number) {
-  const ONE = 1
-
-  const divideNominalByNAddOne = Number(nominal.divide(BigInt(compounds)).add(BigInt(ONE)).toFixed(10))
-
-  // multiply 100 to turn decimal into percent, to fixed since we only display integer
-  return ((divideNominalByNAddOne ** compounds - ONE) * 100).toFixed(0)
 }
 
 const PoolInfo = styled.div`

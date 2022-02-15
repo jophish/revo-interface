@@ -1,18 +1,16 @@
 import { ErrorBoundary } from '@sentry/react'
-import { Token } from '@ubeswap/sdk'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import React, { useMemo, useState } from 'react'
+import { useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useOwnerStakedPools } from 'state/stake/useOwnerStakedPools'
 import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { PoolCard } from '../../components/earn/PoolCard'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
-import { useFarmRegistry } from './useFarmRegistry'
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -43,29 +41,19 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-function useTokenFilter(): [Token | null, (t: Token | null) => void] {
-  const [token, setToken] = useState<Token | null>(null)
-  return [token, setToken]
-}
-
 export default function Earn() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [filteringToken, setFilteringToken] = useTokenFilter()
-  const farmSummaries = useFarmRegistry()
+  const farmbotFarmSummaries = useCompoundRegistry()
 
-  const filteredFarms = useMemo(() => {
-    if (filteringToken === null) {
-      return farmSummaries
-    } else {
-      return farmSummaries.filter(
-        (farm) => farm?.token0Address === filteringToken?.address || farm?.token1Address === filteringToken?.address
-      )
-    }
-  }, [filteringToken, farmSummaries])
+  const stakedFarms = farmbotFarmSummaries.filter((botsummary) => {
+    return botsummary.amountUserLP > 0
+  })
+  const unstakedFarms = farmbotFarmSummaries.filter((botsummary) => {
+    return botsummary.amountUserLP <= 0
+  })
 
-  const { stakedFarms, unstakedFarms } = useOwnerStakedPools(filteredFarms)
-
+  console.log(stakedFarms)
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
   }
@@ -74,22 +62,14 @@ export default function Earn() {
 
   return (
     <PageWrapper>
-      {/* <TopSection gap="md">
-        <AutoColumn>
-          <TokenSelect onTokenSelect={setFilteringToken} token={filteringToken} />
-        </AutoColumn>
-      </TopSection> */}
-      <ColumnCenter>
-        {farmSummaries.length > 0 && filteredFarms.length == 0 && `No Farms for ${filteringToken?.symbol}`}
-        {farmSummaries.length === 0 && <Loader size="48px" />}
-      </ColumnCenter>
+      <ColumnCenter>{farmbotFarmSummaries.length === 0 && <Loader size="48px" />}</ColumnCenter>
       {stakedFarms.length > 0 && (
         <>
           <Header>{t('yourPools')}</Header>
           {stakedFarms.map((farmSummary) => (
-            <PoolWrapper key={farmSummary.stakingAddress}>
+            <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard farmSummary={farmSummary} />
+                <PoolCard compoundBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
@@ -99,9 +79,9 @@ export default function Earn() {
         <>
           <Header>{t('availablePools')}</Header>
           {unstakedFarms.map((farmSummary) => (
-            <PoolWrapper key={farmSummary.stakingAddress}>
+            <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard farmSummary={farmSummary} />
+                <PoolCard compoundBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}

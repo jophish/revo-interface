@@ -8,15 +8,16 @@ const Row = styled(Box)<{
   padding?: string
   border?: string
   borderRadius?: string
+  gap?: string
 }>`
   width: ${({ width }) => width ?? '100%'};
   display: flex;
-  padding: 0;
   align-items: ${({ align }) => align ?? 'center'};
   justify-content: ${({ justify }) => justify ?? 'flex-start'};
-  padding: ${({ padding }) => padding};
+  padding: ${({ padding }) => padding ?? 0};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};
+  gap: ${({ gap }) => gap};
 `
 
 export const RowBetween = styled(Row)`

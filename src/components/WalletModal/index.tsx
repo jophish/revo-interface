@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
 import { ApplicationModal } from '../../state/application/actions'
 import { useCloseModals, useModalOpen } from '../../state/application/hooks'
-import { ExternalLink } from '../../theme'
+import { borderRadius, ExternalLink } from '../../theme'
 import AccountDetails from '../AccountDetails'
 import Modal from '../Modal'
 import { CeloConnector } from './CeloConnector'
@@ -48,8 +48,8 @@ const HeaderRow = styled.div`
 const ContentWrapper = styled.div`
   background-color: ${({ theme }) => theme.bg2};
   padding: 2rem;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: ${borderRadius}px;
+  border-bottom-right-radius: ${borderRadius}px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`padding: 1rem`};
 `

@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect } from 'react'
 import { X } from 'react-feather'
 import { animated, useSpring } from 'react-spring'
 import styled, { ThemeContext } from 'styled-components'
+import { borderRadius } from 'theme'
 
 import { PopupContent } from '../../state/application/actions'
 import { useRemovePopup } from '../../state/application/hooks'
@@ -23,17 +24,17 @@ export const Popup = styled.div`
   padding: 1em;
   background-color: ${({ theme }) => theme.bg1};
   position: relative;
-  border-radius: 10px;
+  border-radius: ${borderRadius}px;
   padding: 20px;
   padding-right: 35px;
   overflow: hidden;
-
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3)
+    ${({ theme }) => theme.mediaWidth.upToSmall`
     min-width: 290px;
     &:not(:last-of-type) {
       margin-right: 20px;
     }
-  `}
+  `};
 `
 const Fader = styled.div`
   position: absolute;
