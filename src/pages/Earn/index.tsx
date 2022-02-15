@@ -2,8 +2,8 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
-import React from 'react'
+import { CompoundBotSummary, useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -44,14 +44,23 @@ const Header: React.FC = ({ children }) => {
 export default function Earn() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
+  const [stakedFarms, setStakedFarms] = useState<CompoundBotSummary[]>([])
+  const [unstakedFarms, setUnstakedFarms] = useState<CompoundBotSummary[]>([])
+
   const farmbotFarmSummaries = useCompoundRegistry()
 
-  const stakedFarms = farmbotFarmSummaries.filter((botsummary) => {
-    return botsummary.amountUserLP > 0
-  })
-  const unstakedFarms = farmbotFarmSummaries.filter((botsummary) => {
-    return botsummary.amountUserLP <= 0
-  })
+  useEffect(() => {
+    setStakedFarms(
+      farmbotFarmSummaries.filter((botsummary) => {
+        return botsummary.amountUserLP > 0
+      })
+    )
+    setUnstakedFarms(
+      farmbotFarmSummaries.filter((botsummary) => {
+        return botsummary.amountUserLP <= 0
+      })
+    )
+  }, [farmbotFarmSummaries])
 
   console.log(stakedFarms)
   if (!isSupportedNetwork) {

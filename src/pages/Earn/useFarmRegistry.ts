@@ -1,6 +1,8 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { ethers } from 'ethers'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { AppState } from 'state'
 import { AbiItem, fromWei, toBN } from 'web3-utils'
 
 import farmRegistryAbi from '../../constants/abis/FarmRegistry.json'
@@ -26,6 +28,12 @@ const LAST_N_BLOCKS = 1440 // Last 2 hours
 export const useFarmRegistry = () => {
   const { kit } = useContractKit()
   const [farmSummaries, setFarmSummaries] = React.useState<FarmSummary[]>([])
+
+  const { network } = useContractKit()
+  const chainId = network.chainId
+  const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions)
+  const transactions = useMemo(() => (chainId ? state[chainId] ?? {} : {}), [chainId, state])
+
   const call = React.useCallback(async () => {
     const farmRegistry = new kit.web3.eth.Contract(
       farmRegistryAbi as AbiItem[],
@@ -75,7 +83,7 @@ export const useFarmRegistry = () => {
       .sort((a, b) => Number(fromWei(toBN(b.rewardsUSDPerYear).sub(toBN(a.rewardsUSDPerYear)))))
       .sort((a, b) => Number(fromWei(toBN(b.tvlUSD).sub(toBN(a.tvlUSD)))))
     setFarmSummaries(farmSummaries)
-  }, [kit.web3.eth])
+  }, [kit.web3.eth, transactions])
 
   useEffect(() => {
     call()
