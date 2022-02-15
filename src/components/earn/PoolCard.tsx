@@ -15,7 +15,7 @@ import { Field } from 'state/swap/actions'
 import { useSwapActionHandlers } from 'state/swap/hooks'
 import { useIsAprMode } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
-import { calcAPY } from 'utils/calcAPY'
+import { useCalcAPY } from 'utils/calcAPY'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
 import { fromWei, toBN } from 'web3-utils'
 
@@ -113,12 +113,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const cusdPrices = useCUSDPrices(tokens)
   const stakingTokenPair = usePair(token0, token1)?.[1]
 
-  let compoundedAPY
-  if (compoundBotSummary && cusdPrices && stakingTokenPair) {
-    compoundedAPY = calcAPY(compoundBotSummary, cusdPrices, stakingTokenPair)
-  } else {
-    console.error('error calculating APY', `${compoundBotSummary.token0Address} - ${compoundBotSummary.token1Address}`)
-  }
+  const compoundedAPY = useCalcAPY(compoundBotSummary)
 
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
   const { approval, approveCallback, onZapIn, showApproveFlow, currencies, approvalSubmitted } = useZapFunctions()
@@ -221,7 +216,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
           <RowFixed>
             <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-              ${userValueCUSD.toSignificant(6, { groupSeparator: ',' })}
+              ${userValueCUSD.toFixed(2, { groupSeparator: ',' })}
             </TYPE.black>
             <QuestionHelper
               text={`${userAmountTokenA?.toSignificant(6, { groupSeparator: ',' })} ${
