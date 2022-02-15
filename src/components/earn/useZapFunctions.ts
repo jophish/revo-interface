@@ -10,7 +10,7 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 // most of this logic taken from the Swap page
 // TODO: make use of expert mode/ displaying swap message/having a confirmation
 // modal for swap
-export const useZapFunctions = () => {
+export const useZapFunctions = (onZapSubmitted) => {
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     showConfirm: boolean
     tradeToConfirm: Trade | undefined
@@ -49,7 +49,7 @@ export const useZapFunctions = () => {
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode)
 
-  const handleZapIn = useCallback(() => {
+  const onZap = useCallback(() => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
       return
     }
@@ -59,9 +59,15 @@ export const useZapFunctions = () => {
     setSwapState({ attemptingTxn: true, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: undefined })
     swapCallback()
       .then((hash) => {
+        if (onZapSubmitted) {
+          onZapSubmitted()
+        }
         setSwapState({ attemptingTxn: false, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: hash })
       })
       .catch((error) => {
+        if (onZapSubmitted) {
+          onZapSubmitted()
+        }
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,
@@ -75,7 +81,7 @@ export const useZapFunctions = () => {
   return {
     showApproveFlow,
     approval,
-    onZapIn: handleZapIn,
+    onZap,
     approveCallback,
     approvalSubmitted,
     currencies,

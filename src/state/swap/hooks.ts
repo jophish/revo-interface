@@ -24,14 +24,14 @@ export function useSwapState(): AppState['swap'] {
 }
 
 export function useSwapActionHandlers(): {
-  onCurrencySelection: (field: Field, currency: Token) => void
+  onCurrencySelection: (field: Field, currency: Token | null) => void
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
   onChangeRecipient: (recipient: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
-    (field: Field, currency: Token) => {
+    (field: Field, currency: Token | null) => {
       dispatch(
         selectCurrency({
           field,

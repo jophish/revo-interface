@@ -223,7 +223,9 @@
   "youWillReceive": "You will receive at least",
   "youWillRemove": "You will remove",
   "zap": "Zap in",
+  "zapOut": "Zap out",
   "zapInAmount": "Zap in amount",
+  "zapOutAmount": "Zap out amount",
   "fees": "Fees",
   "feesInfo": "Some explanation about where the fees come from",
   "APYInfo": "APY is calculated based on assumption of auto-accompounding once per hour"

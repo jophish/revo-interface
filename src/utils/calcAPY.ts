@@ -29,8 +29,8 @@ export function useCalcAPY(compoundBotSummary: CompoundBotSummary) {
     variables: { id: compoundBotSummary?.stakingTokenAddress?.toLowerCase() },
   })
 
-  if (!compoundBotSummary) {
-    return
+  if (!compoundBotSummary || !compoundBotSummary.rewardsUSDPerYear || !compoundBotSummary.tvlUSD) {
+    return '-'
   }
 
   let swapRewardsUSDPerYear = 0
@@ -41,6 +41,7 @@ export function useCalcAPY(compoundBotSummary: CompoundBotSummary) {
     )
     swapRewardsUSDPerYear = Math.floor(lastDayVolumeUsd * 365 * 0.0025)
   }
+
   const rewardApr = new Percent(compoundBotSummary.rewardsUSDPerYear, compoundBotSummary.tvlUSD)
   const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), compoundBotSummary.tvlUSD)
   const apr = new Percent(
