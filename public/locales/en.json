@@ -228,5 +228,5 @@
   "zapOutAmount": "Zap out amount",
   "fees": "Fees",
   "feesInfo": "Some explanation about where the fees come from",
-  "APYInfo": "APY is calculated based on assumption of auto-accompounding once per hour"
+  "APYInfo": "APY is calculated assuming auto-compounding once per hour"
 }
