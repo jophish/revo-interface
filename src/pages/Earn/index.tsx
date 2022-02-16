@@ -99,7 +99,10 @@ export default function Earn() {
                   <TYPE.white fontWeight={600}>{t('ZapInEdu')}</TYPE.white>
                 </RowBetween>
                 <RowBetween>
-                  <TYPE.white fontSize={14}>{t('ZapInEduDesc')}</TYPE.white>
+                  <TYPE.white fontSize={14}>
+                    {t('ZapInEduDesc')}
+                    <a href="https://docs.revo.market/">{t('here')}</a>
+                  </TYPE.white>
                 </RowBetween>
               </AutoColumn>
             </CardSection>
