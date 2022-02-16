@@ -28,7 +28,7 @@ export type CompoundBotSummary = {
   totalLPSupply: number
 }
 
-const compoundAddresses = ['0xc6686060A1BFa583566Ebca400A2C8771b20Cb8C']
+const compoundAddresses = ['0x2e031Fd9930b6aa96e8aC7ad528459817c96Ed70']
 
 export const useCompoundRegistry = () => {
   const { address, kit } = useContractKit()
