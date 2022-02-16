@@ -17,7 +17,7 @@ export const TextBox = styled.div`
 `
 
 export const DataCard = styled(AutoColumn)<{ disabled?: boolean }>`
-  background-color: #8d7c86;
+  background-color: #171c60;
   border-radius: 12px;
   width: 100%;
   position: relative;
