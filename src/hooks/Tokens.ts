@@ -160,7 +160,6 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
   const decimals = useSingleCallResult(token ? undefined : tokenContract, 'decimals', undefined, NEVER_RELOAD)
 
   return useMemo(() => {
-    console.log(token, address, chainId, decimals, symbol, tokenName)
     if (token) return token
     if (!chainId || !address) return undefined
     if (decimals.loading || symbol.loading || tokenName.loading) return null

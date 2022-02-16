@@ -18,7 +18,10 @@ interface IStakingPoolValue {
   userAmountTokenB?: TokenAmount
 }
 
-export const useLPValue = (stakedAmount: BigNumber, farmSummary: FarmSummary): IStakingPoolValue => {
+export const useLPValue = (
+  stakedAmount: BigNumber | number,
+  farmSummary: Pick<FarmSummary, 'lpAddress' | 'token0Address' | 'token1Address'>
+): IStakingPoolValue => {
   const { network } = useContractKit()
   const chainId = network.chainId
   const lpToken = useToken(farmSummary.lpAddress) || undefined

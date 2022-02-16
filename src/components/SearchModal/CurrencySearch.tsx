@@ -1,11 +1,11 @@
 import { ChainId } from '@celo-tools/use-contractkit'
-import Portal from '@reach/portal'
 import { ChainId as UbeswapChainId, cUSD, Token } from '@ubeswap/sdk'
 import { ButtonLight } from 'components/Button'
 import { useOnClickOutside } from 'hooks/useOnClickOutside'
 import useTheme from 'hooks/useTheme'
 import useToggle from 'hooks/useToggle'
 import React, { KeyboardEvent, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Edit } from 'react-feather'
 import ReactGA from 'react-ga'
 import { useTranslation } from 'react-i18next'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -14,10 +14,10 @@ import { Text } from 'rebass'
 import styled from 'styled-components'
 
 import { useAllTokens, useFoundOnInactiveList, useIsUserAddedToken, useToken } from '../../hooks/Tokens'
-import { CloseIcon, TYPE } from '../../theme'
+import { borderRadius, ButtonText, CloseIcon, IconWrapper, TYPE } from '../../theme'
 import { isAddress } from '../../utils'
 import Column from '../Column'
-import Row, { RowBetween } from '../Row'
+import Row, { RowBetween, RowFixed } from '../Row'
 import CommonBases from './CommonBases'
 import CurrencyList from './CurrencyList'
 import { filterTokens } from './filtering'
@@ -29,6 +29,16 @@ const ContentWrapper = styled(Column)`
   width: 100%;
   flex: 1 1;
   position: relative;
+`
+
+const Footer = styled.div`
+  width: 100%;
+  border-radius: ${borderRadius}px;
+  padding: 20px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background-color: ${({ theme }) => theme.bg1};
+  border-top: 1px solid ${({ theme }) => theme.bg2};
 `
 
 interface CurrencySearchProps {
@@ -286,6 +296,18 @@ export function CurrencySearch({
             </ButtonLight>
           </Row>
         )}
+      <Footer>
+        <Row justify="center">
+          <ButtonText onClick={showManageView} color={theme.blue1} className="list-token-manage-button">
+            <RowFixed>
+              <IconWrapper size="16px" marginRight="6px">
+                <Edit />
+              </IconWrapper>
+              <TYPE.main color={theme.blue1}>{t('manage')}</TYPE.main>
+            </RowFixed>
+          </ButtonText>
+        </Row>
+      </Footer>
     </ContentWrapper>
   )
 }
