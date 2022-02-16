@@ -227,5 +227,5 @@
   "fees": "Fees",
   "feesInfo": "Some explanation about where the fees come from",
   "ZapInEdu": "What is Zap in?",
-  "ZapInEduDesc": "Zap in is a simplication of the normally complicated yield farming process. You can simply swap any token to a auto-compounding yield farming token in one click."
+  "ZapInEduDesc": "\"Zap in\" allows you to swap any token (like cUSD or CELO) for a share in a yield farm with automatic compound interest. Learn more about DeFi on Revo [here](https://docs.revo.market/)"
 }
