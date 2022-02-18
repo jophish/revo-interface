@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { BookOpen, Code, Info, MessageCircle, PieChart, Send } from 'react-feather'
+import { BookOpen, Code, MessageCircle } from 'react-feather'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -99,7 +99,7 @@ const MenuItemInternal = styled(NavLink)`
   }
 `
 
-const CODE_LINK = 'https://github.com/Ubeswap/ubeswap-interface'
+const CODE_LINK = 'https://github.com/revo-market/'
 
 export default function Menu() {
   const node = useRef<HTMLDivElement>()
@@ -116,14 +116,6 @@ export default function Menu() {
 
       {open && (
         <MenuFlyout>
-          <MenuItemInternal id="link" to="/send">
-            <Send size={14} />
-            Send
-          </MenuItemInternal>
-          <MenuItem id="link" href="https://ubeswap.org/">
-            <Info size={14} />
-            About
-          </MenuItem>
           <MenuItem id="link" href="https://docs.revo.market/">
             <BookOpen size={14} />
             Docs
@@ -132,13 +124,9 @@ export default function Menu() {
             <Code size={14} />
             Code
           </MenuItem>
-          <MenuItem id="link" href="https://discord.gg/zZkUXCMPGP">
+          <MenuItem id="link" href="https://discord.gg/TBHYqgBnRj">
             <MessageCircle size={14} />
             Discord
-          </MenuItem>
-          <MenuItem id="link" href="https://info.ubeswap.org/">
-            <PieChart size={14} />
-            Analytics
           </MenuItem>
         </MenuFlyout>
       )}
