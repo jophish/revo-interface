@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { borderRadius } from 'theme'
 
 import Icon from '../../assets/images/revo-logo.png'
+import Menu from '../Menu'
 import { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
 import UbeBalanceContent from './UbeBalanceContent'
@@ -167,6 +168,11 @@ export const StyledMenuButton = styled.button`
   }
 `
 
+const HeaderElementWrap = styled.div`
+  display: flex;
+  align-items: center;
+`
+
 const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.CeloMainnet]: 'Celo',
   [ChainId.Alfajores]: 'Alfajores',
@@ -208,6 +214,9 @@ export default function Header() {
             <Web3Status />
           </AccountElement>
         </HeaderElement>
+        <HeaderElementWrap>
+          <Menu />
+        </HeaderElementWrap>
       </HeaderControls>
     </HeaderFrame>
   )
