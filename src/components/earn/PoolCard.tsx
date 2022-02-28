@@ -241,7 +241,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
                 maximumFractionDigits: 0,
               })}
             </TYPE.black>
-            <QuestionHelper text={'Total value locked in the farm in US Dollar'} />
+            <QuestionHelper text={'Total value deposited in the farm bot by anyone, in US Dollars'} />
           </RowFixed>
         </RowBetween>
       )}
