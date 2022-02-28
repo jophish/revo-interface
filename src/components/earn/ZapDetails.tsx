@@ -34,7 +34,7 @@ export const ZapDetails: React.FC<Props> = ({ trade, allowedSlippage }: Props) =
           <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
             Liquidity Provider Fee
           </TYPE.black>
-          <QuestionHelper text="Fees charged by the underlying liquidity pool as protocol incentive. Revo does not take a cut of the fees." />
+          <QuestionHelper text="Charged by Ubeswap to incentivize liquidity. Revo does not take a cut of this fee." />
         </RowFixed>
         <TYPE.black fontSize={14} color={theme.text1}>
           {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade?.inputAmount.currency.symbol}` : '-'}
