@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Field } from 'state/swap/actions'
 import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
-import { useIsAprMode } from 'state/user/hooks'
+import { useIsAprMode, useUserSlippageTolerance } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
@@ -25,18 +25,8 @@ import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
-import PoolStatRow from './PoolStats/PoolStatRow'
 import { useZapFunctions } from './useZapFunctions'
-
-const StatContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: 12px;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-  display: none;
-`};
-`
+import { ZapDetails } from './ZapDetails'
 
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   border-radius: ${borderRadius}px;
@@ -93,6 +83,13 @@ const ManageMenu = styled.div<{ $expanded: boolean }>`
   overflow: hidden;
 `
 
+const ZapDetailsContainer = styled.div<{ $expanded: boolean }>`
+  padding: 12px 16px;
+  max-height: ${({ $expanded }) => ($expanded ? '400px' : '0')};
+  transition: max-height 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
+  overflow: hidden;
+`
+
 interface Props {
   compoundBotSummary: CompoundBotSummary
 }
@@ -116,7 +113,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const userAprMode = useIsAprMode()
   const { address } = useContractKit()
   const dispatch = useDispatch()
-  const { inputError: swapInputError } = useDerivedSwapInfo()
+  const { v2Trade: trade, inputError: swapInputError } = useDerivedSwapInfo()
 
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
@@ -126,6 +123,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
   const cusdPrices = useCUSDPrices(tokens)
   const stakingTokenPair = usePair(token0, token1)?.[1]
+  const [allowedSlippage] = useUserSlippageTolerance()
 
   const compoundedAPY = useCalcAPY(compoundBotSummary)
 
@@ -170,6 +168,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     if (zapType === 'zapIn') {
       onCurrencySelection(Field.INPUT, inputToken)
       onCurrencySelection(Field.OUTPUT, farmbotToken!)
+      // show price details
     } else if (zapType === 'zapOut') {
       onCurrencySelection(Field.OUTPUT, inputToken)
       onCurrencySelection(Field.INPUT, farmbotToken!)
@@ -228,31 +227,24 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
         )}
       </TopSection>
 
-      <StatContainer>
-        <PoolStatRow
-          statName={t('totalDeposited')}
-          // statValue={'0'}
-          statValue={Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          })}
-        />
-        {compoundedAPY && (
-          <div>
-            <PoolStatRow
-              helperText={
-                <>
-                  <small>{t('APYInfo')}</small>
-                  <br />
-                </>
-              }
-              statName={'APY'}
-              statValue={compoundedAPY}
-            />
-          </div>
-        )}
-      </StatContainer>
+      {compoundBotSummary.totalFP && (
+        <RowBetween padding="8px 0">
+          <TYPE.black fontWeight={500}>
+            <span>Total Deposited</span>
+          </TYPE.black>
+
+          <RowFixed>
+            <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
+              {Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0,
+              })}
+            </TYPE.black>
+            <QuestionHelper text={'Total value locked in the farm in US Dollar'} />
+          </RowFixed>
+        </RowBetween>
+      )}
 
       {isStaking && userValueCUSD && (
         <RowBetween padding="8px 0">
@@ -319,6 +311,12 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           </ButtonLight>
         </RowBetween>
       </PoolDetailsContainer>
+
+      {!!zapType && !swapInputError && (
+        <ZapDetailsContainer $expanded={!!zapType && !swapInputError}>
+          <ZapDetails trade={trade} allowedSlippage={allowedSlippage} />
+        </ZapDetailsContainer>
+      )}
     </Wrapper>
   )
 }
