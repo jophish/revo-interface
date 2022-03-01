@@ -22,6 +22,7 @@ import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 import { computeTradePriceBreakdown } from 'utils/prices'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
+import { toBN } from 'web3-utils'
 
 import { BLOCKED_PRICE_IMPACT_NON_EXPERT, ONE_BIPS } from '../../constants/'
 import { borderRadius, TYPE } from '../../theme'
