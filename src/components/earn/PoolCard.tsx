@@ -18,7 +18,6 @@ import { useIsAprMode, useUserSlippageTolerance } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
-import { fromWei, toBN } from 'web3-utils'
 
 import { borderRadius, TYPE } from '../../theme'
 import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
@@ -154,6 +153,12 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     lpAddress: compoundBotSummary.stakingTokenAddress,
   })
 
+  const { userValueCUSD: tvlCUSD } = useLPValue(compoundBotSummary.totalLP ?? 0, {
+    token0Address: compoundBotSummary.token0Address,
+    token1Address: compoundBotSummary.token1Address,
+    lpAddress: compoundBotSummary.stakingTokenAddress,
+  })
+
   const handleToggleExpanded = () => {
     if (isStaking) {
       setShowManageMenu((prev) => !prev)
@@ -235,7 +240,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
           <RowFixed>
             <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-              {Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
+              {Number(tvlCUSD.toFixed(2)).toLocaleString(undefined, {
                 style: 'currency',
                 currency: 'USD',
                 maximumFractionDigits: 0,
