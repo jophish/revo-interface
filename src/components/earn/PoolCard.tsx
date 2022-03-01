@@ -323,7 +323,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           <AutoColumn>
             <RowBetween padding="12px">
               <TYPE.black fontWeight={500}>
-                <span>Select a token to zap out to:</span>
+                <span>{t('zapOutSelect')}</span>
               </TYPE.black>
 
               <ZapOutTokenSelectorContainer>
@@ -377,7 +377,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
                           <Text fontSize={24} fontWeight={500}>
                             {trade.minimumAmountOut(ONE_BIPS.multiply(toBN(allowedSlippage))).toFixed(2) || '-'}
                           </Text>
-                          <QuestionHelper text="Minimum amount you will receive. If there is a large, unfavorable price movement before confirmation, your transaction will revert." />
+                          <QuestionHelper text={t('zapOutPriceImpactHelper')} />
                         </RowFixed>
                         <RowFixed>
                           <CurrencyLogo currency={zapCurrency} style={{ marginRight: '12px' }} />

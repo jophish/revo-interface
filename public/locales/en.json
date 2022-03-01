@@ -228,6 +228,8 @@
   "zapOut": "Zap out",
   "zapInAmount": "Zap in amount",
   "zapOutAmount": "Zap out amount",
+  "zapOutPriceImpactHelper": "Minimum amount you will receive. If there is a large, unfavorable price movement before confirmation, your transaction will revert.",
+  "zapOutSelect": "Select a token to zap out to:",
   "fees": "Fees",
   "feesInfo": "Some explanation about where the fees come from",
   "ZapInEdu": "What is Zap in?",
