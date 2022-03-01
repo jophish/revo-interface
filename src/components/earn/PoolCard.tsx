@@ -130,11 +130,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const { v2Trade: trade, inputError: swapInputError } = useDerivedSwapInfo()
   const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : {}
-  const isPriceImpactTooHigh = priceImpactWithoutFee
-    ? priceImpactWithoutFee.lessThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
-      ? false
-      : true
-    : false
+  const isPriceImpactTooHigh = !!priceImpactWithoutFee?.greaterThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
 
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
