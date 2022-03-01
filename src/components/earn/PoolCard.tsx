@@ -22,7 +22,6 @@ import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 import { computeTradePriceBreakdown } from 'utils/prices'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
-import { fromWei, toBN } from 'web3-utils'
 
 import { BLOCKED_PRICE_IMPACT_NON_EXPERT, ONE_BIPS } from '../../constants/'
 import { borderRadius, TYPE } from '../../theme'
@@ -171,6 +170,12 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
     lpAddress: compoundBotSummary.stakingTokenAddress,
   })
 
+  const { userValueCUSD: tvlCUSD } = useLPValue(compoundBotSummary.totalLP ?? 0, {
+    token0Address: compoundBotSummary.token0Address,
+    token1Address: compoundBotSummary.token1Address,
+    lpAddress: compoundBotSummary.stakingTokenAddress,
+  })
+
   const handleToggleExpanded = () => {
     if (isStaking) {
       setShowManageMenu((prev) => !prev)
@@ -254,7 +259,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
         )}
       </TopSection>
 
-      {compoundBotSummary.totalFP && (
+      {tvlCUSD && (
         <RowBetween padding="8px 0">
           <TYPE.black fontWeight={500}>
             <span>Total Deposited</span>
@@ -262,7 +267,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
           <RowFixed>
             <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-              {Number(fromWei(toBN(compoundBotSummary.totalFP))).toLocaleString(undefined, {
+              {Number(tvlCUSD.toFixed(2)).toLocaleString(undefined, {
                 style: 'currency',
                 currency: 'USD',
                 maximumFractionDigits: 0,
