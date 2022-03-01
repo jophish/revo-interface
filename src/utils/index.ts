@@ -9,7 +9,6 @@ import { IUniswapV2Router02, UbeswapMoolaRouter } from 'generated/index'
 import { ROUTER_ADDRESS, UBESWAP_MOOLA_ROUTER_ADDRESS } from '../constants'
 import IUniswapV2Router02ABI from '../constants/abis/IUniswapV2Router02.json'
 import UbeswapMoolaRouterABI from '../constants/abis/UbeswapMoolaRouter.json'
-
 import { TokenAddressMap } from '../state/lists/hooks'
 
 // returns the checksummed address if the address is valid, otherwise returns false

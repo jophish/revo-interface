@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { useContractKit } from '@celo-tools/use-contractkit'
-import { Token } from '@ubeswap/sdk'
+import { Fraction, Token } from '@ubeswap/sdk'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
@@ -9,21 +9,31 @@ import { useToken } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
-import React, { useContext, useState } from 'react'
+import { MaxButton } from 'pages/Pool/styleds'
+import React, { useCallback, useContext, useState } from 'react'
+import { ArrowDown } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
+import { Text } from 'rebass'
 import { Field } from 'state/swap/actions'
 import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
 import { useIsAprMode, useUserSlippageTolerance } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
+import { computeTradePriceBreakdown } from 'utils/prices'
 import { useCUSDPrices } from 'utils/useCUSDPrice'
+import { toBN } from 'web3-utils'
 
+import { BLOCKED_PRICE_IMPACT_NON_EXPERT, ONE_BIPS } from '../../constants/'
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonConfirmed, ButtonLight, ButtonPrimary } from '../Button'
-import { AutoColumn } from '../Column'
+import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
+import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../Button'
+import { LightCard } from '../Card'
+import { AutoColumn, ColumnCenter } from '../Column'
+import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
-import { AutoRow, RowBetween, RowFixed } from '../Row'
+import Row, { AutoRow, RowBetween, RowFixed } from '../Row'
+import Slider from '../Slider'
 import { useZapFunctions } from './useZapFunctions'
 import { ZapDetails } from './ZapDetails'
 
@@ -89,6 +99,11 @@ const ZapDetailsContainer = styled.div<{ $expanded: boolean }>`
   overflow: hidden;
 `
 
+const ZapOutTokenSelectorContainer = styled.div`
+  #zap-out-token-selector {
+  }
+`
+
 interface Props {
   compoundBotSummary: CompoundBotSummary
 }
@@ -112,7 +127,10 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const userAprMode = useIsAprMode()
   const { address } = useContractKit()
   const dispatch = useDispatch()
+
   const { v2Trade: trade, inputError: swapInputError } = useDerivedSwapInfo()
+  const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : {}
+  const isPriceImpactTooHigh = !!priceImpactWithoutFee?.greaterThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
 
   const token0 = useToken(compoundBotSummary.token0Address) || undefined
   const token1 = useToken(compoundBotSummary.token1Address) || undefined
@@ -182,6 +200,9 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const handleSetZapType = (type: ZapType) => {
     setZapType(type)
+    if (type == 'zapOut') {
+      setZapOutPercentage('50')
+    }
     onCurrencySelection(Field.INPUT, null)
     onCurrencySelection(Field.OUTPUT, null)
     onUserInput(Field.INPUT, '')
@@ -191,13 +212,20 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const handleUserInput = (amount: string) => {
     setZapInAmount(amount)
-
-    if (zapType === 'zapIn') {
-      onUserInput(Field.INPUT, amount)
-    } else if (zapType === 'zapOut') {
-      onUserInput(Field.OUTPUT, amount)
-    }
+    onUserInput(Field.INPUT, amount)
   }
+
+  const zapOutPercentChangeCallback = useCallback(
+    (value: number) => {
+      const rawAmountZapOut = toBN(compoundBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
+      const adjustedAmountZapOut = new Fraction(toBN(rawAmountZapOut), toBN(10).pow(toBN(18))).toSignificant(100)
+      setZapInAmount(rawAmountZapOut)
+      onUserInput(Field.INPUT, adjustedAmountZapOut)
+    },
+    [handleUserInput]
+  )
+
+  const [zapOutPercentage, setZapOutPercentage] = useDebouncedChangeHandler('50', zapOutPercentChangeCallback)
 
   if (!token0 || !token1) {
     return (
@@ -280,16 +308,93 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
       </ManageMenu>
 
       <PoolDetailsContainer $expanded={!!zapType}>
-        <CurrencyInputPanel
-          value={zapAmount}
-          onUserInput={handleUserInput}
-          label={zapType === 'zapIn' ? t('zapInAmount') : t('zapOutAmount')}
-          showMaxButton={false}
-          currency={zapCurrency}
-          onCurrencySelect={handleCurrencySelect}
-          otherCurrency={null}
-          id="zap-currency-input"
-        />
+        {zapType == 'zapIn' && (
+          <CurrencyInputPanel
+            value={zapAmount}
+            onUserInput={handleUserInput}
+            label={zapType === 'zapIn' ? t('zapInAmount') : t('zapOutAmount')}
+            showMaxButton={false}
+            currency={zapCurrency}
+            onCurrencySelect={handleCurrencySelect}
+            otherCurrency={null}
+            id="zap-currency-input"
+          />
+        )}
+
+        {zapType == 'zapOut' && (
+          <AutoColumn>
+            <RowBetween padding="12px">
+              <TYPE.black fontWeight={500}>
+                <span>{t('zapOutSelect')}</span>
+              </TYPE.black>
+
+              <ZapOutTokenSelectorContainer>
+                <CurrencyInputPanel
+                  value={zapAmount}
+                  onUserInput={handleUserInput}
+                  label={zapType === 'zapIn' ? t('zapInAmount') : t('zapOutAmount')}
+                  showMaxButton={false}
+                  currency={zapCurrency}
+                  onCurrencySelect={handleCurrencySelect}
+                  otherCurrency={null}
+                  hideInput={true}
+                  id="zap-out-token-selector"
+                />
+              </ZapOutTokenSelectorContainer>
+            </RowBetween>
+            {zapCurrency && (
+              <AutoColumn>
+                <LightCard>
+                  <>
+                    <Row style={{ alignItems: 'flex-end' }}>
+                      <Text fontSize={72} fontWeight={500}>
+                        {zapOutPercentage}%
+                      </Text>
+                    </Row>
+                    <Slider value={zapOutPercentage} onChange={setZapOutPercentage} />
+                    <RowBetween>
+                      <MaxButton onClick={() => setZapOutPercentage('25')} width="20%">
+                        25%
+                      </MaxButton>
+                      <MaxButton onClick={() => setZapOutPercentage('50')} width="20%">
+                        50%
+                      </MaxButton>
+                      <MaxButton onClick={() => setZapOutPercentage('75')} width="20%">
+                        75%
+                      </MaxButton>
+                      <MaxButton onClick={() => setZapOutPercentage('100')} width="20%">
+                        Max
+                      </MaxButton>
+                    </RowBetween>
+                  </>
+                </LightCard>
+                {!!trade && (
+                  <>
+                    <ColumnCenter>
+                      <ArrowDown size="16" color={theme.text2} />
+                    </ColumnCenter>
+                    <LightCard>
+                      <RowBetween>
+                        <RowFixed>
+                          <Text fontSize={24} fontWeight={500}>
+                            {trade.minimumAmountOut(ONE_BIPS.multiply(toBN(allowedSlippage))).toFixed(2) || '-'}
+                          </Text>
+                          <QuestionHelper text={t('zapOutPriceImpactHelper')} />
+                        </RowFixed>
+                        <RowFixed>
+                          <CurrencyLogo currency={zapCurrency} style={{ marginRight: '12px' }} />
+                          <Text fontSize={24} fontWeight={500}>
+                            {zapCurrency?.symbol}
+                          </Text>
+                        </RowFixed>
+                      </RowBetween>
+                    </LightCard>
+                  </>
+                )}
+              </AutoColumn>
+            )}
+          </AutoColumn>
+        )}
 
         <RowBetween gap="12px">
           {showApproveFlow && (
@@ -311,9 +416,15 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
               )}
             </ButtonConfirmed>
           )}
-          <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
-            {zapType === 'zapIn' ? t('zap') : t('zapOut')}
-          </ButtonLight>
+          {isPriceImpactTooHigh ? (
+            <ButtonError padding="8px" disabled={true} error={true}>
+              {t('priceImpact')}
+            </ButtonError>
+          ) : (
+            <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
+              {zapType === 'zapIn' ? t('zapIn') : t('zapOut')}
+            </ButtonLight>
+          )}
         </RowBetween>
       </PoolDetailsContainer>
 
