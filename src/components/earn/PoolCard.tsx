@@ -232,7 +232,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
         )}
       </TopSection>
 
-      {compoundBotSummary.totalFP && (
+      {tvlCUSD && (
         <RowBetween padding="8px 0">
           <TYPE.black fontWeight={500}>
             <span>Total Deposited</span>
