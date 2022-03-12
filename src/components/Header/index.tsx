@@ -1,9 +1,7 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
 import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
-import Modal from 'components/Modal'
 import { NETWORK_CHAIN_ID } from 'connectors'
-import React, { useState } from 'react'
-import { isMobile } from 'react-device-detect'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useTokenBalance } from 'state/wallet/hooks'
@@ -14,7 +12,6 @@ import Icon from '../../assets/images/revo-logo.png'
 import Menu from '../Menu'
 import { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
-import UbeBalanceContent from './UbeBalanceContent'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -30,15 +27,15 @@ const HeaderFrame = styled.div`
   padding: 1rem;
   z-index: 2;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-grid-template-columns: 1fr;
-padding: 0 1rem;
-width: calc(100%);
-position: relative;
-`};
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    width: calc(100%);
+    position: relative;
+  `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-padding: 0.5rem 1rem;
-`}
+    padding: 0.5rem 1rem;
+  `}
 `
 
 const HeaderControls = styled.div`
@@ -173,6 +170,13 @@ const HeaderElementWrap = styled.div`
   align-items: center;
 `
 
+const Logo = styled.img`
+  height: 54px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height: 42px;
+  `};
+`
+
 const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.CeloMainnet]: 'Celo',
   [ChainId.Alfajores]: 'Alfajores',
@@ -185,16 +189,12 @@ export default function Header() {
   const { address: account } = useContractKit()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])
-  const [showUbeBalanceModal, setShowUbeBalanceModal] = useState<boolean>(false)
 
   return (
     <HeaderFrame>
-      <Modal isOpen={showUbeBalanceModal} onDismiss={() => setShowUbeBalanceModal(false)}>
-        <UbeBalanceContent setShowUbeBalanceModal={setShowUbeBalanceModal} />
-      </Modal>
       <HeaderRow>
         <Title to="/">
-          <img height={isMobile ? '48px' : '60px'} src={Icon} alt="Revo.Finance" />
+          <Logo src={Icon} alt="Revo.Finance" />
         </Title>
       </HeaderRow>
       <HeaderControls>

@@ -3,6 +3,7 @@ import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
 import { CompoundBotSummary, useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import { useLiquidityRegistry } from 'pages/Compound/useLiquidityRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -12,6 +13,7 @@ import { PoolCard } from '../../components/earn/PoolCard'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
+import AddLiquidity from './AddLiquidity'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -55,6 +57,8 @@ export default function Earn() {
 
   const farmbotFarmSummaries = useCompoundRegistry()
 
+  const liquidityPools = useLiquidityRegistry()
+
   useEffect(() => {
     setStakedFarms(
       farmbotFarmSummaries.filter((botsummary) => {
@@ -72,8 +76,6 @@ export default function Earn() {
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
   }
-
-  // TODO add info for new users
 
   return (
     <PageWrapper>
@@ -116,6 +118,19 @@ export default function Earn() {
                 <PoolCard compoundBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
+          ))}
+        </>
+      )}
+      {liquidityPools.length > 0 && (
+        <>
+          <Header>{t('addLiquidity')}</Header>
+          {liquidityPools.map((pool) => (
+            <AddLiquidity
+              key={`${pool.token0}${pool.token1}`}
+              token0={pool.token0}
+              token1={pool.token1}
+              compoundBotSummary={pool.compoundBotSummary}
+            />
           ))}
         </>
       )}

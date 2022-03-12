@@ -8,16 +8,19 @@ import farmBotAbi from '../../constants/abis/FarmBot.json'
 import MOOLA_STAKING_REWARDS_ABI from '../../constants/abis/moola/MoolaStakingRewards.json'
 import { useFarmRegistry } from '../Earn/useFarmRegistry'
 
-export type CompoundBotSummary = {
-  address: string
-  token0Name: string
-  token1Name: string
+export interface CompoundBotSummaryBase {
   token0Address: string
   token1Address: string
-  amountUserFP: number
-  amountUserLP: number
+  token0Name: string
+  token1Name: string
   stakingTokenAddress: string
   totalLP: number
+}
+
+export interface CompoundBotSummary extends CompoundBotSummaryBase {
+  address: string
+  amountUserFP: number
+  amountUserLP: number
   totalFP: number
   exchangeRate: number
   // userLPValue: number

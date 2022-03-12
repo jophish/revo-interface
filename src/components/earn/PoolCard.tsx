@@ -275,7 +275,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
       <RowBetween padding="8px 0">
         <TYPE.black fontWeight={500}>
-          <span>Total Deposited</span>
+          <span>{t('totalDeposited')}</span>
         </TYPE.black>
 
         <RowFixed>
