@@ -195,7 +195,7 @@ export function CurrencySearch({
   return (
     <ContentWrapper>
       <PaddedColumn gap="16px">
-        <RowBetween>
+        <RowBetween border="none">
           <Text fontWeight={500} fontSize={16}>
             {t('selectToken')}
           </Text>

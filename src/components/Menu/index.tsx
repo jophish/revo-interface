@@ -61,17 +61,20 @@ const MenuFlyout = styled.span`
   flex-direction: column;
   font-size: 1rem;
   position: absolute;
-  top: 4rem;
+  top: 3rem;
   right: 0rem;
   z-index: 100;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    top: -17.25rem;
+    top: unset;
+    bottom: 3rem;
   `};
 `
 
 const MenuItem = styled(ExternalLink)`
   flex: 1;
+  display: flex;
+  align-items: center;
   padding: 0.5rem 0.5rem;
   color: ${({ theme }) => theme.text2};
   :hover {

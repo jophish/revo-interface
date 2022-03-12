@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { borderRadius } from 'theme'
 
 import uImage from '../../assets/images/big_unicorn.png'
 import noise from '../../assets/images/noise.webp'
@@ -18,7 +19,7 @@ export const TextBox = styled.div`
 
 export const DataCard = styled(AutoColumn)<{ disabled?: boolean }>`
   background-color: #171c60;
-  border-radius: 12px;
+  border-radius: ${borderRadius}px;
   width: 100%;
   position: relative;
   overflow: hidden;
