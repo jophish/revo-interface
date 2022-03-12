@@ -347,7 +347,7 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
         {zapType == 'zapOut' && (
           <ZapOutContainer>
             <div>
-              <RowColumn padding="12px 0">
+              <RowColumn padding="0 0 12px 0">
                 <TYPE.black fontWeight={500}>
                   <span>{t('zapOutSelect')}</span>
                 </TYPE.black>
