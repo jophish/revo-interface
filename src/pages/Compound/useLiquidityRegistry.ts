@@ -13,6 +13,7 @@ export type LiquiditySummary = {
   token0: Token
   token1: Token
   compoundBotSummary: CompoundBotSummaryBase
+  userBalance: number
 }
 
 // pools containing RFP
@@ -31,6 +32,7 @@ export const useLiquidityRegistry = () => {
 
       const token0Address = await uniswapV2Pair.methods.token0().call()
       const token1Address = await uniswapV2Pair.methods.token1().call()
+      const userBalance = address ? await uniswapV2Pair.methods.balanceOf(address).call() : 0
 
       const token0Contract = new kit.web3.eth.Contract(ERC20_ABI as AbiItem[], token0Address)
       const token0Symbol = await token0Contract.methods.symbol().call()
@@ -64,6 +66,7 @@ export const useLiquidityRegistry = () => {
           stakingTokenAddress,
           totalLP,
         },
+        userBalance,
       })
     }
     setSummaries(liquidityPoolSummaries)

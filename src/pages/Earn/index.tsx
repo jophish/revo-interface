@@ -125,12 +125,7 @@ export default function Earn() {
         <>
           <Header>{t('addLiquidity')}</Header>
           {liquidityPools.map((pool) => (
-            <AddLiquidity
-              key={`${pool.token0}${pool.token1}`}
-              token0={pool.token0}
-              token1={pool.token1}
-              compoundBotSummary={pool.compoundBotSummary}
-            />
+            <AddLiquidity key={`${pool.token0}${pool.token1}`} {...pool} />
           ))}
         </>
       )}

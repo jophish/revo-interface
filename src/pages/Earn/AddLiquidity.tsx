@@ -18,9 +18,10 @@ interface Props {
   token0: Token
   token1: Token
   compoundBotSummary: CompoundBotSummaryBase
+  userBalance: number
 }
 
-export default function AddLiquidity({ token0, token1, compoundBotSummary }: Props) {
+export default function AddLiquidity({ token0, token1, compoundBotSummary, userBalance }: Props) {
   const { t } = useTranslation()
   const {
     dependentField,
@@ -55,6 +56,7 @@ export default function AddLiquidity({ token0, token1, compoundBotSummary }: Pro
       <p>On expand:</p>
       <p>{`Token 0: ${token0.symbol}`}</p>
       <p>{`Token 1: ${token1.symbol}`}</p>
+      <p>{`Your stake: ${userBalance}`}</p>
       <LightCard padding="1rem" borderRadius={'20px'}>
         <PoolPriceBar
           currencies={currencies}
