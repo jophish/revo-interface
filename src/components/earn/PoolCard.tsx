@@ -10,7 +10,7 @@ import { borderRadius, TYPE } from '../../theme'
 import { ButtonPrimary } from '../Button'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
-import { RowBetween, RowFixed } from '../Row'
+import Row, { RowBetween, RowFixed } from '../Row'
 
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   border-radius: ${borderRadius}px;
@@ -27,16 +27,14 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
 `
 
 const TopSection = styled.div`
-  display: grid;
-  grid-template-columns: 48px 1fr 120px;
-  grid-gap: 0px;
-  align-items: center;
+  display: flex;
+  flex-direction: row;
   padding-bottom: 1rem;
+  gap: 12px;
   z-index: 1;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    grid-template-columns: 48px 1fr 96px;
-    padding-bottom: 0;
-  `};
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 `
 
 const PoolInfo = styled.div`
@@ -92,24 +90,32 @@ export const PoolCard: React.FC<Props> = ({
   return (
     <Wrapper showBackground>
       <TopSection>
-        <DoubleCurrencyLogo currency0={token0} currency1={token1} size={24} />
-        <PoolInfo style={{ marginLeft: '8px' }}>
-          <TYPE.black fontWeight={600} fontSize={[18, 24]}>
-            {poolTitle}
-          </TYPE.black>
-          {APY && (
-            <TYPE.darkGray style={{ display: 'flex' }}>
-              <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
-                APY: {APY}
-              </TYPE.small>
-              <QuestionHelper text={APYInfo} />
-            </TYPE.darkGray>
-          )}
-        </PoolInfo>
+        <Row width="auto">
+          <DoubleCurrencyLogo currency0={token0} currency1={token1} size={24} />
+          <PoolInfo style={{ marginLeft: '8px' }}>
+            <TYPE.black fontWeight={600} fontSize={[18, 24]}>
+              {poolTitle}
+            </TYPE.black>
+            {APY && (
+              <TYPE.darkGray style={{ display: 'flex' }}>
+                <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
+                  APY: {APY}
+                </TYPE.small>
+                <QuestionHelper text={APYInfo} />
+              </TYPE.darkGray>
+            )}
+          </PoolInfo>
+        </Row>
 
         {/* TODO show the connect wallet button */}
         {address && (
-          <ButtonPrimary onClick={buttonOnPress} inverse={!buttonActive} padding="8px">
+          <ButtonPrimary
+            width="auto"
+            onClick={buttonOnPress}
+            inverse={!buttonActive}
+            padding="8px 20px"
+            maxHeight="40px"
+          >
             {buttonLabel}
           </ButtonPrimary>
         )}

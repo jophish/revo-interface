@@ -13,6 +13,7 @@ const Base = styled(RebassButton)<{
   borderRadius?: string
   altDisabledStyle?: boolean
   inverse?: boolean
+  maxHeight?: string
 }>`
   transition: 0.25s ease;
   padding: ${({ padding }) => (padding ? padding : '18px')};
@@ -34,7 +35,7 @@ const Base = styled(RebassButton)<{
   &:disabled {
     cursor: auto;
   }
-
+  max-height: ${({ maxHeight }) => (maxHeight ? maxHeight : '100%')};
   > * {
     user-select: none;
   }

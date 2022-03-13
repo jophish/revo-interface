@@ -61,7 +61,7 @@ export default function LiquidityCard({ token0, token1, compoundBotSummary, user
     <PoolCard
       token0={token0}
       token1={token1}
-      poolTitle={`${token0.symbol}/${compoundBotSummary.token0Name}-${compoundBotSummary.token1Name} ${token1.symbol} LP`}
+      poolTitle={`${token0.symbol} / ${compoundBotSummary.token0Name}-${compoundBotSummary.token1Name} ${token1.symbol} LP`}
       buttonLabel={t('addLiquidity')}
       buttonOnPress={handleAddLiquidity}
       buttonActive={expanded}
