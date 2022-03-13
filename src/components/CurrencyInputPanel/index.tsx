@@ -196,6 +196,7 @@ export default function CurrencyInputPanel({
                 setModalOpen(true)
               }
             }}
+            disabled={disableCurrencySelect}
           >
             <Aligner>
               {pair ? (

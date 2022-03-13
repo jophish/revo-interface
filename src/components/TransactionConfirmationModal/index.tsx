@@ -7,7 +7,7 @@ import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 
 import Circle from '../../assets/images/blue-loader.svg'
-import { ExternalLink } from '../../theme'
+import { borderRadius, ExternalLink } from '../../theme'
 import { CloseIcon, CustomLightSpinner } from '../../theme/components'
 import { ButtonPrimary } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
@@ -23,8 +23,8 @@ const Section = styled(AutoColumn)`
 
 const BottomSection = styled(Section)`
   background-color: ${({ theme }) => theme.bg2};
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: ${borderRadius}px;
+  border-bottom-right-radius: ${borderRadius}px;
 `
 
 const ConfirmedIcon = styled(ColumnCenter)`
