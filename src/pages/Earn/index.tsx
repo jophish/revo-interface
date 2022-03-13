@@ -15,6 +15,7 @@ import { TYPE } from '../../theme'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
+  margin-bottom: 16px;
 `
 
 const PageWrapper = styled.div`
@@ -96,11 +97,11 @@ export default function Earn() {
             <CardSection>
               <AutoColumn gap="md">
                 <RowBetween>
-                  <TYPE.white fontWeight={600}>{t('ZapInEdu')}</TYPE.white>
+                  <TYPE.white fontWeight={600}>{t('zapInEdu')}</TYPE.white>
                 </RowBetween>
                 <RowBetween>
                   <TYPE.white fontSize={14}>
-                    {t('ZapInEduDesc')}
+                    {t('zapInEduDesc')}
                     <a href="https://docs.revo.market/">{t('here')}</a>
                   </TYPE.white>
                 </RowBetween>

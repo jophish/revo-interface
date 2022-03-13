@@ -6,7 +6,7 @@ import { ArrowLeft } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
 import styled from 'styled-components'
-import { CloseIcon } from 'theme'
+import { borderRadius, CloseIcon } from 'theme'
 
 import { CurrencyModalView } from './CurrencySearchModal'
 import { ManageLists } from './ManageLists'
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 
 const ToggleWrapper = styled(RowBetween)`
   background-color: ${({ theme }) => theme.bg3};
-  border-radius: 12px;
+  border-radius: ${borderRadius}px;
   padding: 6px;
 `
 
@@ -31,7 +31,7 @@ const ToggleOption = styled.div<{ active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: ${borderRadius}px;
   font-weight: 600;
   background-color: ${({ theme, active }) => (active ? theme.bg1 : theme.bg3)};
   color: ${({ theme, active }) => (active ? theme.text1 : theme.text2)};

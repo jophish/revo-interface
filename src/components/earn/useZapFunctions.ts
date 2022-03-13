@@ -10,7 +10,7 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 // most of this logic taken from the Swap page
 // TODO: make use of expert mode/ displaying swap message/having a confirmation
 // modal for swap
-export const useZapFunctions = (onZapSubmitted) => {
+export const useZapFunctions = (onZapComplete?: () => void) => {
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
     showConfirm: boolean
     tradeToConfirm: Trade | undefined
@@ -59,15 +59,12 @@ export const useZapFunctions = (onZapSubmitted) => {
     setSwapState({ attemptingTxn: true, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: undefined })
     swapCallback()
       .then((hash) => {
-        if (onZapSubmitted) {
-          onZapSubmitted()
+        if (onZapComplete) {
+          onZapComplete()
         }
         setSwapState({ attemptingTxn: false, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: hash })
       })
       .catch((error) => {
-        if (onZapSubmitted) {
-          onZapSubmitted()
-        }
         setSwapState({
           attemptingTxn: false,
           tradeToConfirm,

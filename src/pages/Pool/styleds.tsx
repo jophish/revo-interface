@@ -1,5 +1,6 @@
 import { Text } from 'rebass'
 import styled from 'styled-components'
+import { borderRadius } from 'theme'
 
 export const Wrapper = styled.div`
   position: relative;
@@ -15,8 +16,8 @@ export const ClickableText = styled(Text)`
 export const MaxButton = styled.button<{ width: string }>`
   padding: 0.5rem 1rem;
   background-color: ${({ theme }) => theme.primary3};
-  border: 1px solid ${({ theme }) => theme.primary3};
-  border-radius: 8px;
+  border: 2px solid ${({ theme }) => theme.primary3};
+  border-radius: ${borderRadius}px;
   font-size: 1rem;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0.25rem 0.5rem;
@@ -25,12 +26,12 @@ export const MaxButton = styled.button<{ width: string }>`
   cursor: pointer;
   margin: 0.25rem;
   overflow: hidden;
-  color: ${({ theme }) => theme.primary1};
+  color: ${({ theme }) => theme.bg2};
   :hover {
-    border: 1px solid ${({ theme }) => theme.primary1};
+    border: 2px solid ${({ theme }) => theme.primary2};
   }
   :focus {
-    border: 1px solid ${({ theme }) => theme.primary1};
+    border: 2px solid ${({ theme }) => theme.primary2};
     outline: none;
   }
 `
