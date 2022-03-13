@@ -8,15 +8,9 @@ import { CompoundBotSummaryBase } from 'pages/Compound/useCompoundRegistry'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDerivedMintInfo } from 'state/mint/hooks'
-import styled from 'styled-components'
 import { TYPE } from 'theme'
 
 import { useLPValue } from './useLPValue'
-
-const Wrapper = styled.div`
-  width: 100%;
-  max-width: 640px;
-`
 
 interface Props {
   token0: Token
@@ -57,27 +51,25 @@ export default function LiquidityCard({ token0, token1, compoundBotSummary, user
   }
 
   return (
-    <Wrapper>
-      <PoolCard
-        token0={token0}
-        token1={token1}
-        poolTitle={`${token0.symbol}/${compoundBotSummary.token0Name}-${compoundBotSummary.token1Name} ${token1.symbol} LP`}
-        buttonLabel={t('addLiquidity')}
-        buttonOnPress={handleAddLiquidity}
-        buttonActive={false}
-        tvlCUSD={tvlCUSD}
-        tvlCUSDInfo={t('farmBotTVLInfo')}
-        PoolDetails={PoolDetails}
-      >
-        <LightCard padding="1rem" borderRadius={'20px'}>
-          <PoolPriceBar
-            currencies={currencies}
-            poolTokenPercentage={poolTokenPercentage}
-            noLiquidity={noLiquidity}
-            price={price}
-          />
-        </LightCard>
-      </PoolCard>
-    </Wrapper>
+    <PoolCard
+      token0={token0}
+      token1={token1}
+      poolTitle={`${token0.symbol}/${compoundBotSummary.token0Name}-${compoundBotSummary.token1Name} ${token1.symbol} LP`}
+      buttonLabel={t('addLiquidity')}
+      buttonOnPress={handleAddLiquidity}
+      buttonActive={false}
+      tvlCUSD={tvlCUSD}
+      tvlCUSDInfo={t('farmBotTVLInfo')}
+      PoolDetails={PoolDetails}
+    >
+      <LightCard padding="16px">
+        <PoolPriceBar
+          currencies={currencies}
+          poolTokenPercentage={poolTokenPercentage}
+          noLiquidity={noLiquidity}
+          price={price}
+        />
+      </LightCard>
+    </PoolCard>
   )
 }
