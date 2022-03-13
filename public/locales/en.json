@@ -235,5 +235,6 @@
   "zapInEdu": "What is Zap in?",
   "zapInEduDesc": "\"Zap In\" allows you to swap any token (like cUSD or CELO) for a share in a yield farm with automatic compound interest. Learn more about DeFi on Revo ",
   "here": "here",
-  "APYInfo": "APY is calculated assuming auto-compounding once per hour"
+  "APYInfo": "APY is calculated assuming auto-compounding once per hour",
+  "farmBotTVLInfo": "Total value deposited in the farm bot by anyone, in US Dollars"
 }

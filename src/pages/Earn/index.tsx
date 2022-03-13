@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
-import { PoolCard } from '../../components/earn/PoolCard'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
+import ZapCard from '../../components/earn/ZapCard'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
-import AddLiquidity from './AddLiquidity'
+import LiquidityCard from './LiquidityCard'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -23,12 +23,6 @@ const VoteCard = styled(DataCard)`
 const PageWrapper = styled.div`
   width: 100%;
   max-width: 640px;
-`
-
-const TopSection = styled(AutoColumn)`
-  max-width: 720px;
-  width: 100%;
-  margin-bottom: 24px;
 `
 
 const DataRow = styled(RowBetween)`
@@ -86,7 +80,7 @@ export default function Earn() {
           {stakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard compoundBotSummary={farmSummary} />
+                <ZapCard compoundBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
@@ -115,7 +109,7 @@ export default function Earn() {
           {unstakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard compoundBotSummary={farmSummary} />
+                <ZapCard compoundBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
@@ -125,7 +119,7 @@ export default function Earn() {
         <>
           <Header>{t('addLiquidity')}</Header>
           {liquidityPools.map((pool) => (
-            <AddLiquidity key={`${pool.token0}${pool.token1}`} {...pool} />
+            <LiquidityCard key={`${pool.token0}${pool.token1}`} {...pool} />
           ))}
         </>
       )}
