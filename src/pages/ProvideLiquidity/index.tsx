@@ -2,16 +2,16 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { CompoundBotSummary, useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import { LiquiditySummary, useLiquidityRegistry } from 'pages/Compound/useLiquidityRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
-import ZapCard from '../../components/earn/ZapCard'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
+import LiquidityCard from './LiquidityCard'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -41,26 +41,26 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export default function Earn() {
+export default function ProvideLiquidity() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedFarms, setStakedFarms] = useState<CompoundBotSummary[]>([])
-  const [unstakedFarms, setUnstakedFarms] = useState<CompoundBotSummary[]>([])
+  const [stakedPools, setStakedPools] = useState<LiquiditySummary[]>([])
+  const [unstakedPools, setUnstakedPools] = useState<LiquiditySummary[]>([])
 
-  const farmbotFarmSummaries = useCompoundRegistry()
+  const liquidityPools = useLiquidityRegistry()
 
   useEffect(() => {
-    setStakedFarms(
-      farmbotFarmSummaries.filter((botsummary) => {
-        return botsummary.amountUserLP > 0
+    setStakedPools(
+      liquidityPools.filter((pool) => {
+        return pool.userBalance > 0
       })
     )
-    setUnstakedFarms(
-      farmbotFarmSummaries.filter((botsummary) => {
-        return botsummary.amountUserLP <= 0
+    setUnstakedPools(
+      liquidityPools.filter((pool) => {
+        return pool.userBalance <= 0
       })
     )
-  }, [farmbotFarmSummaries])
+  }, [liquidityPools])
 
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
@@ -68,20 +68,20 @@ export default function Earn() {
 
   return (
     <PageWrapper>
-      <ColumnCenter>{farmbotFarmSummaries.length === 0 && <Loader size="48px" />}</ColumnCenter>
-      {stakedFarms.length > 0 && (
+      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
+      {stakedPools.length > 0 && (
         <>
           <Header>{t('yourPools')}</Header>
-          {stakedFarms.map((farmSummary) => (
-            <PoolWrapper key={farmSummary.address}>
+          {stakedPools.map((pool) => (
+            <PoolWrapper key={`${pool.token0}${pool.token1}`}>
               <ErrorBoundary>
-                <ZapCard compoundBotSummary={farmSummary} />
+                <LiquidityCard {...pool} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
         </>
       )}
-      {unstakedFarms.length > 0 && (
+      {unstakedPools.length > 0 && (
         <>
           <VoteCard>
             <CardNoise />
@@ -92,7 +92,7 @@ export default function Earn() {
                 </RowBetween>
                 <RowBetween>
                   <TYPE.white fontSize={14}>
-                    {t('zapInEduDesc')}
+                    Some information about what this page does
                     <a href="https://docs.revo.market/">{t('here')}</a>
                   </TYPE.white>
                 </RowBetween>
@@ -101,10 +101,10 @@ export default function Earn() {
             <CardNoise />
           </VoteCard>
           <Header>{t('availablePools')}</Header>
-          {unstakedFarms.map((farmSummary) => (
-            <PoolWrapper key={farmSummary.address}>
+          {unstakedPools.map((pool) => (
+            <PoolWrapper key={`${pool.token0}${pool.token1}`}>
               <ErrorBoundary>
-                <ZapCard compoundBotSummary={farmSummary} />
+                <LiquidityCard {...pool} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}

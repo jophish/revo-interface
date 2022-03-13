@@ -3,6 +3,7 @@ import { PoolCard } from 'components/earn/PoolCard'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { CompoundBotSummaryBase } from 'pages/Compound/useCompoundRegistry'
+import { useLPValue } from 'pages/Earn/useLPValue'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -10,7 +11,6 @@ import { TYPE } from 'theme'
 
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
-import { useLPValue } from './useLPValue'
 
 const Container = styled.div<{ $expanded: boolean }>`
   margin-top: ${({ $expanded }) => ($expanded ? '12px' : '0')};

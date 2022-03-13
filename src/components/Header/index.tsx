@@ -1,7 +1,9 @@
 import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
 import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
 import { NETWORK_CHAIN_ID } from 'connectors'
+import { darken } from 'polished'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { Text } from 'rebass'
 import { useTokenBalance } from 'state/wallet/hooks'
@@ -177,6 +179,39 @@ const Logo = styled.img`
   `};
 `
 
+const activeClassName = 'ACTIVE'
+
+const StyledNavLink = styled(NavLink).attrs({
+  activeClassName,
+})`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: left;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text2};
+  font-size: 1rem;
+  width: fit-content;
+  margin: 0 12px;
+  font-weight: 500;
+
+  &.${activeClassName} {
+    border-radius: 12px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text1};
+  }
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+
+  @media (max-width: 320px) {
+    margin: 0 8px;
+  }
+`
+
 const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
   [ChainId.CeloMainnet]: 'Celo',
   [ChainId.Alfajores]: 'Alfajores',
@@ -187,6 +222,7 @@ const chainId = NETWORK_CHAIN_ID
 
 export default function Header() {
   const { address: account } = useContractKit()
+  const { t } = useTranslation()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])
 
@@ -196,6 +232,12 @@ export default function Header() {
         <Title to="/">
           <Logo src={Icon} alt="Revo.Finance" />
         </Title>
+        <StyledNavLink id="swap-nav-link" to="/zap">
+          Zap
+        </StyledNavLink>
+        <StyledNavLink id="compound-nav-link" to="/pool">
+          Provide
+        </StyledNavLink>
       </HeaderRow>
       <HeaderControls>
         <HeaderElement>
