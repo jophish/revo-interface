@@ -1,4 +1,5 @@
 import QuestionHelper from 'components/QuestionHelper'
+import { RowBetween, RowFixed } from 'components/Row'
 import FormattedPriceImpact from 'components/swap/FormattedPriceImpact'
 import { UbeswapTrade } from 'components/swap/routing/trade'
 import React, { useContext } from 'react'
@@ -6,7 +7,6 @@ import { ThemeContext } from 'styled-components'
 import { computeTradePriceBreakdown } from 'utils/prices'
 
 import { TYPE } from '../../theme'
-import { RowBetween, RowFixed } from '../Row'
 
 interface Props {
   trade: UbeswapTrade | undefined

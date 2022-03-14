@@ -1,7 +1,7 @@
-import { PoolCard } from 'components/earn/PoolCard'
 import { RowBetween, RowFixed } from 'components/Row'
 import { LiquiditySummary } from 'pages/Compound/useLiquidityRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
+import { PoolCard } from 'pages/Zap/PoolCard'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'

@@ -1,16 +1,16 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { Token, TokenAmount } from '@ubeswap/sdk'
+import { ButtonPrimary } from 'components/Button'
+import { AutoColumn } from 'components/Column'
+import DoubleCurrencyLogo from 'components/DoubleLogo'
 import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
+import Row, { RowBetween, RowFixed } from 'components/Row'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { borderRadius, TYPE } from '../../theme'
-import { ButtonPrimary } from '../Button'
-import { AutoColumn } from '../Column'
-import DoubleCurrencyLogo from '../DoubleLogo'
-import Row, { RowBetween, RowFixed } from '../Row'
 
 const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
   border-radius: ${borderRadius}px;

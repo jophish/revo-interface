@@ -3,13 +3,13 @@ import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
 import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
+import ZapCard from 'pages/Zap/ZapCard'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
-import ZapCard from '../../components/earn/ZapCard'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
 
@@ -41,7 +41,7 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export default function Earn() {
+export default function Zap() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
   const [stakedFarms, setStakedFarms] = useState<FarmBotSummary[]>([])
