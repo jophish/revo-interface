@@ -29,14 +29,18 @@ export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBal
   })
 
   const PoolDetails = (
-    <RowBetween padding="8px 0">
-      <TYPE.black fontWeight={500}>{t('YourTotalPoolTokens')}</TYPE.black>
-      <RowFixed>
-        <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-          {Number(fromWei(toBN(userBalance))).toPrecision(4)}
-        </TYPE.black>
-      </RowFixed>
-    </RowBetween>
+    <>
+      {userBalance ? (
+        <RowBetween padding="8px 0">
+          <TYPE.black fontWeight={500}>{t('YourTotalPoolTokens')}</TYPE.black>
+          <RowFixed>
+            <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
+              {Number(fromWei(toBN(userBalance))).toPrecision(4)}
+            </TYPE.black>
+          </RowFixed>
+        </RowBetween>
+      ) : null}
+    </>
   )
 
   const handleAddLiquidity = () => {
