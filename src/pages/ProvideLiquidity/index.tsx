@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
-import { TYPE } from '../../theme'
+import { ExternalLink, TYPE } from '../../theme'
 import LiquidityCard from './LiquidityCard'
 
 const VoteCard = styled(DataCard)`
@@ -88,12 +88,21 @@ export default function ProvideLiquidity() {
             <CardSection>
               <AutoColumn gap="md">
                 <RowBetween>
-                  <TYPE.white fontWeight={600}>{t('zapInEdu')}</TYPE.white>
+                  <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
+                </RowBetween>
+                <RowBetween>
+                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
                 </RowBetween>
                 <RowBetween>
                   <TYPE.white fontSize={14}>
-                    Some information about what this page does
-                    <a href="https://docs.revo.market/">{t('here')}</a>
+                    {/* TODO: add more specific link once we have one */}
+                    <ExternalLink
+                      style={{ color: 'white', textDecoration: 'underline' }}
+                      target="_blank"
+                      href="https://docs.revo.market/"
+                    >
+                      <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
+                    </ExternalLink>
                   </TYPE.white>
                 </RowBetween>
               </AutoColumn>
