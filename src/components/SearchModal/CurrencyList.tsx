@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 
 import { useAllInactiveTokens, useIsUserAddedToken } from '../../hooks/Tokens'
-import { FarmBotSummary, useFarmBotRegistry } from '../../pages/Compound/useCompoundRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from '../../pages/Compound/useFarmBotRegistry'
 import { useCombinedActiveList, WrappedTokenInfo } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'

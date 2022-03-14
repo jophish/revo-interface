@@ -8,7 +8,7 @@ import { CompoundCard } from '../../components/compound/CompoundCard'
 import { Break, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
-import { useFarmBotRegistry } from './useCompoundRegistry'
+import { useFarmBotRegistry } from './useFarmBotRegistry'
 
 const PageWrapper = styled.div`
   width: 100%;

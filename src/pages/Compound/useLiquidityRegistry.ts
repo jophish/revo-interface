@@ -7,7 +7,7 @@ import { AbiItem } from 'web3-utils'
 import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import { useFarmRegistry } from '../Earn/useFarmRegistry'
-import { FarmBotSummaryBase } from './useCompoundRegistry'
+import { FarmBotSummaryBase } from './useFarmBotRegistry'
 
 export type LiquiditySummary = {
   token0: Token

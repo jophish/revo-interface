@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { Percent } from '@ubeswap/sdk'
-import { FarmBotSummary } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { toBN, toWei } from 'web3-utils'
 
 const pairDataGql = gql`
