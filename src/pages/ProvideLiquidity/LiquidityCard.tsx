@@ -1,5 +1,4 @@
 import { PoolCard } from 'components/earn/PoolCard'
-import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { LiquiditySummary } from 'pages/Compound/useLiquidityRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
@@ -7,6 +6,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { TYPE } from 'theme'
+import { fromWei, toBN } from 'web3-utils'
 
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
@@ -30,17 +30,11 @@ export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBal
 
   const PoolDetails = (
     <RowBetween padding="8px 0">
-      <TYPE.black fontWeight={500}>
-        <span>Your stake</span>
-      </TYPE.black>
-
+      <TYPE.black fontWeight={500}>{t('YourTotalPoolTokens')}</TYPE.black>
       <RowFixed>
-        <>
-          <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-            ${userBalance}
-          </TYPE.black>
-          <QuestionHelper text={`Some explanation of this value`} />
-        </>
+        <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
+          {Number(fromWei(toBN(userBalance))).toPrecision(4)}
+        </TYPE.black>
       </RowFixed>
     </RowBetween>
   )
