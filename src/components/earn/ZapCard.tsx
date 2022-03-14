@@ -4,7 +4,7 @@ import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
 import { useToken } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
-import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { MaxButton } from 'pages/Pool/styleds'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
@@ -84,14 +84,14 @@ const ZapDetailsContainer = styled.div<{ $expanded: boolean }>`
 `
 
 interface Props {
-  compoundBotSummary: CompoundBotSummary
+  farmBotSummary: FarmBotSummary
 }
 
 type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
 
 const zapOutPercentages = [25, 50, 75, 100]
 
-export const ZapCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
+export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
 
@@ -99,18 +99,18 @@ export const ZapCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : {}
   const isPriceImpactTooHigh = !!priceImpactWithoutFee?.greaterThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
 
-  const token0 = useToken(compoundBotSummary.token0Address) || undefined
-  const token1 = useToken(compoundBotSummary.token1Address) || undefined
-  const farmbotToken = useToken(compoundBotSummary.address) || undefined
+  const token0 = useToken(farmBotSummary.token0Address) || undefined
+  const token1 = useToken(farmBotSummary.token1Address) || undefined
+  const farmbotToken = useToken(farmBotSummary.address) || undefined
 
   const [allowedSlippage] = useUserSlippageTolerance()
 
-  const compoundedAPY = useCalcAPY(compoundBotSummary)
+  const compoundedAPY = useCalcAPY(farmBotSummary)
 
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
 
   // const { data, loading, error } = useQuery(pairDataGql, {
-  //   variables: { id: compoundBotSummary.stakingTokenAddress.toLowerCase() },
+  //   variables: { id: farmBotSummary.stakingTokenAddress.toLowerCase() },
   // })
 
   const [zapType, setZapType] = useState<ZapType | null>(null)
@@ -134,18 +134,18 @@ export const ZapCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } =
     useZapFunctions(onZapComplete)
 
-  const isStaking = compoundBotSummary.amountUserLP > 0
+  const isStaking = farmBotSummary.amountUserLP > 0
 
-  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(compoundBotSummary.amountUserLP ?? 0, {
-    token0Address: compoundBotSummary.token0Address,
-    token1Address: compoundBotSummary.token1Address,
-    lpAddress: compoundBotSummary.stakingTokenAddress,
+  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(farmBotSummary.amountUserLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
-  const { userValueCUSD: tvlCUSD } = useLPValue(compoundBotSummary.totalLP ?? 0, {
-    token0Address: compoundBotSummary.token0Address,
-    token1Address: compoundBotSummary.token1Address,
-    lpAddress: compoundBotSummary.stakingTokenAddress,
+  const { userValueCUSD: tvlCUSD } = useLPValue(farmBotSummary.totalLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
   const handleToggleExpanded = () => {
@@ -192,12 +192,12 @@ export const ZapCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const zapOutPercentChangeCallback = useCallback(
     (value: number) => {
-      const rawAmountZapOut = toBN(compoundBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
+      const rawAmountZapOut = toBN(farmBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
       const adjustedAmountZapOut = new Fraction(toBN(rawAmountZapOut), toBN(10).pow(toBN(18))).toSignificant(100)
       setZapInAmount(rawAmountZapOut)
       onUserInput(Field.INPUT, adjustedAmountZapOut)
     },
-    [handleUserInput, compoundBotSummary.amountUserFP, onUserInput]
+    [handleUserInput, farmBotSummary.amountUserFP, onUserInput]
   )
 
   const [zapOutPercentage, setZapOutPercentage] = useDebouncedChangeHandler<number>(50, zapOutPercentChangeCallback)

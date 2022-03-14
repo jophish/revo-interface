@@ -2,7 +2,7 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { CompoundBotSummary, useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useCompoundRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -44,10 +44,10 @@ const Header: React.FC = ({ children }) => {
 export default function Earn() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedFarms, setStakedFarms] = useState<CompoundBotSummary[]>([])
-  const [unstakedFarms, setUnstakedFarms] = useState<CompoundBotSummary[]>([])
+  const [stakedFarms, setStakedFarms] = useState<FarmBotSummary[]>([])
+  const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
 
-  const farmbotFarmSummaries = useCompoundRegistry()
+  const farmbotFarmSummaries = useFarmBotRegistry()
 
   useEffect(() => {
     setStakedFarms(
@@ -75,7 +75,7 @@ export default function Earn() {
           {stakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <ZapCard compoundBotSummary={farmSummary} />
+                <ZapCard farmBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
@@ -104,7 +104,7 @@ export default function Earn() {
           {unstakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <ZapCard compoundBotSummary={farmSummary} />
+                <ZapCard farmBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}

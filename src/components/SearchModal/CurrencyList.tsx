@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 
 import { useAllInactiveTokens, useIsUserAddedToken } from '../../hooks/Tokens'
-import { CompoundBotSummary, useCompoundRegistry } from '../../pages/Compound/useCompoundRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from '../../pages/Compound/useCompoundRegistry'
 import { useCombinedActiveList, WrappedTokenInfo } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'
@@ -98,7 +98,7 @@ function CurrencyRow({
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
-  botSummaries: CompoundBotSummary[]
+  botSummaries: FarmBotSummary[]
 }) {
   const { address: account } = useContractKit()
 
@@ -181,7 +181,7 @@ export default function CurrencyList({
     [address: string]: Token
   } = useAllInactiveTokens()
 
-  const botSummaries = useCompoundRegistry()
+  const botSummaries = useFarmBotRegistry()
 
   const Row = useCallback(
     ({ data, index, style }) => {

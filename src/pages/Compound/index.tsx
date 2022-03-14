@@ -8,7 +8,7 @@ import { CompoundCard } from '../../components/compound/CompoundCard'
 import { Break, CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
-import { useCompoundRegistry } from './useCompoundRegistry'
+import { useFarmBotRegistry } from './useCompoundRegistry'
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -39,7 +39,7 @@ const Header: React.FC = ({ children }) => {
 }
 
 export default function Compound() {
-  const botSummaries = useCompoundRegistry()
+  const botSummaries = useFarmBotRegistry()
 
   const { t } = useTranslation()
 
@@ -77,7 +77,7 @@ export default function Compound() {
               {botSummariesStakedIn.map((botSummary) => (
                 <CompoundWrapper key={botSummary.address}>
                   <ErrorBoundary>
-                    <CompoundCard compoundBotSummary={botSummary} />
+                    <CompoundCard farmBotSummary={botSummary} />
                   </ErrorBoundary>
                   <Break />
                 </CompoundWrapper>
@@ -90,7 +90,7 @@ export default function Compound() {
               {otherBotSummaries.map((botSummary) => (
                 <CompoundWrapper key={botSummary.address}>
                   <ErrorBoundary>
-                    <CompoundCard compoundBotSummary={botSummary} />
+                    <CompoundCard farmBotSummary={botSummary} />
                   </ErrorBoundary>
                   <Break />
                 </CompoundWrapper>

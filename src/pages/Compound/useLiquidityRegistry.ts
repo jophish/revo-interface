@@ -7,12 +7,12 @@ import { AbiItem } from 'web3-utils'
 import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import { useFarmRegistry } from '../Earn/useFarmRegistry'
-import { CompoundBotSummaryBase } from './useCompoundRegistry'
+import { FarmBotSummaryBase } from './useCompoundRegistry'
 
 export type LiquiditySummary = {
   token0: Token
   token1: Token
-  compoundBotSummary: CompoundBotSummaryBase
+  farmBotSummary: FarmBotSummaryBase
   userBalance: number
 }
 
@@ -58,7 +58,7 @@ export const useLiquidityRegistry = () => {
       liquidityPoolSummaries.push({
         token0: new Token(ChainId.MAINNET, token0Address, 18, token0Symbol),
         token1: new Token(ChainId.MAINNET, token1Address, 18, token1Symbol),
-        compoundBotSummary: {
+        farmBotSummary: {
           token0Address: stakedToken0,
           token0Name: stakedToken0Name,
           token1Address: stakedToken1,

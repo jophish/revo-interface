@@ -3,7 +3,7 @@ import { Percent } from '@ubeswap/sdk'
 import BN from 'bn.js'
 import { useDoTransaction } from 'components/swap/routing'
 import { useToken } from 'hooks/Tokens'
-import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary } from 'pages/Compound/useCompoundRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { Dots } from 'pages/Pool/styleds'
 import React, { useState } from 'react'
@@ -30,7 +30,7 @@ import { ConfirmAddCompoundModalBottom } from './ConfirmAddCompoundModalBottom'
 import { ConfirmWithdrawCompoundModalBottom } from './ConfirmWithdrawCompoundModalBottom'
 
 interface Props {
-  compoundBotSummary: CompoundBotSummary
+  farmBotSummary: FarmBotSummary
 }
 
 // formula is 1 + ((nom/compoundsPerYear)^compoundsPerYear) - 1
@@ -110,7 +110,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
       0px 24px 32px rgba(0, 0, 0, 0.01);`}
 `
 
-export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
+export const CompoundCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const { t } = useTranslation()
   const { address: account } = useContractKit()
   const [showDeposit, setShowDeposit] = useState<boolean>(false)
@@ -127,23 +127,23 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   const theme = useTheme()
   const farmSummary = {
-    token0Address: compoundBotSummary.token0Address,
-    token1Address: compoundBotSummary.token1Address,
-    lpAddress: compoundBotSummary.stakingTokenAddress,
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   }
 
-  const { userValueCUSD } = useLPValue(compoundBotSummary.amountUserLP, farmSummary)
+  const { userValueCUSD } = useLPValue(farmBotSummary.amountUserLP, farmSummary)
 
-  const isStaking = compoundBotSummary.amountUserLP > 0
+  const isStaking = farmBotSummary.amountUserLP > 0
 
-  const farmBotToken = useToken(compoundBotSummary.address) || undefined
-  const stakingToken = useToken(compoundBotSummary.stakingTokenAddress) || undefined
+  const farmBotToken = useToken(farmBotSummary.address) || undefined
+  const stakingToken = useToken(farmBotSummary.stakingTokenAddress) || undefined
   const userBalance = useCurrencyBalance(account ?? undefined, stakingToken ?? undefined)
   const userLPOwned = userBalance?.numerator / userBalance?.denominator
 
-  const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
-  const token0 = useToken(compoundBotSummary.token0Address) || undefined
-  const token1 = useToken(compoundBotSummary.token1Address) || undefined
+  const rewardsToken = useToken(farmBotSummary.rewardsAddress) || undefined
+  const token0 = useToken(farmBotSummary.token0Address) || undefined
+  const token1 = useToken(farmBotSummary.token1Address) || undefined
 
   const [, stakingTokenPair] = usePair(token0, token1)
 
@@ -160,14 +160,14 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
   console.log(token0Price, amountStakedToken0, token1Price, amountStakedToken1)
   const totalStakedCUSD = token0Price * amountStakedToken0 + token1Price * amountStakedToken1
 
-  const CUSDPerStakedLP = totalStakedCUSD / fromWei(compoundBotSummary.totalLPSupply)
+  const CUSDPerStakedLP = totalStakedCUSD / fromWei(farmBotSummary.totalLPSupply)
 
-  const stakedCUSDInFarm = fromWei(compoundBotSummary.totalLPInFarm) * CUSDPerStakedLP
+  const stakedCUSDInFarm = fromWei(farmBotSummary.totalLPInFarm) * CUSDPerStakedLP
 
-  const farmbotStakedCUSDValue = fromWei(compoundBotSummary.totalLP) * CUSDPerStakedLP
-  const userStakedCUSDValue = fromWei(compoundBotSummary.amountUserLP) * CUSDPerStakedLP
+  const farmbotStakedCUSDValue = fromWei(farmBotSummary.totalLP) * CUSDPerStakedLP
+  const userStakedCUSDValue = fromWei(farmBotSummary.amountUserLP) * CUSDPerStakedLP
 
-  const yearlyRewards = fromWei(compoundBotSummary.rewardsRate) * 60 * 60 * 24 * 365
+  const yearlyRewards = fromWei(farmBotSummary.rewardsRate) * 60 * 60 * 24 * 365
   const yearlyRewardsValue = yearlyRewards * rewardsTokenPrice
 
   let rewardApr, compoundedAPY
@@ -182,23 +182,21 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   const displayedAPY = compoundedAPY ? `${Number(compoundedAPY).toFixed(2)}%` : `-`
 
-  const [approvalDeposit, approveDepositCallback] = useApproveCallback(userBalance, compoundBotSummary.address)
+  const [approvalDeposit, approveDepositCallback] = useApproveCallback(userBalance, farmBotSummary.address)
 
   const doTransaction = useDoTransaction()
-  const farmBot = getContract(compoundBotSummary.address, farmBotAbi.abi, library, account)
+  const farmBot = getContract(farmBotSummary.address, farmBotAbi.abi, library, account)
 
   console.log(approvalDeposit, ApprovalState.APPROVED)
   console.log(approvalDeposit === ApprovalState.APPROVED)
 
-  const FPMinted = compoundBotSummary.exchangeRate ? depositValue / compoundBotSummary.exchangeRate : depositValue
-  const LPReceived = withdrawValue ? Number(fromWei(withdrawValue)) * compoundBotSummary.exchangeRate : 0
+  const FPMinted = farmBotSummary.exchangeRate ? depositValue / farmBotSummary.exchangeRate : depositValue
+  const LPReceived = withdrawValue ? Number(fromWei(withdrawValue)) * farmBotSummary.exchangeRate : 0
 
   const pendingText = `Supplying ${depositValue} LP in exchange for ${FPMinted} FP`
   const pendingWithdrawText = `Depositing ${withdrawValue} FP in exchange for ${LPReceived} LP`
-  const exchangeRateString = compoundBotSummary.exchangeRate
-    ? ' LP (' +
-      Number(compoundBotSummary.exchangeRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) +
-      ' FP/LP)'
+  const exchangeRateString = farmBotSummary.exchangeRate
+    ? ' LP (' + Number(farmBotSummary.exchangeRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' FP/LP)'
     : ''
 
   async function onAdd() {
@@ -213,7 +211,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
 
   async function onWithdraw() {
     try {
-      if (new BN(withdrawValue).gt(new BN(compoundBotSummary.amountUserFP).mul(new BN(99)).div(new BN(100)))) {
+      if (new BN(withdrawValue).gt(new BN(farmBotSummary.amountUserFP).mul(new BN(99)).div(new BN(100)))) {
         const response = await doTransaction(farmBot, 'withdrawAll', {
           args: [],
         })
@@ -312,7 +310,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         {/* <DoubleCurrencyLogo currency0={token0} currency1={token1} size={24} /> */}
         <PoolInfo style={{ marginLeft: '8px' }}>
           <TYPE.white fontWeight={800} fontSize={[22, 24]}>
-            {compoundBotSummary.token0Name}-{compoundBotSummary.token1Name}
+            {farmBotSummary.token0Name}-{farmBotSummary.token1Name}
           </TYPE.white>
         </PoolInfo>
       </TopSection>
@@ -321,7 +319,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         {/* <PoolStatRow
           statName={'Total supply (FP)'}
           statValue={
-            Number(fromWei(compoundBotSummary.totalFP)).toLocaleString(undefined, {
+            Number(fromWei(farmBotSummary.totalFP)).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             }) + ' FP'
           }
@@ -329,7 +327,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         <PoolStatRow
           statName={'Total supply (LP)'}
           statValue={
-            Number(fromWei(compoundBotSummary.totalLP)).toLocaleString(undefined, {
+            Number(fromWei(farmBotSummary.totalLP)).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             }) + exchangeRateString
           }
@@ -339,7 +337,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
           statName={'TVL'}
           helperText={'Total value locked in underlying yield farm'}
           statValue={
-            Number(fromWei(compoundBotSummary.totalLPInFarm)).toLocaleString(undefined, {
+            Number(fromWei(farmBotSummary.totalLPInFarm)).toLocaleString(undefined, {
               maximumFractionDigits: 3,
             }) +
             ' LP ($' +
@@ -353,7 +351,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
         <PoolStatRow
           statName={'TVL (in autocompounder)'}
           statValue={
-            Number(fromWei(compoundBotSummary.totalLP)).toLocaleString(undefined, {
+            Number(fromWei(farmBotSummary.totalLP)).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             }) +
             ' LP ($' +
@@ -479,7 +477,7 @@ export const CompoundCard: React.FC<Props> = ({ compoundBotSummary }: Props) => 
                   className="depositLiquidity"
                   value={withdrawValue ? fromWei(withdrawValue) : undefined}
                   onMax={() => {
-                    setWithdrawValue(new BN(compoundBotSummary.amountUserFP))
+                    setWithdrawValue(new BN(farmBotSummary.amountUserFP))
                   }}
                   onUserInput={(val) => {
                     setWithdrawValue(toWei(val))
