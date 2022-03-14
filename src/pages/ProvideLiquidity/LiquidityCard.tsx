@@ -1,8 +1,7 @@
-import { Token } from '@ubeswap/sdk'
 import { PoolCard } from 'components/earn/PoolCard'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { FarmBotSummaryBase } from 'pages/Compound/useFarmBotRegistry'
+import { LiquiditySummary } from 'pages/Compound/useLiquidityRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,14 +17,7 @@ const Container = styled.div<{ $expanded: boolean }>`
   transition: all 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
 `
 
-interface Props {
-  token0: Token
-  token1: Token
-  farmBotSummary: FarmBotSummaryBase
-  userBalance: number
-}
-
-export default function LiquidityCard({ token0, token1, farmBotSummary, userBalance }: Props) {
+export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBalance }: LiquiditySummary) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -59,9 +51,9 @@ export default function LiquidityCard({ token0, token1, farmBotSummary, userBala
 
   return (
     <PoolCard
-      token0={token0}
-      token1={token1}
-      poolTitle={`${token0.symbol} / ${farmBotSummary.token0Name}-${farmBotSummary.token1Name} ${token1.symbol} LP`}
+      token0={token}
+      token1={rfpToken}
+      poolTitle={`${token.symbol} / ${farmBotSummary.token0Name}-${farmBotSummary.token1Name} ${rfpToken.symbol} LP`}
       buttonLabel={t('addLiquidity')}
       buttonOnPress={handleAddLiquidity}
       buttonActive={expanded}
@@ -71,16 +63,16 @@ export default function LiquidityCard({ token0, token1, farmBotSummary, userBala
     >
       <Container $expanded={expanded}>
         <AddLiquidityConfirm
-          token0={token0}
-          token1={token1}
+          token0={token}
+          token1={rfpToken}
           isOpen={showConfirm}
           onDismiss={() => {
             setShowConfirm(false)
           }}
         />
         <AddLiquidityForm
-          token0={token0}
-          token1={token1}
+          token0={token}
+          token1={rfpToken}
           onConfirmAddLiquidity={() => {
             setShowConfirm(true)
           }}
