@@ -64,7 +64,7 @@ export default function LiquidityCard({
     <PoolCard
       token0={token}
       token1={rfpToken}
-      poolTitle={`${token.symbol} / ${farmBotSummary.token0Name}-${farmBotSummary.token1Name} ${rfpToken.symbol} LP`}
+      poolTitle={t('liquidityCardTitle', { token0: farmBotSummary.token0Name, token1: farmBotSummary.token1Name })}
       buttonLabel={t('addLiquidity')}
       buttonOnPress={handleAddLiquidity}
       buttonActive={expanded}
