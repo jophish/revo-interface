@@ -1,6 +1,5 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
-import { ChainId, Token } from '@ubeswap/sdk'
 import { useCallback, useEffect, useState } from 'react'
 import { AbiItem } from 'web3-utils'
 
@@ -10,8 +9,8 @@ import { useFarmRegistry } from '../Earn/useFarmRegistry'
 import { farmBotAddresses, FarmBotSummaryBase } from './useFarmBotRegistry'
 
 export type LiquiditySummary = {
-  token: Token
-  rfpToken: Token
+  tokenAddress: string
+  rfpTokenAddress: string
   farmBotSummary: FarmBotSummaryBase
   userBalance: number
 }
@@ -38,12 +37,6 @@ export const useLiquidityRegistry = () => {
       const rfpTokenAddress = [token0Address, token1Address].find((address) => farmBotAddresses.includes(address))
       const tokenAddress = token0Address === rfpTokenAddress ? token1Address : token0Address
 
-      const tokenContract = new kit.web3.eth.Contract(ERC20_ABI as AbiItem[], tokenAddress)
-      const tokenSymbol = await tokenContract.methods.symbol().call()
-
-      const rfpTokenContract = new kit.web3.eth.Contract(ERC20_ABI as AbiItem[], rfpTokenAddress)
-      const rfpTokenSymbol = await rfpTokenContract.methods.symbol().call()
-
       const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], rfpTokenAddress)
       const totalFP = await farmBot.methods.totalSupply().call()
       const totalLP = await farmBot.methods.getLpAmount(totalFP).call()
@@ -59,8 +52,8 @@ export const useLiquidityRegistry = () => {
       const stakedToken1Name = await stakedToken1Contract.methods.symbol().call()
 
       liquidityPoolSummaries.push({
-        token: new Token(ChainId.MAINNET, tokenAddress, 18, tokenSymbol),
-        rfpToken: new Token(ChainId.MAINNET, rfpTokenAddress, 18, rfpTokenSymbol),
+        tokenAddress,
+        rfpTokenAddress,
         farmBotSummary: {
           token0Address: stakedToken0,
           token0Name: stakedToken0Name,

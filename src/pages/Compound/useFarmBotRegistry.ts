@@ -25,8 +25,8 @@ export interface FarmBotSummary extends FarmBotSummaryBase {
   exchangeRate: number
   // userLPValue: number
   stakingRewardsAddress: string
-  rewardsUSDPerYear: string
-  tvlUSD: string
+  rewardsUSDPerYear?: string
+  tvlUSD?: string
   totalLPInFarm: number
   totalLPSupply: number
 }
@@ -66,8 +66,8 @@ export const useFarmBotRegistry = () => {
       const stakingRewardsAddress = await farmBot.methods.stakingRewards().call()
       const farmSummary = farmSummaries.find((farm) => farm.stakingAddress == stakingRewardsAddress)
 
-      const rewardsUSDPerYear = farmSummary?.rewardsUSDPerYear || ''
-      const tvlUSD = farmSummary?.tvlUSD || ''
+      const rewardsUSDPerYear = farmSummary?.rewardsUSDPerYear
+      const tvlUSD = farmSummary?.tvlUSD
 
       const stakingRewardsContract = new kit.web3.eth.Contract(
         MOOLA_STAKING_REWARDS_ABI as AbiItem[],

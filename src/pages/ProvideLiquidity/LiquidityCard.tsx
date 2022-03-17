@@ -1,4 +1,5 @@
 import { RowBetween, RowFixed } from 'components/Row'
+import { useToken } from 'hooks/Tokens'
 import { LiquiditySummary } from 'pages/Compound/useLiquidityRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { PoolCard } from 'pages/Zap/PoolCard'
@@ -17,7 +18,12 @@ const Container = styled.div<{ $expanded: boolean }>`
   transition: all 0.2s ${({ $expanded }) => ($expanded ? 'ease-in' : 'ease-out')};
 `
 
-export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBalance }: LiquiditySummary) {
+export default function LiquidityCard({
+  tokenAddress,
+  rfpTokenAddress,
+  farmBotSummary,
+  userBalance,
+}: LiquiditySummary) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -27,6 +33,9 @@ export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBal
     token1Address: farmBotSummary.token1Address,
     lpAddress: farmBotSummary.stakingTokenAddress,
   })
+
+  const token = useToken(tokenAddress)
+  const rfpToken = useToken(rfpTokenAddress)
 
   const PoolDetails = (
     <>
@@ -45,6 +54,10 @@ export default function LiquidityCard({ token, rfpToken, farmBotSummary, userBal
 
   const handleAddLiquidity = () => {
     setExpanded((prev) => !prev)
+  }
+
+  if (!token || !rfpToken) {
+    return null
   }
 
   return (

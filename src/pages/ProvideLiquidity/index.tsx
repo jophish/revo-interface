@@ -73,7 +73,7 @@ export default function ProvideLiquidity() {
         <>
           <Header>{t('yourPools')}</Header>
           {stakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.token}${pool.rfpToken}`}>
+            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
               <ErrorBoundary>
                 <LiquidityCard {...pool} />
               </ErrorBoundary>
@@ -111,7 +111,7 @@ export default function ProvideLiquidity() {
           </VoteCard>
           <Header>{t('availablePools')}</Header>
           {unstakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.token}${pool.rfpToken}`}>
+            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
               <ErrorBoundary>
                 <LiquidityCard {...pool} />
               </ErrorBoundary>
