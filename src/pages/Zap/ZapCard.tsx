@@ -1,67 +1,36 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
 import { Fraction, Token } from '@ubeswap/sdk'
+import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from 'components/Button'
+import { LightCard } from 'components/Card'
+import { AutoColumn, ColumnCenter } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import CurrencyLogo from 'components/CurrencyLogo'
 import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
-import { usePair } from 'data/Reserves'
+import Row, { AutoRow, RowBetween, RowFixed } from 'components/Row'
+import Slider from 'components/Slider'
 import { useToken } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
-import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { MaxButton } from 'pages/Pool/styleds'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
 import { Text } from 'rebass'
 import { Field } from 'state/swap/actions'
 import { useDerivedSwapInfo, useSwapActionHandlers } from 'state/swap/hooks'
-import { useIsAprMode, useUserSlippageTolerance } from 'state/user/hooks'
+import { useUserSlippageTolerance } from 'state/user/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { useCalcAPY } from 'utils/calcAPY'
 import { computeTradePriceBreakdown } from 'utils/prices'
-import { useCUSDPrices } from 'utils/useCUSDPrice'
 import { toBN } from 'web3-utils'
 
 import { BLOCKED_PRICE_IMPACT_NON_EXPERT, ONE_BIPS } from '../../constants/'
-import { borderRadius, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
-import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../Button'
-import { LightCard } from '../Card'
-import { AutoColumn, ColumnCenter } from '../Column'
-import CurrencyLogo from '../CurrencyLogo'
-import DoubleCurrencyLogo from '../DoubleLogo'
-import Row, { AutoRow, RowBetween, RowFixed } from '../Row'
-import Slider from '../Slider'
+import { PoolCard } from './PoolCard'
 import { useZapFunctions } from './useZapFunctions'
 import { ZapDetails } from './ZapDetails'
-
-const Wrapper = styled(AutoColumn)<{ showBackground: boolean }>`
-  border-radius: ${borderRadius}px;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  padding: 16px;
-  background: ${({ theme }) => theme.bg1};
-  min-height: 110px;
-  ${({ showBackground }) =>
-    showBackground &&
-    `  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);`}
-`
-
-const TopSection = styled.div`
-  display: grid;
-  grid-template-columns: 48px 1fr 120px;
-  grid-gap: 0px;
-  align-items: center;
-  padding-bottom: 1rem;
-  z-index: 1;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    grid-template-columns: 48px 1fr 96px;
-    padding-bottom: 0;
-  `};
-`
 
 const RowColumn = styled(RowBetween)`
   flex-direction: row;
@@ -115,40 +84,33 @@ const ZapDetailsContainer = styled.div<{ $expanded: boolean }>`
 `
 
 interface Props {
-  compoundBotSummary: CompoundBotSummary
+  farmBotSummary: FarmBotSummary
 }
 
 type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
 
 const zapOutPercentages = [25, 50, 75, 100]
 
-export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
+export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
-  const userAprMode = useIsAprMode()
-  const { address } = useContractKit()
-  const dispatch = useDispatch()
 
   const { v2Trade: trade, inputError: swapInputError } = useDerivedSwapInfo()
   const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : {}
   const isPriceImpactTooHigh = !!priceImpactWithoutFee?.greaterThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
 
-  const token0 = useToken(compoundBotSummary.token0Address) || undefined
-  const token1 = useToken(compoundBotSummary.token1Address) || undefined
-  const farmbotToken = useToken(compoundBotSummary.address) || undefined
+  const token0 = useToken(farmBotSummary.token0Address) || undefined
+  const token1 = useToken(farmBotSummary.token1Address) || undefined
+  const farmbotToken = useToken(farmBotSummary.address) || undefined
 
-  const rewardsToken = useToken(compoundBotSummary.rewardsAddress) || undefined
-  const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
-  const cusdPrices = useCUSDPrices(tokens)
-  const stakingTokenPair = usePair(token0, token1)?.[1]
   const [allowedSlippage] = useUserSlippageTolerance()
 
-  const compoundedAPY = useCalcAPY(compoundBotSummary)
+  const compoundedAPY = useCalcAPY(farmBotSummary)
 
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
 
   // const { data, loading, error } = useQuery(pairDataGql, {
-  //   variables: { id: compoundBotSummary.stakingTokenAddress.toLowerCase() },
+  //   variables: { id: farmBotSummary.stakingTokenAddress.toLowerCase() },
   // })
 
   const [zapType, setZapType] = useState<ZapType | null>(null)
@@ -172,18 +134,18 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
   const { approval, approveCallback, onZap, showApproveFlow, currencies, approvalSubmitted } =
     useZapFunctions(onZapComplete)
 
-  const isStaking = compoundBotSummary.amountUserLP > 0
+  const isStaking = farmBotSummary.amountUserLP > 0
 
-  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(compoundBotSummary.amountUserLP ?? 0, {
-    token0Address: compoundBotSummary.token0Address,
-    token1Address: compoundBotSummary.token1Address,
-    lpAddress: compoundBotSummary.stakingTokenAddress,
+  const { userValueCUSD, userAmountTokenA, userAmountTokenB } = useLPValue(farmBotSummary.amountUserLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
-  const { userValueCUSD: tvlCUSD } = useLPValue(compoundBotSummary.totalLP ?? 0, {
-    token0Address: compoundBotSummary.token0Address,
-    token1Address: compoundBotSummary.token1Address,
-    lpAddress: compoundBotSummary.stakingTokenAddress,
+  const { userValueCUSD: tvlCUSD } = useLPValue(farmBotSummary.totalLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
   const handleToggleExpanded = () => {
@@ -230,97 +192,55 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
 
   const zapOutPercentChangeCallback = useCallback(
     (value: number) => {
-      const rawAmountZapOut = toBN(compoundBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
+      const rawAmountZapOut = toBN(farmBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
       const adjustedAmountZapOut = new Fraction(toBN(rawAmountZapOut), toBN(10).pow(toBN(18))).toSignificant(100)
       setZapInAmount(rawAmountZapOut)
       onUserInput(Field.INPUT, adjustedAmountZapOut)
     },
-    [handleUserInput]
+    [handleUserInput, farmBotSummary.amountUserFP, onUserInput]
   )
 
   const [zapOutPercentage, setZapOutPercentage] = useDebouncedChangeHandler<number>(50, zapOutPercentChangeCallback)
 
-  if (!token0 || !token1) {
-    return (
-      <Wrapper showBackground>
-        <Loader centered size="24px" />
-      </Wrapper>
-    )
-  }
+  const PoolDetails = isStaking ? (
+    <RowBetween padding="8px 0">
+      <TYPE.black fontWeight={500}>
+        <span>Your stake</span>
+      </TYPE.black>
+
+      <RowFixed>
+        {userValueCUSD ? (
+          <>
+            <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
+              ${userValueCUSD.toFixed(2, { groupSeparator: ',' })}
+            </TYPE.black>
+            <QuestionHelper
+              text={`${userAmountTokenA?.toSignificant(6, { groupSeparator: ',' })} ${
+                userAmountTokenA?.token.symbol
+              }, ${userAmountTokenB?.toSignificant(6, { groupSeparator: ',' })} ${userAmountTokenB?.token.symbol}`}
+            />
+          </>
+        ) : (
+          <Loader centered size="24px" />
+        )}
+      </RowFixed>
+    </RowBetween>
+  ) : null
 
   return (
-    <Wrapper showBackground>
-      <TopSection>
-        <DoubleCurrencyLogo currency0={token0} currency1={token1} size={24} />
-        <PoolInfo style={{ marginLeft: '8px' }}>
-          <TYPE.black fontWeight={600} fontSize={[18, 24]}>
-            {token0?.symbol}-{token1?.symbol}
-          </TYPE.black>
-          {compoundedAPY && (
-            <TYPE.darkGray style={{ display: 'flex' }}>
-              <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
-                APY: {compoundedAPY}
-              </TYPE.small>
-              <QuestionHelper text={t('APYInfo')} />
-            </TYPE.darkGray>
-          )}
-        </PoolInfo>
-
-        {address && (
-          <ButtonPrimary onClick={handleToggleExpanded} inverse={!showManageMenu} padding="8px">
-            {isStaking ? t('manage') : t('zapIn')}
-          </ButtonPrimary>
-        )}
-      </TopSection>
-
-      <RowBetween padding="8px 0">
-        <TYPE.black fontWeight={500}>
-          <span>Total Deposited</span>
-        </TYPE.black>
-
-        <RowFixed>
-          {tvlCUSD ? (
-            <>
-              <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-                {Number(tvlCUSD.toFixed(2)).toLocaleString(undefined, {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                })}
-              </TYPE.black>
-              <QuestionHelper text={'Total value deposited in the farm bot by anyone, in US Dollars'} />
-            </>
-          ) : (
-            <Loader centered size="24px" />
-          )}
-        </RowFixed>
-      </RowBetween>
-
-      {isStaking && (
-        <RowBetween padding="8px 0">
-          <TYPE.black fontWeight={500}>
-            <span>Your stake</span>
-          </TYPE.black>
-
-          <RowFixed>
-            {userValueCUSD ? (
-              <>
-                <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-                  ${userValueCUSD.toFixed(2, { groupSeparator: ',' })}
-                </TYPE.black>
-                <QuestionHelper
-                  text={`${userAmountTokenA?.toSignificant(6, { groupSeparator: ',' })} ${
-                    userAmountTokenA?.token.symbol
-                  }, ${userAmountTokenB?.toSignificant(6, { groupSeparator: ',' })} ${userAmountTokenB?.token.symbol}`}
-                />
-              </>
-            ) : (
-              <Loader centered size="24px" />
-            )}
-          </RowFixed>
-        </RowBetween>
-      )}
-
+    <PoolCard
+      token0={token0}
+      token1={token1}
+      poolTitle={`${token0?.symbol}-${token1?.symbol}`}
+      APY={compoundedAPY}
+      APYInfo={t('APYInfo')}
+      buttonLabel={isStaking ? t('manage') : t('zapIn')}
+      buttonOnPress={handleToggleExpanded}
+      buttonActive={showManageMenu || zapType === 'zapIn'}
+      tvlCUSD={tvlCUSD}
+      tvlCUSDInfo={t('farmBotTVLInfo')}
+      PoolDetails={PoolDetails}
+    >
       <ManageMenu $expanded={showManageMenu}>
         <ButtonPrimary onClick={() => handleSetZapType('zapIn')} padding="8px" inverse={zapType !== 'zapIn'}>
           {t('zapIn')}
@@ -376,13 +296,9 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
                     </Row>
                     <Slider value={zapOutPercentage} onChange={setZapOutPercentage} />
                     <RowBetween>
-                      {zapOutPercentages.map((zapOutPercentage) => (
-                        <MaxButton
-                          key={zapOutPercentage}
-                          onClick={() => setZapOutPercentage(zapOutPercentage)}
-                          width="25%"
-                        >
-                          {`${zapOutPercentage}%`}
+                      {zapOutPercentages.map((percentage) => (
+                        <MaxButton key={percentage} onClick={() => setZapOutPercentage(percentage)} width="25%">
+                          {`${percentage}%`}
                         </MaxButton>
                       ))}
                     </RowBetween>
@@ -453,16 +369,8 @@ export const PoolCard: React.FC<Props> = ({ compoundBotSummary }: Props) => {
           </ZapDetailsContainer>
         )}
       </PoolDetailsContainer>
-    </Wrapper>
+    </PoolCard>
   )
 }
 
-const PoolInfo = styled.div`
-  .apr {
-    margin-top: 4px;
-    display: none;
-    ${({ theme }) => theme.mediaWidth.upToSmall`
-  display: block;
-  `}
-  }
-`
+export default ZapCard

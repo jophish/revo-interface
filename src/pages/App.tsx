@@ -9,7 +9,9 @@ import Polling from '../components/Header/Polling'
 import Popups from '../components/Popups'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import { getMobileOperatingSystem, Mobile } from '../utils/mobile'
-import Earn from './Earn'
+import ProvideLiquidity from './ProvideLiquidity'
+import Zap from './Zap'
+import { RedirectPathToZapOnly } from './Zap/redirects'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -99,9 +101,9 @@ export default function App() {
           <Polling />
           <ErrorBoundary fallback={<p>An unexpected error occured on this part of the page. Please reload.</p>}>
             <Switch>
-              <Route path="/">
-                <Earn />
-              </Route>
+              <Route exact strict path="/zap" component={Zap} />
+              <Route exact strict path="/pool" component={ProvideLiquidity} />
+              <Route component={RedirectPathToZapOnly} />
             </Switch>
           </ErrorBoundary>
           <Marginer />

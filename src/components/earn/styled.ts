@@ -17,8 +17,8 @@ export const TextBox = styled.div`
   justify-self: flex-end;
 `
 
-export const DataCard = styled(AutoColumn)<{ disabled?: boolean }>`
-  background-color: #171c60;
+export const DataCard = styled(AutoColumn)<{ disabled?: boolean; color?: string }>`
+  background-color: ${({ color }) => color ?? '#171c60'};
   border-radius: ${borderRadius}px;
   width: 100%;
   position: relative;

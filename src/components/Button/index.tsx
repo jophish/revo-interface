@@ -13,6 +13,7 @@ const Base = styled(RebassButton)<{
   borderRadius?: string
   altDisabledStyle?: boolean
   inverse?: boolean
+  maxHeight?: string
 }>`
   transition: 0.25s ease;
   padding: ${({ padding }) => (padding ? padding : '18px')};
@@ -34,7 +35,7 @@ const Base = styled(RebassButton)<{
   &:disabled {
     cursor: auto;
   }
-
+  max-height: ${({ maxHeight }) => (maxHeight ? maxHeight : '100%')};
   > * {
     user-select: none;
   }
@@ -43,7 +44,6 @@ const Base = styled(RebassButton)<{
 export const ButtonPrimary = styled(Base)`
   background-color: ${({ theme, inverse }) => (inverse ? theme.white : theme.primary1)};
   border-color: ${({ theme }) => theme.primary1};
-  font-weight: bold;
   color: ${({ theme, inverse }) => (inverse ? theme.primary1 : theme.white)};
   &:focus {
     background-color: ${({ theme, inverse }) => (inverse ? theme.white : darken(0.05, theme.primary1))};
@@ -70,7 +70,6 @@ export const ButtonLight = styled(Base)`
   background-color: ${({ theme }) => theme.primary2};
   color: ${({ theme }) => theme.white};
   font-size: 16px;
-  font-weight: 500;
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme, disabled }) => !disabled && darken(0.03, theme.primary2)};
     background-color: ${({ theme, disabled }) => !disabled && darken(0.03, theme.primary2)};
@@ -98,7 +97,6 @@ export const ButtonGray = styled(Base)`
   background-color: ${({ theme }) => theme.bg3};
   color: ${({ theme }) => theme.text2};
   font-size: 16px;
-  font-weight: 500;
   &:focus {
     background-color: ${({ theme, disabled }) => !disabled && darken(0.05, theme.bg4)};
   }
@@ -167,7 +165,6 @@ export const ButtonUBEGradient = styled(ButtonPrimary)`
   color: white;
   padding: 4px 8px;
   height: 36px;
-  font-weight: 500;
   background-color: ${({ theme }) => theme.bg3};
   background: radial-gradient(174.47% 188.91% at 1.84% 0%, #ff007a 0%, #2172e5 100%), #edeef2;
   width: fit-content;

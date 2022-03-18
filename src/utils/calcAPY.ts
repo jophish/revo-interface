@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { Percent } from '@ubeswap/sdk'
-import { CompoundBotSummary } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { toBN, toWei } from 'web3-utils'
 
 const pairDataGql = gql`
@@ -24,12 +24,12 @@ function annualizedPercentageYield(nominal: Percent, compounds: number) {
   return ((divideNominalByNAddOne ** compounds - ONE) * 100).toFixed(0)
 }
 
-export function useCalcAPY(compoundBotSummary: CompoundBotSummary) {
+export function useCalcAPY(farmBotSummary: FarmBotSummary) {
   const { data, loading, error } = useQuery(pairDataGql, {
-    variables: { id: compoundBotSummary?.stakingTokenAddress?.toLowerCase() },
+    variables: { id: farmBotSummary?.stakingTokenAddress?.toLowerCase() },
   })
 
-  if (!compoundBotSummary || !compoundBotSummary.rewardsUSDPerYear || !compoundBotSummary.tvlUSD) {
+  if (!farmBotSummary || !farmBotSummary.rewardsUSDPerYear || !farmBotSummary.tvlUSD) {
     return '-'
   }
 
@@ -42,11 +42,11 @@ export function useCalcAPY(compoundBotSummary: CompoundBotSummary) {
     swapRewardsUSDPerYear = Math.floor(lastDayVolumeUsd * 365 * 0.0025)
   }
 
-  const rewardApr = new Percent(compoundBotSummary.rewardsUSDPerYear, compoundBotSummary.tvlUSD)
-  const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), compoundBotSummary.tvlUSD)
+  const rewardApr = new Percent(farmBotSummary.rewardsUSDPerYear, farmBotSummary.tvlUSD)
+  const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), farmBotSummary.tvlUSD)
   const apr = new Percent(
-    toBN(toWei(swapRewardsUSDPerYear.toString())).add(toBN(compoundBotSummary.rewardsUSDPerYear)).toString(),
-    compoundBotSummary.tvlUSD
+    toBN(toWei(swapRewardsUSDPerYear.toString())).add(toBN(farmBotSummary.rewardsUSDPerYear)).toString(),
+    farmBotSummary.tvlUSD
   )
 
   let compoundedAPY

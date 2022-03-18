@@ -2,13 +2,13 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { CompoundBotSummary, useCompoundRegistry } from 'pages/Compound/useCompoundRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
+import ZapCard from 'pages/Zap/ZapCard'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
-import { PoolCard } from '../../components/earn/PoolCard'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { TYPE } from '../../theme'
@@ -21,12 +21,6 @@ const VoteCard = styled(DataCard)`
 const PageWrapper = styled.div`
   width: 100%;
   max-width: 640px;
-`
-
-const TopSection = styled(AutoColumn)`
-  max-width: 720px;
-  width: 100%;
-  margin-bottom: 24px;
 `
 
 const DataRow = styled(RowBetween)`
@@ -47,13 +41,13 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export default function Earn() {
+export default function Zap() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedFarms, setStakedFarms] = useState<CompoundBotSummary[]>([])
-  const [unstakedFarms, setUnstakedFarms] = useState<CompoundBotSummary[]>([])
+  const [stakedFarms, setStakedFarms] = useState<FarmBotSummary[]>([])
+  const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
 
-  const farmbotFarmSummaries = useCompoundRegistry()
+  const farmbotFarmSummaries = useFarmBotRegistry()
 
   useEffect(() => {
     setStakedFarms(
@@ -68,12 +62,9 @@ export default function Earn() {
     )
   }, [farmbotFarmSummaries])
 
-  console.log(stakedFarms)
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
   }
-
-  // TODO add info for new users
 
   return (
     <PageWrapper>
@@ -84,7 +75,7 @@ export default function Earn() {
           {stakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard compoundBotSummary={farmSummary} />
+                <ZapCard farmBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
@@ -113,7 +104,7 @@ export default function Earn() {
           {unstakedFarms.map((farmSummary) => (
             <PoolWrapper key={farmSummary.address}>
               <ErrorBoundary>
-                <PoolCard compoundBotSummary={farmSummary} />
+                <ZapCard farmBotSummary={farmSummary} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}

@@ -1,7 +1,7 @@
 import { darken } from 'polished'
 import styled from 'styled-components'
 
-export const CurrencySelect = styled.button<{ selected: boolean }>`
+export const CurrencySelect = styled.button<{ selected: boolean; disabled?: boolean }>`
   align-items: center;
   height: 2.2rem;
   font-size: 20px;
@@ -11,13 +11,13 @@ export const CurrencySelect = styled.button<{ selected: boolean }>`
   border-radius: 4px;
   box-shadow: ${({ selected }) => (selected ? 'none' : '0px 6px 10px rgba(0, 0, 0, 0.075)')};
   outline: none;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   user-select: none;
   border: none;
   padding: 0 0.5rem;
 
-  :focus,
-  :hover {
+  :focus:enabled,
+  :hover:enabled {
     background-color: ${({ selected, theme }) => (selected ? theme.bg2 : darken(0.05, theme.primary1))};
   }
 `

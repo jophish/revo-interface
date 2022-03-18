@@ -4,13 +4,13 @@ import { Box } from 'rebass/styled-components'
 import styled from 'styled-components'
 import { borderRadius } from 'theme'
 
-const Card = styled(Box)<{ width?: string; padding?: string; border?: string; borderRadius?: string }>`
+const Card = styled(Box)<{ width?: string; padding?: string; border?: string; borderRadius?: string; margin?: string }>`
   width: ${({ width }) => width ?? '100%'};
   border-radius: ${borderRadius}px;
-  padding: 1.25rem;
-  padding: ${({ padding }) => padding};
+  padding: ${({ padding }) => padding || '1.25rem'};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};
+  margin: ${({ margin }) => margin || '0'};
 `
 export default Card
 

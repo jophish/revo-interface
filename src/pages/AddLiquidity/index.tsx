@@ -337,9 +337,9 @@ export default function AddLiquidity({
               onUserInput={onFieldAInput}
               onMax={() => {
                 if (currencies[Field.CURRENCY_A]?.address === CELO[chainId as unknown as UbeswapChainId].address) {
-                  onFieldAInput(Math.max(Number(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '') - 0.01, 0).toString())
+                  onFieldAInput(Math.max(Number(maxAmounts[Field.CURRENCY_A]?.toExact() ?? 0) - 0.01, 0).toString())
                 } else {
-                  onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                  onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? 0)
                 }
               }}
               onCurrencySelect={handleCurrencyASelect}
