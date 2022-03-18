@@ -233,10 +233,10 @@ export default function Header() {
           <Logo src={Icon} alt="Revo.Finance" />
         </Title>
         <StyledNavLink id="swap-nav-link" to="/zap">
-          {t('header.zap')}
+          {t('headerZap')}
         </StyledNavLink>
         <StyledNavLink id="compound-nav-link" to="/pool">
-          {t('header.pool')}
+          {t('headerPool')}
         </StyledNavLink>
       </HeaderRow>
       <HeaderControls>
