@@ -10,6 +10,7 @@ import { PoolPriceBar } from 'pages/AddLiquidity/PoolPriceBar'
 import { Dots } from 'pages/Pool/styleds'
 import React, { useContext } from 'react'
 import { Plus } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import { Field } from 'state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/mint/hooks'
 import styled, { ThemeContext } from 'styled-components'
@@ -30,6 +31,7 @@ interface Props {
 
 export default function AddLiquidityForm({ token0, token1, onConfirmAddLiquidity }: Props) {
   const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
 
   const { network } = useContractKit()
 
