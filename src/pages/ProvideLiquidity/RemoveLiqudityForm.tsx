@@ -90,14 +90,6 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
     <>
       <div style={{ paddingTop: '12px' }}>
         <AutoColumn gap="md">
-          {/* <BlueCard>
-            <AutoColumn gap="10px">
-              <TYPE.link fontWeight={400} color="#FFF">
-                <b>Tip:</b> Removing pool tokens converts your position back into underlying tokens at the current rate,
-                proportional to your share of the pool. Accrued fees are included in the amounts you receive.
-              </TYPE.link>
-            </AutoColumn>
-          </BlueCard> */}
           <LightCard>
             <AutoColumn gap="20px">
               <RowBetween>
