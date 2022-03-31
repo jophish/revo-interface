@@ -1,12 +1,13 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { Token, TokenAmount } from '@ubeswap/sdk'
-import { ButtonPrimary } from 'components/Button'
+import { ButtonEmpty } from 'components/Button'
 import { AutoColumn } from 'components/Column'
 import DoubleCurrencyLogo from 'components/DoubleLogo'
 import Loader from 'components/Loader'
 import QuestionHelper from 'components/QuestionHelper'
 import Row, { RowBetween, RowFixed } from 'components/Row'
-import React from 'react'
+import React, { useState } from 'react'
+import { ChevronDown, ChevronUp } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -78,7 +79,12 @@ export const PoolCard: React.FC<Props> = ({
 }: Props) => {
   const { t } = useTranslation()
   const { address } = useContractKit()
+  const [showMore, setShowMore] = useState(false)
 
+  const toggleExpanded = () => {
+    setShowMore(!showMore)
+    buttonOnPress()
+  }
   if (!token0 || !token1) {
     return (
       <Wrapper showBackground>
@@ -109,15 +115,26 @@ export const PoolCard: React.FC<Props> = ({
 
         {/* TODO show the connect wallet button */}
         {address && (
-          <ButtonPrimary
+          <ButtonEmpty
             width="auto"
-            onClick={buttonOnPress}
+            onClick={toggleExpanded}
             inverse={!buttonActive}
             padding="8px 20px"
             maxHeight="40px"
           >
-            {buttonLabel}
-          </ButtonPrimary>
+            {/* {buttonLabel} */}
+            {showMore ? (
+              <>
+                {buttonLabel}
+                <ChevronUp size="20" style={{ marginLeft: '10px' }} />
+              </>
+            ) : (
+              <>
+                {buttonLabel}
+                <ChevronDown size="20" style={{ marginLeft: '10px' }} />
+              </>
+            )}
+          </ButtonEmpty>
         )}
       </TopSection>
 

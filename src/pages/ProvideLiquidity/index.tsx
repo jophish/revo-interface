@@ -75,10 +75,12 @@ export default function ProvideLiquidity() {
         <CardSection>
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white fontWeight={600}>Providing liquidity in Revo is still in Beta</TYPE.white>
+              <TYPE.white fontWeight={600}>Providing liquidity on Revo</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white fontSize={14}>Functionality for removing liquidity is coming very soon!</TYPE.white>
+              <TYPE.white fontSize={14}>
+                Add liquidity for our farmbot to support our ecosystem and earn liquidity provider fees
+              </TYPE.white>
             </RowBetween>
           </AutoColumn>
         </CardSection>

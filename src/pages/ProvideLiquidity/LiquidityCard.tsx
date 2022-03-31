@@ -82,68 +82,70 @@ export default function LiquidityCard({
         tvlCUSDInfo={t('farmBotTVLInfo')}
         PoolDetails={PoolDetails}
       >
-        <Container $expanded={expanded}>
-          {userBalance && (
-            <RowBetween marginTop="10px">
-              <ButtonPrimary
-                onClick={() => handleSetActionType('add')}
-                padding="8px"
-                borderRadius="8px"
-                width="48%"
-                inverse={actionType !== 'add'}
-              >
-                {t('addLiquidity')}
-              </ButtonPrimary>
-              <ButtonPrimary
-                onClick={() => handleSetActionType('remove')}
-                padding="8px"
-                borderRadius="8px"
-                width="48%"
-                inverse={actionType !== 'remove'}
-              >
-                {t('removeLiquidity')}
-              </ButtonPrimary>
-            </RowBetween>
-          )}
-          {actionType == 'add' && (
-            <>
-              <AddLiquidityConfirm
-                token0={token}
-                token1={rfpToken}
-                isOpen={showConfirmAdd}
-                onDismiss={() => {
-                  setShowConfirmAdd(false)
-                }}
-              />
-              <AddLiquidityForm
-                token0={token}
-                token1={rfpToken}
-                onConfirmAddLiquidity={() => {
-                  setShowConfirmAdd(true)
-                }}
-              />
-            </>
-          )}
-          {actionType == 'remove' && (
-            <>
-              <RemoveLiquidityConfirm
-                token0={token}
-                token1={rfpToken}
-                isOpen={showConfirmRemove}
-                onDismiss={() => {
-                  setShowConfirmRemove(false)
-                }}
-              />
-              <RemoveLiquidityForm
-                token0={token}
-                token1={rfpToken}
-                onConfirmRemoveLiquidity={() => {
-                  setShowConfirmRemove(true)
-                }}
-              />
-            </>
-          )}
-        </Container>
+        {expanded && (
+          <Container $expanded={expanded}>
+            {userBalance && (
+              <RowBetween marginTop="10px">
+                <ButtonPrimary
+                  onClick={() => handleSetActionType('add')}
+                  padding="8px"
+                  borderRadius="8px"
+                  width="48%"
+                  inverse={actionType !== 'add'}
+                >
+                  {t('addLiquidity')}
+                </ButtonPrimary>
+                <ButtonPrimary
+                  onClick={() => handleSetActionType('remove')}
+                  padding="8px"
+                  borderRadius="8px"
+                  width="48%"
+                  inverse={actionType !== 'remove'}
+                >
+                  {t('removeLiquidity')}
+                </ButtonPrimary>
+              </RowBetween>
+            )}
+            {actionType == 'add' && (
+              <>
+                <AddLiquidityConfirm
+                  token0={token}
+                  token1={rfpToken}
+                  isOpen={showConfirmAdd}
+                  onDismiss={() => {
+                    setShowConfirmAdd(false)
+                  }}
+                />
+                <AddLiquidityForm
+                  token0={token}
+                  token1={rfpToken}
+                  onConfirmAddLiquidity={() => {
+                    setShowConfirmAdd(true)
+                  }}
+                />
+              </>
+            )}
+            {actionType == 'remove' && (
+              <>
+                <RemoveLiquidityConfirm
+                  token0={token}
+                  token1={rfpToken}
+                  isOpen={showConfirmRemove}
+                  onDismiss={() => {
+                    setShowConfirmRemove(false)
+                  }}
+                />
+                <RemoveLiquidityForm
+                  token0={token}
+                  token1={rfpToken}
+                  onConfirmRemoveLiquidity={() => {
+                    setShowConfirmRemove(true)
+                  }}
+                />
+              </>
+            )}
+          </Container>
+        )}
       </PoolCard>
     </>
   )

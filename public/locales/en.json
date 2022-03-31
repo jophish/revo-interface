@@ -237,7 +237,7 @@
   "here": "here",
   "APYInfo": "APY is calculated assuming auto-compounding once per hour",
   "farmBotTVLInfo": "Total value deposited in the farm bot by anyone, in US Dollars",
-  "liquidityCardTitle": "{{token0}}-{{token1}} Zap Pool",
+  "liquidityCardTitle": "{{token0}}-{{token1}}",
   "headerPool": "Pool",
   "headerZap": "Zap"
 }
