@@ -148,10 +148,6 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
     return (
       <>
         <RowBetween>
-          {/* todo: lisa delete this?*/}
-          <Text color={theme.text2} fontWeight={500} fontSize={16}>
-            {'UBE ' + pair?.token0?.symbol + '/' + pair?.token1?.symbol} Burned
-          </Text>
           <RowFixed>
             <DoubleCurrencyLogo currency0={pair?.token0} currency1={pair?.token1} margin={true} />
             <Text fontWeight={500} fontSize={16}>

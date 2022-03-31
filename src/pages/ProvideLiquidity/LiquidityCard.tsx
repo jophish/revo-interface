@@ -31,7 +31,7 @@ export default function LiquidityCard({
   const [expanded, setExpanded] = useState(false)
   const [showConfirmAdd, setShowConfirmAdd] = useState<boolean>(false)
   const [showConfirmRemove, setShowConfirmRemove] = useState<boolean>(false)
-  const [actionType, setActionType] = useState<ACTION_TYPE | null>('add')
+  const [actionType, setActionType] = useState<ACTION_TYPE>('add')
 
   const { userValueCUSD: tvlCUSD } = useLPValue(farmBotSummary.totalLP ?? 0, {
     token0Address: farmBotSummary.token0Address,
@@ -106,42 +106,42 @@ export default function LiquidityCard({
             </RowBetween>
           )}
           {actionType == 'add' && (
-            <AddLiquidityConfirm
-              token0={token}
-              token1={rfpToken}
-              isOpen={showConfirmAdd}
-              onDismiss={() => {
-                setShowConfirmAdd(false)
-              }}
-            />
-          )}
-          {actionType == 'add' && (
-            <AddLiquidityForm
-              token0={token}
-              token1={rfpToken}
-              onConfirmAddLiquidity={() => {
-                setShowConfirmAdd(true)
-              }}
-            />
-          )}
-          {actionType == 'remove' && (
-            <RemoveLiquidityConfirm
-              token0={token}
-              token1={rfpToken}
-              isOpen={showConfirmRemove}
-              onDismiss={() => {
-                setShowConfirmRemove(false)
-              }}
-            />
+            <>
+              <AddLiquidityConfirm
+                token0={token}
+                token1={rfpToken}
+                isOpen={showConfirmAdd}
+                onDismiss={() => {
+                  setShowConfirmAdd(false)
+                }}
+              />
+              <AddLiquidityForm
+                token0={token}
+                token1={rfpToken}
+                onConfirmAddLiquidity={() => {
+                  setShowConfirmAdd(true)
+                }}
+              />
+            </>
           )}
           {actionType == 'remove' && (
-            <RemoveLiquidityForm
-              token0={token}
-              token1={rfpToken}
-              onConfirmRemoveLiquidity={() => {
-                setShowConfirmRemove(true)
-              }}
-            />
+            <>
+              <RemoveLiquidityConfirm
+                token0={token}
+                token1={rfpToken}
+                isOpen={showConfirmRemove}
+                onDismiss={() => {
+                  setShowConfirmRemove(false)
+                }}
+              />
+              <RemoveLiquidityForm
+                token0={token}
+                token1={rfpToken}
+                onConfirmRemoveLiquidity={() => {
+                  setShowConfirmRemove(true)
+                }}
+              />
+            </>
           )}
         </Container>
       </PoolCard>
