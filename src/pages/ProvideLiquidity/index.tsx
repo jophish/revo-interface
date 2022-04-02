@@ -104,7 +104,7 @@ export default function ProvideLiquidity() {
 
       {stakedPools.length > 0 && (
         <>
-          <Header>{t('yourPools')}</Header>
+          <Header>{t('yourFarms')}</Header>
           {stakedPools.map((pool) => (
             <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
               <ErrorBoundary>
@@ -116,7 +116,7 @@ export default function ProvideLiquidity() {
       )}
       {unstakedPools.length > 0 && (
         <>
-          <Header>{t('availablePools')}</Header>
+          <Header>{t('availableFarms')}</Header>
           {unstakedPools.map((pool) => (
             <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
               <ErrorBoundary>
