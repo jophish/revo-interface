@@ -70,8 +70,6 @@ export default function ProvideLiquidity() {
 
   return (
     <PageWrapper>
-      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
-
       <VoteCard>
         <CardNoise />
         <CardSection>
@@ -81,11 +79,9 @@ export default function ProvideLiquidity() {
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
-                Add liquidity for our farmbots to support our ecosystem and earn liquidity provider fees!
+                Revo automatically stakes the liquidity that you provide, so that you can earn auto compounding rewards
+                for your liquidity while also earning the usual liquidity provider rewards from trade fees!
               </TYPE.white>
-            </RowBetween>
-            <RowBetween>
-              <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
@@ -103,6 +99,8 @@ export default function ProvideLiquidity() {
         </CardSection>
         <CardNoise />
       </VoteCard>
+
+      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
 
       {stakedPools.length > 0 && (
         <>
