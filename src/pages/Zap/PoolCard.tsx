@@ -1,6 +1,6 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { Token, TokenAmount } from '@ubeswap/sdk'
-import { ButtonEmpty } from 'components/Button'
+import { ButtonPrimary } from 'components/Button'
 import { AutoColumn } from 'components/Column'
 import DoubleCurrencyLogo from 'components/DoubleLogo'
 import Loader from 'components/Loader'
@@ -102,27 +102,25 @@ export const PoolCard: React.FC<Props> = ({
             <TYPE.black fontWeight={600} fontSize={[18, 24]}>
               {poolTitle}
             </TYPE.black>
-            {APY && (
+            {APY ? (
               <TYPE.darkGray style={{ display: 'flex' }}>
                 <TYPE.small className="apy" fontWeight={400} fontSize={14} paddingTop={'0.2rem'}>
                   APY: {APY}
                 </TYPE.small>
                 <QuestionHelper text={APYInfo} />
               </TYPE.darkGray>
-            )}
+            ) : null}
           </PoolInfo>
         </Row>
 
-        {/* TODO show the connect wallet button */}
         {address && (
-          <ButtonEmpty
+          <ButtonPrimary
             width="auto"
             onClick={toggleExpanded}
             inverse={!buttonActive}
             padding="8px 20px"
             maxHeight="40px"
           >
-            {/* {buttonLabel} */}
             {showMore ? (
               <>
                 {buttonLabel}
@@ -134,7 +132,7 @@ export const PoolCard: React.FC<Props> = ({
                 <ChevronDown size="20" style={{ marginLeft: '10px' }} />
               </>
             )}
-          </ButtonEmpty>
+          </ButtonPrimary>
         )}
       </TopSection>
 
