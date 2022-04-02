@@ -6,16 +6,22 @@ import DoubleCurrencyLogo from 'components/DoubleLogo'
 import Row, { RowFlat } from 'components/Row'
 import { useDoTransaction } from 'components/swap/routing'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
+import { FarmBrokerBot } from 'generated'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { ConfirmAddModalBottom } from 'pages/AddLiquidity/ConfirmAddModalBottom'
 import React, { useCallback, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
 import { Field } from 'state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers } from 'state/mint/hooks'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { TYPE } from 'theme'
-import { calculateSlippageAmount, getRouterContract } from 'utils'
+import { calculateSlippageAmount, getContract } from 'utils'
+
+import brokerBotAbi from '../../constants/abis/FarmBrokerBot.json'
+
+const brokerBotAddress = '0x02763Ce86559Ba8DF9939a1281a988a9d0073C87'
+// TODO need some way to make this an array
+const metaFarmbotAddress = '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95'
 
 interface Props {
   token0: Token
@@ -25,7 +31,6 @@ interface Props {
 }
 
 export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss }: Props) {
-  const { t } = useTranslation()
   // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
@@ -40,7 +45,7 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
   const { currencies, price, noLiquidity, poolTokenPercentage, parsedAmounts, currencyBalances, liquidityMinted } =
     useDerivedMintInfo(token0, token1)
 
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const { onFieldAInput } = useMintActionHandlers(noLiquidity)
   const doTransaction = useDoTransaction()
 
   const chainId = network.chainId
@@ -56,7 +61,7 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
 
   async function onAdd() {
     if (!chainId || !library || !account) return
-    const router = getRouterContract(chainId, library, account)
+    const brokerBot = getContract(brokerBotAddress, brokerBotAbi, library, account) as FarmBrokerBot
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !token0 || !token1 || !deadline) {
@@ -70,15 +75,15 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
 
     setAttemptingTxn(true)
     try {
-      const response = await doTransaction(router, 'addLiquidity', {
+      const response = await doTransaction(brokerBot, 'getUniswapLPAndDeposit', {
         args: [
-          token0.address ?? '',
-          token1.address ?? '',
-          parsedAmountA.raw.toString(),
-          parsedAmountB.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
+          metaFarmbotAddress,
+          {
+            amount0Desired: parsedAmountA.raw.toString(),
+            amount1Desired: parsedAmountB.raw.toString(),
+            amount0Min: amountsMin[Field.CURRENCY_A].toString(),
+            amount1Min: amountsMin[Field.CURRENCY_B].toString(),
+          },
           deadline.toHexString(),
         ],
         summary:

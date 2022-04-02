@@ -88,7 +88,8 @@ export const useDoTransaction = (): DoTransactionFn => {
       }
       const contract = contractDisconnected.connect(await getConnectedSigner())
       const call = { contract, methodName, args: args.args, value: args.overrides?.value }
-      const gasEstimate = await estimateGas(call)
+      // const gasEstimate = await estimateGas(call)
+      const gasEstimate = BigNumber.from(1e7)
 
       try {
         const response: ContractTransaction = await contract[methodName](...args.args, {
