@@ -239,5 +239,6 @@
   "farmBotTVLInfo": "Total value deposited in the farm bot by anyone, in US Dollars",
   "liquidityCardTitle": "{{token0}}-{{token1}}",
   "headerPool": "Pool",
-  "headerZap": "Zap"
+  "headerZap": "Zap",
+  "yourStake": "Your stake"
 }

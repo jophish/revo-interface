@@ -8,7 +8,6 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { TYPE } from 'theme'
-import { fromWei, toBN } from 'web3-utils'
 
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
@@ -41,17 +40,23 @@ export default function LiquidityCard({
     lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
+  const { userValueCUSD } = useLPValue(userBalance, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
+  })
+
   const token = useToken(tokenAddress)
   const rfpToken = useToken(rfpTokenAddress)
 
   const PoolDetails = (
     <>
-      {userBalance ? (
+      {userValueCUSD ? (
         <RowBetween padding="8px 0">
-          <TYPE.black fontWeight={500}>{t('YourTotalPoolTokens')}</TYPE.black>
+          <TYPE.black fontWeight={500}>{t('yourStake')}</TYPE.black>
           <RowFixed>
             <TYPE.black style={{ textAlign: 'right' }} fontWeight={500}>
-              {Number(fromWei(toBN(userBalance))).toPrecision(4)}
+              {`$${userValueCUSD.toFixed(2, { groupSeparator: ',' })}`}
             </TYPE.black>
           </RowFixed>
         </RowBetween>

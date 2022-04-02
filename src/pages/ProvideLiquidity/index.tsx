@@ -2,7 +2,6 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import useTheme from 'hooks/useTheme'
 import { LiquiditySummary, useLiquidityRegistry } from 'pages/Compound/useLiquidityRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -48,7 +47,6 @@ export default function ProvideLiquidity() {
   const [stakedPools, setStakedPools] = useState<LiquiditySummary[]>([])
   const [unstakedPools, setUnstakedPools] = useState<LiquiditySummary[]>([])
 
-  const theme = useTheme()
   const liquidityPools = useLiquidityRegistry()
 
   useEffect(() => {
@@ -70,8 +68,6 @@ export default function ProvideLiquidity() {
 
   return (
     <PageWrapper>
-      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
-
       <VoteCard>
         <CardNoise />
         <CardSection>
@@ -103,6 +99,8 @@ export default function ProvideLiquidity() {
         </CardSection>
         <CardNoise />
       </VoteCard>
+
+      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
 
       {stakedPools.length > 0 && (
         <>
