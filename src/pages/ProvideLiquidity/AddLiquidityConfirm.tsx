@@ -94,6 +94,7 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
           },
           deadline.toHexString(),
         ],
+        skipGasEstimate: true,
         summary:
           'Add ' +
           parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
