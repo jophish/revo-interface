@@ -20,8 +20,11 @@ import { calculateSlippageAmount, getContract } from 'utils'
 import brokerBotAbi from '../../constants/abis/FarmBrokerBot.json'
 
 const brokerBotAddress = '0x02763Ce86559Ba8DF9939a1281a988a9d0073C87'
-// TODO need some way to make this an array
-const metaFarmbotAddress = '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95'
+// key is token0Address-token1Address
+const metaFarmbotAddressMap = {
+  '0x918146359264C492BD6934071c6Bd31C854EDBc3-0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81':
+    '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95',
+}
 
 interface Props {
   token0: Token
@@ -31,15 +34,16 @@ interface Props {
 }
 
 export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss }: Props) {
-  // modal and loading
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
-  // txn values
   const deadline = useTransactionDeadline() // custom from users settings
   const [allowedSlippage] = useUserSlippageTolerance() // custom from users
   const [txHash, setTxHash] = useState('')
 
-  const { address: account, network } = useContractKit()
+  const {
+    address: account,
+    network: { chainId },
+  } = useContractKit()
   const library = useProvider()
 
   const { currencies, price, noLiquidity, poolTokenPercentage, parsedAmounts, currencyBalances, liquidityMinted } =
@@ -47,8 +51,6 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
 
   const { onFieldAInput } = useMintActionHandlers(noLiquidity)
   const doTransaction = useDoTransaction()
-
-  const chainId = network.chainId
 
   const handleDismissConfirmation = useCallback(() => {
     onDismiss()
@@ -75,6 +77,12 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
 
     setAttemptingTxn(true)
     try {
+      const metaFarmbotAddress =
+        metaFarmbotAddressMap[`${token0.address}-${token1.address}` as keyof typeof metaFarmbotAddressMap]
+      if (!metaFarmbotAddress) {
+        throw new Error('could not find meta farmbot address from token0 and token1')
+      }
+
       const response = await doTransaction(brokerBot, 'getUniswapLPAndDeposit', {
         args: [
           metaFarmbotAddress,
