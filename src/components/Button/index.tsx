@@ -16,7 +16,7 @@ const Base = styled(RebassButton)<{
   maxHeight?: string
 }>`
   transition: 0.25s ease;
-  padding: ${({ padding }) => (padding ? padding : '18px')};
+  padding: ${({ padding }) => (padding ? padding : '8px 16px')};
   width: ${({ width }) => (width ? width : '100%')};
   font-weight: 500;
   text-align: center;

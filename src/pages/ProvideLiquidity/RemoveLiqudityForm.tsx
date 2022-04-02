@@ -96,7 +96,7 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
                 <Text fontWeight={500}>Amount</Text>
               </RowBetween>
               <Row style={{ alignItems: 'flex-end' }}>
-                <Text fontSize={54} fontWeight={500}>
+                <Text fontSize={36} fontWeight={500}>
                   {formattedAmounts[Field.LIQUIDITY_PERCENT]}%
                 </Text>
               </Row>
@@ -148,7 +148,7 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
           </LightCard>
 
           {pair && (
-            <div style={{ padding: '10px 20px' }}>
+            <div style={{ padding: '10px 0px' }}>
               <RowBetween>
                 Price:
                 <div>

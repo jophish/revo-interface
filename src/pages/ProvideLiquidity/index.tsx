@@ -71,14 +71,33 @@ export default function ProvideLiquidity() {
   return (
     <PageWrapper>
       <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
-      <VoteCard color={theme.primary5}>
+
+      <VoteCard>
+        <CardNoise />
         <CardSection>
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white fontWeight={600}>Providing liquidity in Revo is still in Beta</TYPE.white>
+              <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white fontSize={14}>Functionality for removing liquidity is coming very soon!</TYPE.white>
+              <TYPE.white fontSize={14}>
+                Add liquidity for our farmbots to support our ecosystem and earn liquidity provider fees!
+              </TYPE.white>
+            </RowBetween>
+            <RowBetween>
+              <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
+            </RowBetween>
+            <RowBetween>
+              <TYPE.white fontSize={14}>
+                {/* TODO: add more specific link once we have one */}
+                <ExternalLink
+                  style={{ color: 'white', textDecoration: 'underline' }}
+                  target="_blank"
+                  href="https://docs.revo.market/"
+                >
+                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
+                </ExternalLink>
+              </TYPE.white>
             </RowBetween>
           </AutoColumn>
         </CardSection>
@@ -99,32 +118,6 @@ export default function ProvideLiquidity() {
       )}
       {unstakedPools.length > 0 && (
         <>
-          <VoteCard>
-            <CardNoise />
-            <CardSection>
-              <AutoColumn gap="md">
-                <RowBetween>
-                  <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
-                </RowBetween>
-                <RowBetween>
-                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
-                </RowBetween>
-                <RowBetween>
-                  <TYPE.white fontSize={14}>
-                    {/* TODO: add more specific link once we have one */}
-                    <ExternalLink
-                      style={{ color: 'white', textDecoration: 'underline' }}
-                      target="_blank"
-                      href="https://docs.revo.market/"
-                    >
-                      <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
-                    </ExternalLink>
-                  </TYPE.white>
-                </RowBetween>
-              </AutoColumn>
-            </CardSection>
-            <CardNoise />
-          </VoteCard>
           <Header>{t('availablePools')}</Header>
           {unstakedPools.map((pool) => (
             <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
