@@ -102,7 +102,7 @@ export default function App() {
           <ErrorBoundary fallback={<p>An unexpected error occured on this part of the page. Please reload.</p>}>
             <Switch>
               <Route exact strict path="/zap" component={Zap} />
-              <Route exact strict path="/pool" component={ProvideLiquidity} />
+              <Route exact strict path="/farm" component={ProvideLiquidity} />
               <Route component={RedirectPathToZapOnly} />
             </Switch>
           </ErrorBoundary>

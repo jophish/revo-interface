@@ -235,8 +235,8 @@ export default function Header() {
         <StyledNavLink id="swap-nav-link" to="/zap">
           {t('headerZap')}
         </StyledNavLink>
-        <StyledNavLink id="compound-nav-link" to="/pool">
-          {t('headerPool')}
+        <StyledNavLink id="compound-nav-link" to="/farm">
+          {t('headerFarms')}
         </StyledNavLink>
       </HeaderRow>
       <HeaderControls>
