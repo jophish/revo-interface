@@ -91,7 +91,7 @@ export default function AddLiquidityForm({ token0, token1, onConfirmAddLiquidity
           if (currencies[Field.CURRENCY_A]?.address === CELO[chainId as unknown as UbeswapChainId].address) {
             onFieldAInput(Math.max(Number(maxAmounts[Field.CURRENCY_A]?.toExact() ?? 0) - 0.01, 0).toString())
           } else {
-            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? 0)
+            onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '0')
           }
         }}
         showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
