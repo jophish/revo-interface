@@ -9,6 +9,7 @@ import TransactionConfirmationModal, { ConfirmationModalContent } from 'componen
 import { FarmBrokerBot } from 'generated'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { ConfirmAddModalBottom } from 'pages/AddLiquidity/ConfirmAddModalBottom'
+import { brokerBotAddress, metaFarmbotAddressMap } from 'pages/ProvideLiquidity'
 import React, { useCallback, useState } from 'react'
 import { Text } from 'rebass'
 import { Field } from 'state/mint/actions'
@@ -18,13 +19,6 @@ import { TYPE } from 'theme'
 import { calculateSlippageAmount, getContract } from 'utils'
 
 import brokerBotAbi from '../../constants/abis/FarmBrokerBot.json'
-
-const brokerBotAddress = '0x02763Ce86559Ba8DF9939a1281a988a9d0073C87'
-// key is token0Address-token1Address
-const metaFarmbotAddressMap = {
-  '0x918146359264C492BD6934071c6Bd31C854EDBc3-0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81':
-    '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95',
-}
 
 interface Props {
   token0: Token

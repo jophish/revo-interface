@@ -7,16 +7,13 @@ import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import MOOLA_STAKING_REWARDS_ABI from '../../constants/abis/moola/MoolaStakingRewards.json'
 
-export interface FarmBotSummaryBase {
+export interface FarmBotSummary {
   token0Address: string
   token1Address: string
   token0Name: string
   token1Name: string
   stakingTokenAddress: string
   totalLP: number
-}
-
-export interface FarmBotSummary extends FarmBotSummaryBase {
   address: string
   amountUserFP: number
   amountUserLP: number

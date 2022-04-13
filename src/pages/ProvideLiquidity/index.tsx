@@ -41,7 +41,12 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export const metaFarmBotAddresses = ['0xAcA7148642d2C634b318ff36d14764f8Bde4dc95']
+export const brokerBotAddress = '0x02763Ce86559Ba8DF9939a1281a988a9d0073C87'
+// key is token0Address-token1Address
+export const metaFarmbotAddressMap = {
+  '0x918146359264C492BD6934071c6Bd31C854EDBc3-0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81':
+    '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95',
+}
 
 export default function ProvideLiquidity() {
   const { t } = useTranslation()
@@ -49,7 +54,7 @@ export default function ProvideLiquidity() {
   const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
   const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
 
-  const metaFarmbotFarmSummaries = useFarmBotRegistry(metaFarmBotAddresses)
+  const metaFarmbotFarmSummaries = useFarmBotRegistry(Object.values(metaFarmbotAddressMap))
 
   useEffect(() => {
     const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
