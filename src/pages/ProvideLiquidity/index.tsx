@@ -2,7 +2,7 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { LiquiditySummary, useLiquidityRegistry } from 'pages/Compound/useLiquidityRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -41,26 +41,23 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
+export const metaFarmBotAddresses = ['0xAcA7148642d2C634b318ff36d14764f8Bde4dc95']
+
 export default function ProvideLiquidity() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedPools, setStakedPools] = useState<LiquiditySummary[]>([])
-  const [unstakedPools, setUnstakedPools] = useState<LiquiditySummary[]>([])
+  const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
+  const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
 
-  const liquidityPools = useLiquidityRegistry()
+  const metaFarmbotFarmSummaries = useFarmBotRegistry(metaFarmBotAddresses)
 
   useEffect(() => {
-    setStakedPools(
-      liquidityPools.filter((pool) => {
-        return pool.userBalance > 0
-      })
-    )
-    setUnstakedPools(
-      liquidityPools.filter((pool) => {
-        return pool.userBalance <= 0
-      })
-    )
-  }, [liquidityPools])
+    const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
+    const stakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP <= 0)
+
+    setStakedMetaFarms(unstakedFarms)
+    setUnstakedMetaFarms(stakedFarms)
+  }, [metaFarmbotFarmSummaries])
 
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
@@ -98,27 +95,27 @@ export default function ProvideLiquidity() {
         <CardNoise />
       </VoteCard>
 
-      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
+      <ColumnCenter>{metaFarmbotFarmSummaries.length === 0 && <Loader size="48px" />}</ColumnCenter>
 
-      {stakedPools.length > 0 && (
+      {stakedMetaFarms.length > 0 && (
         <>
           <Header>{t('yourFarms')}</Header>
-          {stakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
+          {stakedMetaFarms.map((stakedMetaFarm) => (
+            <PoolWrapper key={stakedMetaFarm.address}>
               <ErrorBoundary>
-                <LiquidityCard {...pool} />
+                <LiquidityCard farmBotSummary={stakedMetaFarm} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
         </>
       )}
-      {unstakedPools.length > 0 && (
+      {unstakedMetaFarms.length > 0 && (
         <>
           <Header>{t('availableFarms')}</Header>
-          {unstakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
+          {unstakedMetaFarms.map((unstakedMetaFarm) => (
+            <PoolWrapper key={unstakedMetaFarm.address}>
               <ErrorBoundary>
-                <LiquidityCard {...pool} />
+                <LiquidityCard farmBotSummary={unstakedMetaFarm} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
