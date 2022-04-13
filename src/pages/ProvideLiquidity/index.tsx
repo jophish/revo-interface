@@ -41,7 +41,7 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export const brokerBotAddress = '0x02763Ce86559Ba8DF9939a1281a988a9d0073C87'
+export const brokerBotAddress = '0x97d0D4ae7841c9405A80fB8004dbA96123e076De'
 // key is token0Address-token1Address
 export const metaFarmbotAddressMap = {
   '0x918146359264C492BD6934071c6Bd31C854EDBc3-0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81':
