@@ -1,12 +1,13 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
+import { farmBotAddresses } from 'pages/Zap'
 import { useCallback, useEffect, useState } from 'react'
 import { AbiItem } from 'web3-utils'
 
 import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import { useFarmRegistry } from '../Earn/useFarmRegistry'
-import { farmBotAddresses, FarmBotSummaryBase } from './useFarmBotRegistry'
+import { FarmBotSummaryBase } from './useFarmBotRegistry'
 
 export type LiquiditySummary = {
   tokenAddress: string

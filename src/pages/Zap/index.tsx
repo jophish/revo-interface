@@ -3,6 +3,7 @@ import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
 import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
+import { useFarmBotRewards } from 'pages/Compound/useFarmBotRewards'
 import ZapCard from 'pages/Zap/ZapCard'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -41,26 +42,41 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
+export const farmBotAddresses = ['0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81']
+
 export default function Zap() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
   const [stakedFarms, setStakedFarms] = useState<FarmBotSummary[]>([])
   const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
 
-  const farmbotFarmSummaries = useFarmBotRegistry()
+  const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
+  const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
 
   useEffect(() => {
-    setStakedFarms(
-      farmbotFarmSummaries.filter((botsummary) => {
-        return botsummary.amountUserLP > 0
+    const unstakedFarms = farmbotFarmSummaries
+      .filter((botsummary) => botsummary.amountUserLP > 0)
+      .map((farm) => {
+        const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
+        return {
+          ...farm,
+          ...matchingRewards,
+        }
       })
-    )
-    setUnstakedFarms(
-      farmbotFarmSummaries.filter((botsummary) => {
-        return botsummary.amountUserLP <= 0
+
+    const stakedFarms = farmbotFarmSummaries
+      .filter((botsummary) => botsummary.amountUserLP <= 0)
+      .map((farm) => {
+        const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
+        return {
+          ...farm,
+          ...matchingRewards,
+        }
       })
-    )
-  }, [farmbotFarmSummaries])
+
+    setStakedFarms(unstakedFarms)
+    setUnstakedFarms(stakedFarms)
+  }, [farmbotFarmSummaries, farmbotFarmRewards])
 
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />

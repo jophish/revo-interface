@@ -6,7 +6,6 @@ import { AbiItem } from 'web3-utils'
 import { ERC20_ABI } from '../../constants/abis/erc20'
 import farmBotAbi from '../../constants/abis/FarmBot.json'
 import MOOLA_STAKING_REWARDS_ABI from '../../constants/abis/moola/MoolaStakingRewards.json'
-import { useFarmRegistry } from '../Earn/useFarmRegistry'
 
 export interface FarmBotSummaryBase {
   token0Address: string
@@ -25,19 +24,13 @@ export interface FarmBotSummary extends FarmBotSummaryBase {
   exchangeRate: number
   // userLPValue: number
   stakingRewardsAddress: string
-  rewardsUSDPerYear?: string
-  tvlUSD?: string
   totalLPInFarm: number
   totalLPSupply: number
 }
 
-export const farmBotAddresses = ['0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81']
-
-export const useFarmBotRegistry = () => {
+export const useFarmBotRegistry = (farmBotAddresses: string[]) => {
   const { address, kit } = useContractKit()
   const [botSummaries, setBotSummaries] = useState<FarmBotSummary[]>([])
-
-  const farmSummaries = useFarmRegistry()
 
   const call = useCallback(async () => {
     const botSummaries: FarmBotSummary[] = []
@@ -64,10 +57,6 @@ export const useFarmBotRegistry = () => {
       const token1Name = await token1Contract.methods.symbol().call()
 
       const stakingRewardsAddress = await farmBot.methods.stakingRewards().call()
-      const farmSummary = farmSummaries.find((farm) => farm.stakingAddress == stakingRewardsAddress)
-
-      const rewardsUSDPerYear = farmSummary?.rewardsUSDPerYear
-      const tvlUSD = farmSummary?.tvlUSD
 
       const stakingRewardsContract = new kit.web3.eth.Contract(
         MOOLA_STAKING_REWARDS_ABI as AbiItem[],
@@ -89,15 +78,13 @@ export const useFarmBotRegistry = () => {
         totalFP,
         exchangeRate,
         stakingRewardsAddress,
-        rewardsUSDPerYear,
-        tvlUSD,
         totalLPInFarm,
         totalLPSupply,
       }
       botSummaries.push(botSummary)
     }
     setBotSummaries(botSummaries)
-  }, [kit.web3.eth, address, farmSummaries])
+  }, [kit.web3.eth, address])
 
   useEffect(() => {
     call()
