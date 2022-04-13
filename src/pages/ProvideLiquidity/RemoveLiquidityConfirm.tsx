@@ -88,7 +88,7 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
       }
 
       const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], metaFarmbotAddress)
-      const fpAmount = await farmBot.methods.getFpAmount(liquidityAmount).call()
+      const fpAmount = await farmBot.methods.getFpAmount(liquidityAmount.raw.toString()).call()
 
       const response = await doTransaction(brokerBot, 'withdrawFPForStakingTokens', {
         args: [
@@ -98,6 +98,7 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
           amountsMin[Field.CURRENCY_B].toString(),
           deadline.toHexString(),
         ],
+        skipGasEstimate: true,
         summary:
           'Remove ' +
           parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
