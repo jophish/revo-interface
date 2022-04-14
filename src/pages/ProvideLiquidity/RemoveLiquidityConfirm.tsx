@@ -98,7 +98,6 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
           amountsMin[Field.CURRENCY_B].toString(),
           deadline.toHexString(),
         ],
-        skipGasEstimate: true,
         summary:
           'Remove ' +
           parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +

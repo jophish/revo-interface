@@ -23,7 +23,6 @@ type DoTransactionFn = <
     summary?: string
     approval?: { tokenAddress: string; spender: string }
     claim?: { recipient: string }
-    skipGasEstimate?: boolean
   }
 ) => Promise<ContractTransaction>
 
@@ -89,7 +88,7 @@ export const useDoTransaction = (): DoTransactionFn => {
       }
       const contract = contractDisconnected.connect(await getConnectedSigner())
       const call = { contract, methodName, args: args.args, value: args.overrides?.value }
-      const gasEstimate = args.skipGasEstimate ? BigNumber.from(1e7) : await estimateGas(call)
+      const gasEstimate = await estimateGas(call)
 
       try {
         const response: ContractTransaction = await contract[methodName](...args.args, {
