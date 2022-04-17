@@ -89,9 +89,9 @@ export default function ProvideLiquidity() {
 
   const cardParams: { title: string; body: string; cta: string; url: string } = showLegacyAddLiquidity
     ? {
-        title: 'beep boop',
-        body: 'la la',
-        cta: 'foo bar',
+        title: t('legacyLiquidityProviderCardTitle'),
+        body: t('legacyLiquidityProviderCardBody'),
+        cta: t('legacyLiquidityProviderCardCTA'),
         url: 'https://revo.market/#/add-liquidity-legacy',
       }
     : {
