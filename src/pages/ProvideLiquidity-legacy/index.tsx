@@ -73,15 +73,14 @@ export default function ProvideLiquidity() {
         <CardSection>
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
+              <TYPE.white fontWeight={600}>Please remove your liquidity</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
-                Add liquidity for our farmbots to support our ecosystem and earn liquidity provider fees!
+                Thank you for adding liquidity with our legacy interface. We are providing continued access to this
+                interface for a limited time. Please remove your liquidity and re-add it with our updated interface at
+                your earliest convenience.
               </TYPE.white>
-            </RowBetween>
-            <RowBetween>
-              <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
@@ -89,9 +88,9 @@ export default function ProvideLiquidity() {
                 <ExternalLink
                   style={{ color: 'white', textDecoration: 'underline' }}
                   target="_blank"
-                  href="https://docs.revo.market/"
+                  href="https://discord.gg/TBHYqgBnRj"
                 >
-                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
+                  <TYPE.white fontSize={14}>{'Ask on Discord if you have any questions'}</TYPE.white>
                 </ExternalLink>
               </TYPE.white>
             </RowBetween>
