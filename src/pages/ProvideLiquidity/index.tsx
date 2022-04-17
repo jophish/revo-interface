@@ -91,7 +91,7 @@ export default function ProvideLiquidity() {
         title: t('legacyLiquidityProviderCardTitle'),
         body: t('legacyLiquidityProviderCardBody'),
         cta: t('legacyLiquidityProviderCardCTA'),
-        url: 'https://revo.market/#/add-liquidity-legacy',
+        url: 'https://revo.market/#/remove-liquidity-legacy',
       }
     : {
         title: t('liquidityProviderRewards'),
