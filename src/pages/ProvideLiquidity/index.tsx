@@ -1,4 +1,6 @@
+import { useContractKit } from '@celo-tools/use-contractkit'
 import { ErrorBoundary } from '@sentry/react'
+import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
@@ -6,6 +8,7 @@ import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotReg
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { AbiItem } from 'web3-utils'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
@@ -48,13 +51,28 @@ export const metaFarmbotAddressMap = {
     '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95',
 }
 
+function useShowLegacyAddLiquidity() {
+  const { kit, address: walletAddress } = useContractKit()
+  const [showLegacyAddLiquidity, setShowLegacyAddLiquidity] = useState<boolean>(false)
+  const call = async () => {
+    const liquidityPoolAddress = '0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA' // mcUSD / mcUSD_mcEUR_RFP pool
+    const uniswapV2Pair = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], liquidityPoolAddress)
+    const lpBalance = walletAddress ? await uniswapV2Pair.methods.balanceOf(walletAddress).call() : 0
+    setShowLegacyAddLiquidity(lpBalance > 0)
+  }
+  useEffect(() => {
+    call()
+  }, [call])
+  return showLegacyAddLiquidity
+}
+
 export default function ProvideLiquidity() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
   const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
   const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
-
   const metaFarmbotFarmSummaries = useFarmBotRegistry(Object.values(metaFarmbotAddressMap))
+  const showLegacyAddLiquidity = useShowLegacyAddLiquidity()
 
   useEffect(() => {
     const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
@@ -68,6 +86,22 @@ export default function ProvideLiquidity() {
     return <ChangeNetworkModal />
   }
 
+  const cardParams: { title: string; body: string; cta: string; url: string } = showLegacyAddLiquidity
+    ? {
+        title: t('legacyLiquidityProviderCardTitle'),
+        body: t('legacyLiquidityProviderCardBody'),
+        cta: t('legacyLiquidityProviderCardCTA'),
+        url: 'https://revo.market/#/remove-liquidity-legacy',
+      }
+    : {
+        title: t('liquidityProviderRewards'),
+        body: `Zap-in's to Revo farms are supported by liquidity pools. By providing liquidity, you will be
+                supporting the ecosystem and enabling other users to zap in. Most importantly, you will be earning
+                auto-compounding yield farming rewards on top of the rewards from the underlying farm!`,
+        cta: t('liquidityProviderRewardsReadMore'),
+        url: 'https://docs.revo.market/',
+      }
+
   return (
     <PageWrapper>
       <VoteCard>
@@ -75,14 +109,10 @@ export default function ProvideLiquidity() {
         <CardSection>
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
+              <TYPE.white fontWeight={600}>{cardParams.title}</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white fontSize={14}>
-                Zap-in&apos;s to Revo farms are supported by liquidity pools. By providing liquidity, you will be
-                supporting the ecosystem and enabling other users to zap in. Most importantly, you will be earning
-                auto-compounding yield farming rewards <b>on top</b> of the rewards from the underlying farm!
-              </TYPE.white>
+              <TYPE.white fontSize={14}>{cardParams.body}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
@@ -90,9 +120,9 @@ export default function ProvideLiquidity() {
                 <ExternalLink
                   style={{ color: 'white', textDecoration: 'underline' }}
                   target="_blank"
-                  href="https://docs.revo.market/"
+                  href={cardParams.url}
                 >
-                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
+                  <TYPE.white fontSize={14}>{cardParams.cta}</TYPE.white>
                 </ExternalLink>
               </TYPE.white>
             </RowBetween>
