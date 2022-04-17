@@ -97,7 +97,7 @@ export default function ProvideLiquidity() {
         title: t('liquidityProviderRewards'),
         body: `Zap-in's to Revo farms are supported by liquidity pools. By providing liquidity, you will be
                 supporting the ecosystem and enabling other users to zap in. Most importantly, you will be earning
-                auto-compounding yield farming rewards <b>on top</b> of the rewards from the underlying farm!`,
+                auto-compounding yield farming rewards on top of the rewards from the underlying farm!`,
         cta: t('liquidityProviderRewardsReadMore'),
         url: 'https://docs.revo.market/',
       }
