@@ -1,6 +1,7 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { currencyEquals, Token, TokenAmount } from '@ubeswap/sdk'
 import { useToken } from 'hooks/Tokens'
+import { farmBotAddresses } from 'pages/Zap'
 import React, { CSSProperties, MutableRefObject, useCallback } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Text } from 'rebass'
@@ -181,7 +182,7 @@ export default function CurrencyList({
     [address: string]: Token
   } = useAllInactiveTokens()
 
-  const botSummaries = useFarmBotRegistry()
+  const botSummaries = useFarmBotRegistry(farmBotAddresses)
 
   const Row = useCallback(
     ({ data, index, style }) => {
