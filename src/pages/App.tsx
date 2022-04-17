@@ -10,6 +10,7 @@ import Popups from '../components/Popups'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import { getMobileOperatingSystem, Mobile } from '../utils/mobile'
 import ProvideLiquidity from './ProvideLiquidity'
+import ProvideLiquidityLegacy from './ProvideLiquidity-legacy'
 import Zap from './Zap'
 import { RedirectPathToZapOnly } from './Zap/redirects'
 
@@ -103,6 +104,7 @@ export default function App() {
             <Switch>
               <Route exact strict path="/zap" component={Zap} />
               <Route exact strict path="/farm" component={ProvideLiquidity} />
+              <Route exact strict path="/remove-liquidity-legacy" component={ProvideLiquidityLegacy} />
               <Route component={RedirectPathToZapOnly} />
             </Switch>
           </ErrorBoundary>
