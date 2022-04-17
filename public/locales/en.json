@@ -100,7 +100,7 @@
   "liquidityProviderRewardsReadMore": "Read more about providing liquidity",
   "legacyLiquidityProviderCardTitle": "Looking for your liquidity?",
   "legacyLiquidityProviderCardBody": "We're seeing that you provided liquidity with our legacy interface. We recently upgraded our interface to let users deposit straight into a rewards contract to earn additional auto-compouding rewards when they provide liquidity, so you may not see your liquidity here.",
-  "legacyLiquidityProviderCardCTA": "To recover your liquidity click here.",
+  "legacyLiquidityProviderCardCTA": "Click here to recover your liquidity.",
   "compoundInterestTitle": "Your earnings are supercharged",
   "compoundInterestDesc": "We collect and reinvest your earnings. You only need to deposit into our compound pools and we will take care of the rest",
   "liquidityTokens": "liquidity tokens.",
