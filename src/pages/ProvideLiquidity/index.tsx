@@ -58,7 +58,6 @@ function useShowLegacyAddLiquidity() {
     const liquidityPoolAddress = '0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA' // mcUSD / mcUSD_mcEUR_RFP pool
     const uniswapV2Pair = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], liquidityPoolAddress)
     const lpBalance = await uniswapV2Pair.methods.balanceOf(walletAddress).call()
-    console.log(`shouldShowLegacyAddLiquidity: address ${walletAddress}, lpBalance ${lpBalance}`)
     setShowLegacyAddLiquidity(lpBalance > 0)
   }
   useEffect(() => {
