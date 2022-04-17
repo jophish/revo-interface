@@ -95,8 +95,9 @@ export default function ProvideLiquidity() {
       }
     : {
         title: t('liquidityProviderRewards'),
-        body: `Revo automatically stakes the liquidity that you provide, so that you can earn auto compounding rewards
-                    for your liquidity while also earning the usual liquidity provider rewards from trade fees!`,
+        body: `Zap-in's to Revo farms are supported by liquidity pools. By providing liquidity, you will be
+                supporting the ecosystem and enabling other users to zap in. Most importantly, you will be earning
+                auto-compounding yield farming rewards <b>on top</b> of the rewards from the underlying farm!`,
         cta: t('liquidityProviderRewardsReadMore'),
         url: 'https://docs.revo.market/',
       }
