@@ -97,6 +97,7 @@ export default function LiquidityCard({
               borderRadius="8px"
               width="48%"
               inverse={actionType !== 'add'}
+              disabled={true}
             >
               {t('addLiquidity')}
             </ButtonPrimary>
