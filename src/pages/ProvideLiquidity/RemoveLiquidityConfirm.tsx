@@ -64,6 +64,7 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
 
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
+    console.log(parsedAmounts)
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
@@ -90,10 +91,13 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
       const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], metaFarmbotAddress)
       const fpAmount = await farmBot.methods.getFpAmount(liquidityAmount.raw.toString()).call()
 
+      const fpBalance = await farmBot.methods.balanceOf(account).call()
+      const fractionFpBalance = parsedAmounts[Field.LIQUIDITY_PERCENT].multiply(fpBalance).toFixed(0)
+
       const response = await doTransaction(brokerBot, 'withdrawFPForStakingTokens', {
         args: [
           metaFarmbotAddress,
-          fpAmount,
+          fractionFpBalance,
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
           deadline.toHexString(),

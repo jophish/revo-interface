@@ -50,7 +50,7 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
     [Field.CURRENCY_B]:
       independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
   }
-
+  console.log(formattedAmounts)
   // pair contract
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
 
