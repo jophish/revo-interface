@@ -7,22 +7,17 @@ import DoubleCurrencyLogo from 'components/DoubleLogo'
 import { RowBetween, RowFixed } from 'components/Row'
 import { useDoTransaction } from 'components/swap/routing'
 import TransactionConfirmationModal, { ConfirmationModalContent } from 'components/TransactionConfirmationModal'
-import { FarmBrokerBot } from 'generated'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
-import { brokerBotAddress, metaFarmbotAddressMap } from 'pages/ProvideLiquidity'
 import React, { useCallback, useContext, useState } from 'react'
 import { Plus } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
 import { Field } from 'state/burn/actions'
 import { useBurnActionHandlers, useDerivedBurnInfo } from 'state/burn/hooks'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { ThemeContext } from 'styled-components'
 import { TYPE } from 'theme'
-import { calculateSlippageAmount, getContract } from 'utils'
-import { AbiItem } from 'web3-utils'
-
-import farmBotAbi from '../../constants/abis/FarmBot.json'
-import brokerBotAbi from '../../constants/abis/FarmBrokerBot.json'
+import { calculateSlippageAmount, getRouterContract } from 'utils'
 
 interface Props {
   token0: Token
@@ -32,8 +27,9 @@ interface Props {
 }
 
 export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss }: Props) {
+  const { t } = useTranslation()
   const theme = useContext(ThemeContext)
-  const { address: account, network, kit } = useContractKit()
+  const { address: account, network } = useContractKit()
   const library = useProvider()
   const doTransaction = useDoTransaction()
 
@@ -67,7 +63,7 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
-    const brokerBot = getContract(brokerBotAddress, brokerBotAbi, library, account) as FarmBrokerBot
+    const router = getRouterContract(chainId, library, account)
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -81,21 +77,14 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
     // removeLiquidity
     setAttemptingTxn(true)
     try {
-      const metaFarmbotAddress =
-        metaFarmbotAddressMap[`${token0.address}-${token1.address}` as keyof typeof metaFarmbotAddressMap]
-      if (!metaFarmbotAddress) {
-        throw new Error('could not find meta farmbot address from token0 and token1')
-      }
-
-      const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], metaFarmbotAddress)
-      const fpAmount = await farmBot.methods.getFpAmount(liquidityAmount.raw.toString()).call()
-
-      const response = await doTransaction(brokerBot, 'withdrawFPForStakingTokens', {
+      const response = await doTransaction(router, 'removeLiquidity', {
         args: [
-          metaFarmbotAddress,
-          fpAmount,
+          token0.address,
+          token1.address,
+          liquidityAmount.raw.toString(),
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
+          account,
           deadline.toHexString(),
         ],
         summary:

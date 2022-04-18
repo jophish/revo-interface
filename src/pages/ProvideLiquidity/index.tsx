@@ -1,11 +1,14 @@
+import { useContractKit } from '@celo-tools/use-contractkit'
 import { ErrorBoundary } from '@sentry/react'
+import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { LiquiditySummary, useLiquidityRegistry } from 'pages/Compound/useLiquidityRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
+import { AbiItem } from 'web3-utils'
 
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
@@ -41,30 +44,63 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
+export const brokerBotAddress = '0x97d0D4ae7841c9405A80fB8004dbA96123e076De'
+// key is token0Address-token1Address
+export const metaFarmbotAddressMap = {
+  '0x918146359264C492BD6934071c6Bd31C854EDBc3-0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81':
+    '0xAcA7148642d2C634b318ff36d14764f8Bde4dc95',
+}
+
+function useShowLegacyAddLiquidity() {
+  const { kit, address: walletAddress } = useContractKit()
+  const [showLegacyAddLiquidity, setShowLegacyAddLiquidity] = useState<boolean>(false)
+  const call = async () => {
+    const liquidityPoolAddress = '0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA' // mcUSD / mcUSD_mcEUR_RFP pool
+    const uniswapV2Pair = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], liquidityPoolAddress)
+    const lpBalance = walletAddress ? await uniswapV2Pair.methods.balanceOf(walletAddress).call() : 0
+    setShowLegacyAddLiquidity(lpBalance > 0)
+  }
+  useEffect(() => {
+    call()
+  }, [call])
+  return showLegacyAddLiquidity
+}
+
 export default function ProvideLiquidity() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedPools, setStakedPools] = useState<LiquiditySummary[]>([])
-  const [unstakedPools, setUnstakedPools] = useState<LiquiditySummary[]>([])
-
-  const liquidityPools = useLiquidityRegistry()
+  const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
+  const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
+  const metaFarmbotFarmSummaries = useFarmBotRegistry(Object.values(metaFarmbotAddressMap))
+  const showLegacyAddLiquidity = useShowLegacyAddLiquidity()
 
   useEffect(() => {
-    setStakedPools(
-      liquidityPools.filter((pool) => {
-        return pool.userBalance > 0
-      })
-    )
-    setUnstakedPools(
-      liquidityPools.filter((pool) => {
-        return pool.userBalance <= 0
-      })
-    )
-  }, [liquidityPools])
+    const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
+    const stakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP <= 0)
+
+    setStakedMetaFarms(unstakedFarms)
+    setUnstakedMetaFarms(stakedFarms)
+  }, [metaFarmbotFarmSummaries])
 
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
   }
+
+  const cardParams: { title: string; body: string; cta: string; url: string } = showLegacyAddLiquidity
+    ? {
+        title: t('legacyLiquidityProviderCardTitle'),
+        body: t('legacyLiquidityProviderCardBody'),
+        cta: t('legacyLiquidityProviderCardCTA'),
+        url: 'https://revo.market/#/remove-liquidity-legacy',
+      }
+    : {
+        title: t('liquidityProviderRewards'),
+        body: `Zap-in's to Revo farms are supported by liquidity pools. By providing liquidity, you will be
+                supporting the ecosystem and enabling other users to zap in. Most importantly, you will be earning
+                auto-compounding yield farming rewards on top of the rewards from the underlying farm!`,
+        cta: t('liquidityProviderRewardsReadMore'),
+        url: 'https://docs.revo.market/',
+      }
 
   return (
     <PageWrapper>
@@ -73,15 +109,10 @@ export default function ProvideLiquidity() {
         <CardSection>
           <AutoColumn gap="md">
             <RowBetween>
-              <TYPE.white fontWeight={600}>{t('liquidityProviderRewards')}</TYPE.white>
+              <TYPE.white fontWeight={600}>{cardParams.title}</TYPE.white>
             </RowBetween>
             <RowBetween>
-              <TYPE.white fontSize={14}>
-                Add liquidity for our farmbots to support our ecosystem and earn liquidity provider fees!
-              </TYPE.white>
-            </RowBetween>
-            <RowBetween>
-              <TYPE.white fontSize={14}>{t('liquidityProviderRewardsDesc')}</TYPE.white>
+              <TYPE.white fontSize={14}>{cardParams.body}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.white fontSize={14}>
@@ -89,9 +120,9 @@ export default function ProvideLiquidity() {
                 <ExternalLink
                   style={{ color: 'white', textDecoration: 'underline' }}
                   target="_blank"
-                  href="https://docs.revo.market/"
+                  href={cardParams.url}
                 >
-                  <TYPE.white fontSize={14}>{t('liquidityProviderRewardsReadMore')}</TYPE.white>
+                  <TYPE.white fontSize={14}>{cardParams.cta}</TYPE.white>
                 </ExternalLink>
               </TYPE.white>
             </RowBetween>
@@ -100,27 +131,27 @@ export default function ProvideLiquidity() {
         <CardNoise />
       </VoteCard>
 
-      <ColumnCenter>{liquidityPools.length === 0 && <Loader size="48px" />}</ColumnCenter>
+      <ColumnCenter>{metaFarmbotFarmSummaries.length === 0 && <Loader size="48px" />}</ColumnCenter>
 
-      {stakedPools.length > 0 && (
+      {stakedMetaFarms.length > 0 && (
         <>
           <Header>{t('yourFarms')}</Header>
-          {stakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
+          {stakedMetaFarms.map((stakedMetaFarm) => (
+            <PoolWrapper key={stakedMetaFarm.address}>
               <ErrorBoundary>
-                <LiquidityCard {...pool} />
+                <LiquidityCard farmBotSummary={stakedMetaFarm} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}
         </>
       )}
-      {unstakedPools.length > 0 && (
+      {unstakedMetaFarms.length > 0 && (
         <>
           <Header>{t('availableFarms')}</Header>
-          {unstakedPools.map((pool) => (
-            <PoolWrapper key={`${pool.tokenAddress}${pool.rfpTokenAddress}`}>
+          {unstakedMetaFarms.map((unstakedMetaFarm) => (
+            <PoolWrapper key={unstakedMetaFarm.address}>
               <ErrorBoundary>
-                <LiquidityCard {...pool} />
+                <LiquidityCard farmBotSummary={unstakedMetaFarm} />
               </ErrorBoundary>
             </PoolWrapper>
           ))}

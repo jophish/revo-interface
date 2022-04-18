@@ -11,7 +11,6 @@ import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import { usePairContract } from 'hooks/useContract'
 import useTransactionDeadline from 'hooks/useTransactionDeadline'
 import { Dots, MaxButton } from 'pages/Pool/styleds'
-import { brokerBotAddress } from 'pages/ProvideLiquidity'
 import React, { useCallback, useContext, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { Text } from 'rebass'
@@ -19,6 +18,8 @@ import { Field } from 'state/burn/actions'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from 'state/burn/hooks'
 import { ThemeContext } from 'styled-components'
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler'
+
+import { ROUTER_ADDRESS } from '../../constants'
 
 interface Props {
   token0: Token
@@ -56,7 +57,7 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], brokerBotAddress)
+  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')

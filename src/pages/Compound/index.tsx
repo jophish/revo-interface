@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '@sentry/react'
+import { farmBotAddresses } from 'pages/Zap'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -39,7 +40,7 @@ const Header: React.FC = ({ children }) => {
 }
 
 export default function Compound() {
-  const botSummaries = useFarmBotRegistry()
+  const botSummaries = useFarmBotRegistry(farmBotAddresses)
 
   const { t } = useTranslation()
 

@@ -1,21 +1,17 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import { currencyEquals, Token, TokenAmount } from '@ubeswap/sdk'
-import { useToken } from 'hooks/Tokens'
 import React, { CSSProperties, MutableRefObject, useCallback } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components'
-import { useCalcAPY } from 'utils/calcAPY'
 
 import { useAllInactiveTokens, useIsUserAddedToken } from '../../hooks/Tokens'
-import { FarmBotSummary, useFarmBotRegistry } from '../../pages/Compound/useFarmBotRegistry'
 import { useCombinedActiveList, WrappedTokenInfo } from '../../state/lists/hooks'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'
 import { isTokenOnList } from '../../utils'
 import Column from '../Column'
 import CurrencyLogo from '../CurrencyLogo'
-import { Break } from '../earn/styled'
 import Loader from '../Loader'
 import { RowFixed } from '../Row'
 import { MouseoverTooltip } from '../Tooltip'
@@ -91,14 +87,12 @@ function CurrencyRow({
   isSelected,
   otherSelected,
   style,
-  botSummaries,
 }: {
   currency: Token
   onSelect: () => void
   isSelected: boolean
   otherSelected: boolean
   style: CSSProperties
-  botSummaries: FarmBotSummary[]
 }) {
   const { address: account } = useContractKit()
 
@@ -108,20 +102,6 @@ function CurrencyRow({
   const customAdded = useIsUserAddedToken(currency)
   const balance = useCurrencyBalance(account ?? undefined, currency)
 
-  const isFPToken = currency.name == 'Farmbot FP Token'
-
-  const botSummary = botSummaries.filter((summary) => {
-    return summary.address == currency.address
-  })?.[0]
-
-  const rewardsToken = useToken(botSummary?.rewardsAddress) || undefined
-  const token0 = useToken(botSummary?.token0Address) || undefined
-  const token1 = useToken(botSummary?.token1Address) || undefined
-  const tokens = [token0, token1, rewardsToken].filter((t?: Token): t is Token => !!t)
-
-  const compoundedAPY = useCalcAPY(botSummary)
-
-  // only show add or remove buttons if not on selected list
   return (
     <MenuItem
       style={style}
@@ -138,14 +118,6 @@ function CurrencyRow({
         <TYPE.darkGray ml="0px" fontSize={'12px'} fontWeight={300}>
           {currency.name} {!isOnSelectedList && customAdded && '• Added by user'}
         </TYPE.darkGray>
-        {isFPToken && compoundedAPY && (
-          <>
-            <Text ml="0px" fontSize={'12px'} fontWeight={300} color={'yellow'}>
-              {'ZAP IN for '} {compoundedAPY} {'APY'}
-            </Text>
-            <Break />
-          </>
-        )}
       </Column>
       <TokenTags currency={currency} />
       <RowFixed style={{ justifySelf: 'flex-end' }}>
@@ -181,8 +153,6 @@ export default function CurrencyList({
     [address: string]: Token
   } = useAllInactiveTokens()
 
-  const botSummaries = useFarmBotRegistry()
-
   const Row = useCallback(
     ({ data, index, style }) => {
       const currency: Token = data[index]
@@ -212,7 +182,6 @@ export default function CurrencyList({
             isSelected={isSelected}
             onSelect={handleSelect}
             otherSelected={otherSelected}
-            botSummaries={botSummaries}
           />
         )
       }

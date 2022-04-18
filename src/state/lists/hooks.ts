@@ -3,6 +3,7 @@ import UBESWAP_TOKEN_LIST from '@ubeswap/default-token-list'
 import { Token } from '@ubeswap/sdk'
 import UNISWAP_TOKEN_LIST from '@uniswap/default-token-list'
 import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists'
+import { RFP_TOKEN_LIST } from 'pages/Zap'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import sortByListPriority from 'utils/listSort'
@@ -149,7 +150,7 @@ export function useInactiveListUrls(): string[] {
 export function useCombinedActiveList(): TokenAddressMap {
   const activeListUrls = useActiveListUrls()
   const activeTokens = useCombinedTokenMapFromUrls(activeListUrls)
-  const defaultTokenMap = listToTokenMap({ ...UBESWAP_TOKEN_LIST, ...UNISWAP_TOKEN_LIST })
+  const defaultTokenMap = listToTokenMap({ ...UBESWAP_TOKEN_LIST, ...UNISWAP_TOKEN_LIST, ...RFP_TOKEN_LIST })
   return combineMaps(activeTokens, defaultTokenMap)
 }
 
@@ -161,7 +162,11 @@ export function useCombinedInactiveList(): TokenAddressMap {
 
 // used to hide warnings on import for default tokens
 export function useDefaultTokenList(): TokenAddressMap {
-  return { ...listToTokenMap(UBESWAP_TOKEN_LIST), ...listToTokenMap(UNISWAP_TOKEN_LIST) }
+  return {
+    ...listToTokenMap(UBESWAP_TOKEN_LIST),
+    ...listToTokenMap(UNISWAP_TOKEN_LIST),
+    ...listToTokenMap(RFP_TOKEN_LIST),
+  }
 }
 
 // list of tokens not supported on interface, used to show warnings and prevent swaps and adds

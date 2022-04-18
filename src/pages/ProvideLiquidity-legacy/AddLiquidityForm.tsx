@@ -8,7 +8,6 @@ import { RowBetween } from 'components/Row'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import { PoolPriceBar } from 'pages/AddLiquidity/PoolPriceBar'
 import { Dots } from 'pages/Pool/styleds'
-import { brokerBotAddress } from 'pages/ProvideLiquidity'
 import React, { useContext } from 'react'
 import { Plus } from 'react-feather'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +16,8 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from 'state/m
 import styled, { ThemeContext } from 'styled-components'
 import { TYPE } from 'theme'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
+
+import { ROUTER_ADDRESS } from '../../constants'
 
 const StyledColumnCenter = styled(ColumnCenter)`
   padding-top: 16px;
@@ -49,8 +50,8 @@ export default function AddLiquidityForm({ token0, token1, onConfirmAddLiquidity
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], brokerBotAddress)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], brokerBotAddress)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
 
   const chainId = network.chainId
 
