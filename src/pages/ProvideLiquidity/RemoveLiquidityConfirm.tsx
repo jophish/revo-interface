@@ -29,16 +29,17 @@ interface Props {
   token1: Token
   isOpen: boolean
   onDismiss: () => void
+  userTotalRFPBalance: number
 }
 
-export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss }: Props) {
+export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss, userTotalRFPBalance }: Props) {
   const theme = useContext(ThemeContext)
   const { address: account, network, kit } = useContractKit()
   const library = useProvider()
   const doTransaction = useDoTransaction()
 
   // burn state
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(token0, token1)
+  const { pair, parsedAmounts } = useDerivedBurnInfo(token0, token1, userTotalRFPBalance)
   const { onUserInput } = useBurnActionHandlers()
 
   // modal and loading

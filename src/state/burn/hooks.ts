@@ -16,7 +16,8 @@ export function useBurnState(): AppState['burn'] {
 
 export function useDerivedBurnInfo(
   currencyA: Token | undefined,
-  currencyB: Token | undefined
+  currencyB: Token | undefined,
+  userTotalRFPBalance?: number
 ): {
   pair?: Pair | null
   parsedAmounts: {
@@ -36,7 +37,11 @@ export function useDerivedBurnInfo(
 
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
-  const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
+  const userLPLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
+  const userLiquidity =
+    userTotalRFPBalance === undefined || !userLPLiquidity
+      ? userLPLiquidity
+      : new TokenAmount(userLPLiquidity.token, userTotalRFPBalance.toString())
 
   const [tokenA, tokenB] = [currencyA as Token, currencyB as Token]
   const tokens = {
