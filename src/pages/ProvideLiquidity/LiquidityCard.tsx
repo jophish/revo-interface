@@ -1,4 +1,5 @@
 import { ButtonPrimary } from 'components/Button'
+import Loader from 'components/Loader'
 import { RowBetween, RowFixed } from 'components/Row'
 import { useToken } from 'hooks/Tokens'
 import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
@@ -47,6 +48,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
 
   const token0 = useToken(farmBotSummary.token0Address)
   const token1 = useToken(farmBotSummary.token1Address)
+  const rfpToken = useToken(farmBotSummary.address)
   const isStaking = farmBotSummary.amountUserFP > 0
 
   const PoolDetails = (
@@ -72,8 +74,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
     setActionType(type)
   }
 
-  if (!token0 || !token1) {
-    return null
+  if (!token0 || !token1 || !rfpToken) {
+    return <Loader centered size="24px" />
   }
 
   return (
@@ -145,6 +147,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
             <RemoveLiquidityForm
               token0={token0}
               token1={token1}
+              rfpToken={rfpToken}
               onConfirmRemoveLiquidity={() => {
                 setShowConfirmRemove(true)
               }}

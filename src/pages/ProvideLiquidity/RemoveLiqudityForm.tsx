@@ -1,6 +1,6 @@
 import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
 import { Contract } from '@ethersproject/contracts'
-import { Percent, Token } from '@ubeswap/sdk'
+import { Percent, Token, TokenAmount } from '@ubeswap/sdk'
 import { ButtonConfirmed, ButtonError, ButtonLight } from 'components/Button'
 import { LightCard } from 'components/Card'
 import { AutoColumn, ColumnCenter } from 'components/Column'
@@ -23,11 +23,18 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler'
 interface Props {
   token0: Token
   token1: Token
+  rfpToken: Token
   onConfirmRemoveLiquidity: () => void
   userTotalRFPBalance: number
 }
 
-export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiquidity, userTotalRFPBalance }: Props) {
+export default function RemoveLiquidityForm({
+  token0,
+  token1,
+  onConfirmRemoveLiquidity,
+  userTotalRFPBalance,
+  rfpToken,
+}: Props) {
   const theme = useContext(ThemeContext)
   const { address: account, network, connect } = useContractKit()
   const library = useProvider()
@@ -55,8 +62,12 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
 
   // allowance handling
+  const rfpTokenAmount =
+    rfpToken && parsedAmounts[Field.LIQUIDITY]
+      ? new TokenAmount(rfpToken, parsedAmounts[Field.LIQUIDITY]!.raw)
+      : undefined
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], brokerBotAddress)
+  const [approval, approveCallback] = useApproveCallback(rfpTokenAmount, brokerBotAddress)
 
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
