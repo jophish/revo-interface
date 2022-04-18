@@ -65,7 +65,6 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
 
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
-    console.log(parsedAmounts)
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
