@@ -24,16 +24,17 @@ interface Props {
   token0: Token
   token1: Token
   onConfirmRemoveLiquidity: () => void
+  userTotalRFPBalance: number
 }
 
-export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiquidity }: Props) {
+export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiquidity, userTotalRFPBalance }: Props) {
   const theme = useContext(ThemeContext)
   const { address: account, network, connect } = useContractKit()
   const library = useProvider()
   const deadline = useTransactionDeadline()
 
   const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(token0, token1)
+  const { pair, parsedAmounts, error } = useDerivedBurnInfo(token0, token1, userTotalRFPBalance)
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
@@ -50,7 +51,6 @@ export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiq
     [Field.CURRENCY_B]:
       independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
   }
-  console.log(formattedAmounts)
   // pair contract
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
 

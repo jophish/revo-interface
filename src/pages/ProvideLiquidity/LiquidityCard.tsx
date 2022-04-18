@@ -47,7 +47,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
 
   const token0 = useToken(farmBotSummary.token0Address)
   const token1 = useToken(farmBotSummary.token1Address)
-  const isStaking = farmBotSummary.amountUserLP > 0
+  const isStaking = farmBotSummary.amountUserFP > 0
 
   const PoolDetails = (
     <>
@@ -140,6 +140,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
               onDismiss={() => {
                 setShowConfirmRemove(false)
               }}
+              userTotalRFPBalance={farmBotSummary.amountUserFP}
             />
             <RemoveLiquidityForm
               token0={token0}
@@ -147,6 +148,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
               onConfirmRemoveLiquidity={() => {
                 setShowConfirmRemove(true)
               }}
+              userTotalRFPBalance={farmBotSummary.amountUserFP}
             />
           </>
         )}

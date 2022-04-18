@@ -29,16 +29,17 @@ interface Props {
   token1: Token
   isOpen: boolean
   onDismiss: () => void
+  userTotalRFPBalance: number
 }
 
-export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss }: Props) {
+export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss, userTotalRFPBalance }: Props) {
   const theme = useContext(ThemeContext)
   const { address: account, network, kit } = useContractKit()
   const library = useProvider()
   const doTransaction = useDoTransaction()
 
   // burn state
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(token0, token1)
+  const { pair, parsedAmounts } = useDerivedBurnInfo(token0, token1, userTotalRFPBalance)
   const { onUserInput } = useBurnActionHandlers()
 
   // modal and loading
@@ -91,13 +92,10 @@ export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismi
       const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], metaFarmbotAddress)
       const fpAmount = await farmBot.methods.getFpAmount(liquidityAmount.raw.toString()).call()
 
-      const fpBalance = await farmBot.methods.balanceOf(account).call()
-      const fractionFpBalance = parsedAmounts[Field.LIQUIDITY_PERCENT].multiply(fpBalance).toFixed(0)
-
       const response = await doTransaction(brokerBot, 'withdrawFPForStakingTokens', {
         args: [
           metaFarmbotAddress,
-          fractionFpBalance,
+          fpAmount,
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
           deadline.toHexString(),
