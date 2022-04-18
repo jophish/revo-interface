@@ -12,7 +12,7 @@ import { useToken } from 'hooks/Tokens'
 import { ApprovalState } from 'hooks/useApproveCallback'
 import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
-import { MaxButton } from 'pages/Pool/styleds'
+import { Dots, MaxButton } from 'pages/Pool/styleds'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { useTranslation } from 'react-i18next'
@@ -343,7 +343,7 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
             >
               {approval === ApprovalState.PENDING ? (
                 <AutoRow gap="6px" justify="center">
-                  Approving <Loader stroke="white" />
+                  <Dots>Approving</Dots>
                 </AutoRow>
               ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                 'Approved'
@@ -357,7 +357,11 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
               {t('priceImpact')}
             </ButtonError>
           ) : (
-            <ButtonLight onClick={onZap} padding="8px" disabled={!!swapInputError}>
+            <ButtonLight
+              onClick={onZap}
+              padding="8px"
+              disabled={!!swapInputError || approval !== ApprovalState.APPROVED}
+            >
               {zapType === 'zapIn' ? t('zapIn') : t('zapOut')}
             </ButtonLight>
           )}
