@@ -1,6 +1,8 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
 import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { AppState } from 'state'
 import { AbiItem } from 'web3-utils'
 
 import { ERC20_ABI } from '../../constants/abis/erc20'
@@ -26,8 +28,9 @@ export interface FarmBotSummary {
 }
 
 export const useFarmBotRegistry = (farmBotAddresses: string[]) => {
-  const { address, kit } = useContractKit()
+  const { address, kit, network } = useContractKit()
   const [botSummaries, setBotSummaries] = useState<FarmBotSummary[]>([])
+  const transactions = useSelector((state: AppState) => state.transactions[network.chainId])
 
   const call = useCallback(async () => {
     const botSummaries: FarmBotSummary[] = []
@@ -81,7 +84,7 @@ export const useFarmBotRegistry = (farmBotAddresses: string[]) => {
       botSummaries.push(botSummary)
     }
     setBotSummaries(botSummaries)
-  }, [kit.web3.eth, address])
+  }, [kit.web3.eth, address, transactions])
 
   useEffect(() => {
     call()
