@@ -43,7 +43,10 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export const farmBotAddresses = ['0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81']
+export const farmBotAddresses = [
+  '0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81', // mcUSD-mcEUR
+  '0xec17fb85529a6a48cb6ed7e3c1d1a7cc57d742c1', // PACT-CELO
+]
 
 export const RFP_TOKEN_LIST = {
   name: 'Revo',
