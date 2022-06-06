@@ -91,9 +91,6 @@ export default function App() {
     <Suspense fallback={null}>
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
-        <ConstructionBanner>
-          Warning: Revo&apos;s smart contracts are pending full audits. Please use with caution!
-        </ConstructionBanner>
         <HeaderWrapper>
           <Header />
         </HeaderWrapper>
