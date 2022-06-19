@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { TYPE } from 'theme'
 
+import { useCalculateMetaFarmAPY } from '../../utils/calcAPY'
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
 import RemoveLiquidityForm from './RemoveLiqudityForm'
@@ -74,6 +75,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
     setActionType(type)
   }
 
+  const apy = useCalculateMetaFarmAPY(farmBotSummary, undefined) // todo provide underlying farm APY as a param
+
   if (!token0 || !token1 || !rfpToken) {
     return <Loader centered size="24px" />
   }
@@ -83,6 +86,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
       token0={token0}
       token1={token1}
       poolTitle={t('liquidityCardTitle', { token0: farmBotSummary.token0Name, token1: farmBotSummary.token1Name })}
+      APY={apy}
+      APYInfo={t('APYInfo')}
       buttonLabel={isStaking ? t('manage') : t('addLiquidity')}
       buttonOnPress={handleAddLiquidity}
       buttonActive={expanded}

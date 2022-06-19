@@ -3,6 +3,8 @@ import { Percent } from '@ubeswap/sdk'
 import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { toBN, toWei } from 'web3-utils'
 
+import { FarmBotRewards } from '../pages/Compound/useFarmBotRewards'
+
 const pairDataGql = gql`
   query getPairHourData($id: String!) {
     pair(id: $id) {
@@ -24,13 +26,13 @@ function annualizedPercentageYield(nominal: Percent, compounds: number) {
   return ((divideNominalByNAddOne ** compounds - ONE) * 100).toFixed(0)
 }
 
-export function useCalcAPY(farmBotSummary: FarmBotSummary) {
+export function useCalcAPY(farmBotSummary: FarmBotRewards & FarmBotSummary): number | undefined {
   const { data, loading, error } = useQuery(pairDataGql, {
     variables: { id: farmBotSummary?.stakingTokenAddress?.toLowerCase() },
   })
 
   if (!farmBotSummary || !farmBotSummary.rewardsUSDPerYear || !farmBotSummary.tvlUSD) {
-    return '-'
+    return undefined
   }
 
   let swapRewardsUSDPerYear = 0
@@ -41,9 +43,6 @@ export function useCalcAPY(farmBotSummary: FarmBotSummary) {
     )
     swapRewardsUSDPerYear = Math.floor(lastDayVolumeUsd * 365 * 0.0025)
   }
-
-  const rewardApr = new Percent(farmBotSummary.rewardsUSDPerYear, farmBotSummary.tvlUSD)
-  const swapApr = new Percent(toWei(swapRewardsUSDPerYear.toString()), farmBotSummary.tvlUSD)
   const apr = new Percent(
     toBN(toWei(swapRewardsUSDPerYear.toString())).add(toBN(farmBotSummary.rewardsUSDPerYear)).toString(),
     farmBotSummary.tvlUSD
@@ -51,11 +50,20 @@ export function useCalcAPY(farmBotSummary: FarmBotSummary) {
 
   let compoundedAPY
   try {
+    // fixme might need to take swap APR out of this (not sure it's possible to compound swap rewards...)
     compoundedAPY = annualizedPercentageYield(apr, COMPOUNDS_PER_YEAR)
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    console.error('apy calc overflow', farmSummary.farmName, e)
+    console.error('apy calc overflow', farmBotSummary.address, e)
   }
-  const displayedAPY = compoundedAPY ? `${Number(compoundedAPY).toFixed(2)}%` : `-`
-  return displayedAPY
+  return compoundedAPY ? Number(compoundedAPY) : undefined
+}
+
+export function useCalculateMetaFarmAPY(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _farmBotInfo: FarmBotRewards & FarmBotSummary,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _underlyingFarmAPY: number | undefined
+) {
+  // TODO
+  return '100%'
 }

@@ -233,7 +233,7 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
       token0={token0}
       token1={token1}
       poolTitle={`${token0?.symbol}-${token1?.symbol}`}
-      APY={compoundedAPY}
+      APY={compoundedAPY ? `${Number(compoundedAPY).toFixed(2)}%` : `-`}
       APYInfo={t('APYInfo')}
       buttonLabel={isStaking ? t('manage') : t('zapIn')}
       buttonOnPress={handleToggleExpanded}
