@@ -2,7 +2,7 @@ import { ButtonPrimary } from 'components/Button'
 import Loader from 'components/Loader'
 import { RowBetween, RowFixed } from 'components/Row'
 import { useToken } from 'hooks/Tokens'
-import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { PoolCard } from 'pages/Zap/PoolCard'
 import React, { useState } from 'react'
@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { TYPE } from 'theme'
 
 import { useCalculateMetaFarmAPY } from '../../utils/calcAPY'
+import { farmBotAddresses } from '../Zap/index'
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
 import RemoveLiquidityForm from './RemoveLiqudityForm'
@@ -34,6 +35,17 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
   const [showConfirmAdd, setShowConfirmAdd] = useState<boolean>(false)
   const [showConfirmRemove, setShowConfirmRemove] = useState<boolean>(false)
   const [actionType, setActionType] = useState<ACTION_TYPE>('add')
+  const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
+
+  const farmTokenFarmSummary = farmbotFarmSummaries.find((farmSummary) => {
+    return farmSummary.address === farmBotSummary.token0Address || farmSummary.address === farmBotSummary.token1Address
+  })
+  const farmTokenAddress = farmTokenFarmSummary?.address
+  const normalTokenAddress =
+    farmTokenAddress === farmBotSummary.token0Address ? farmBotSummary.token1Address : farmBotSummary.token0Address
+
+  const farmToken0 = useToken(farmTokenFarmSummary?.token0Address)
+  const farmToken1 = useToken(farmTokenFarmSummary?.token1Address)
 
   const { userValueCUSD: tvlCUSD } = useLPValue(farmBotSummary.totalLP ?? 0, {
     token0Address: farmBotSummary.token0Address,
@@ -47,8 +59,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
     lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
-  const token0 = useToken(farmBotSummary.token0Address)
-  const token1 = useToken(farmBotSummary.token1Address)
+  const normalToken = useToken(normalTokenAddress)
+  const farmToken = useToken(farmTokenAddress)
   const rfpToken = useToken(farmBotSummary.address)
   const isStaking = farmBotSummary.amountUserFP > 0
 
@@ -77,15 +89,20 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
 
   const apy = useCalculateMetaFarmAPY(farmBotSummary, undefined) // todo provide underlying farm APY as a param
 
-  if (!token0 || !token1 || !rfpToken) {
+  if (!normalToken || !farmToken || !rfpToken) {
     return <Loader centered size="24px" />
   }
 
   return (
     <PoolCard
-      token0={token0}
-      token1={token1}
-      poolTitle={t('liquidityCardTitle', { token0: farmBotSummary.token0Name, token1: farmBotSummary.token1Name })}
+      token0={normalToken}
+      token1={farmToken}
+      poolTitle={t('liquidityCardTitle', {
+        normalToken: normalToken.symbol,
+        farmToken: farmToken.symbol,
+        farmToken0: farmToken0.symbol,
+        farmToken1: farmToken1.symbol,
+      })}
       APY={apy}
       APYInfo={t('APYInfo')}
       buttonLabel={isStaking ? t('manage') : t('addLiquidity')}
@@ -122,16 +139,16 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
         {actionType == 'add' && (
           <>
             <AddLiquidityConfirm
-              token0={token0}
-              token1={token1}
+              token0={normalToken}
+              token1={farmToken}
               isOpen={showConfirmAdd}
               onDismiss={() => {
                 setShowConfirmAdd(false)
               }}
             />
             <AddLiquidityForm
-              token0={token0}
-              token1={token1}
+              token0={normalToken}
+              token1={farmToken}
               onConfirmAddLiquidity={() => {
                 setShowConfirmAdd(true)
               }}
@@ -141,8 +158,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
         {actionType == 'remove' && (
           <>
             <RemoveLiquidityConfirm
-              token0={token0}
-              token1={token1}
+              token0={normalToken}
+              token1={farmToken}
               isOpen={showConfirmRemove}
               onDismiss={() => {
                 setShowConfirmRemove(false)
@@ -150,8 +167,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
               userTotalRFPBalance={farmBotSummary.amountUserFP}
             />
             <RemoveLiquidityForm
-              token0={token0}
-              token1={token1}
+              token0={normalToken}
+              token1={farmToken}
               rfpToken={rfpToken}
               onConfirmRemoveLiquidity={() => {
                 setShowConfirmRemove(true)
