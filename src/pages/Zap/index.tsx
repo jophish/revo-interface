@@ -47,6 +47,7 @@ export const farmBotAddresses = [
   '0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81', // mcUSD-mcEUR
   '0xec17fb85529a6a48cb6ed7e3c1d1a7cc57d742c1', // PACT-CELO
   '0x1cEC3e5722CB0a2FFB78e299b9607ea7efA92090', // UBE-CELO
+  '0xC2402ADc740eFdC40C19fc384240481f11E35E8a', // CELO-mcUSD
 ]
 
 export const RFP_TOKEN_LIST = {
