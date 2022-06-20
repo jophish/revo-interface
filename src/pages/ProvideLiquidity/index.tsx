@@ -14,9 +14,9 @@ import { AutoColumn, ColumnCenter } from '../../components/Column'
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { ExternalLink, TYPE } from '../../theme'
-import LiquidityCard from './LiquidityCard'
-// import { useFarmBotRewards } from '../Compound/useFarmBotRewards'
-// import { farmBotAddresses } from '../Zap'
+import { FarmBotRewards, useFarmBotRewards } from '../Compound/useFarmBotRewards'
+import { farmBotAddresses } from '../Zap'
+import LiquidityCard, { MetaFarmInfo } from './LiquidityCard'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -71,35 +71,39 @@ function useShowLegacyAddLiquidity() {
 export default function ProvideLiquidity() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
-  const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
+  const [stakedMetaFarms, setStakedMetaFarms] = useState<(FarmBotSummary & MetaFarmInfo)[]>([])
+  const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<(FarmBotSummary & MetaFarmInfo)[]>([])
+  // const [underlyingFarmBotInfo, setUnderlyingFarmBotInfo] = useState<AddressToFarmBotInfo>({})
   const metaFarmbotFarmSummaries = useFarmBotRegistry(Object.values(metaFarmbotAddressMap))
-  // const farmbotFarmRewards = useFarmBotRewards(Object.values(metaFarmbotAddressMap))
 
   const showLegacyAddLiquidity = useShowLegacyAddLiquidity()
 
+  const underlyingFarmBotSummaries = useFarmBotRegistry(farmBotAddresses)
+  const underlyingFarmBotRewards = useFarmBotRewards(farmBotAddresses)
+
   useEffect(() => {
-    const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
-    // .map((farm) => {
-    //   const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
-    //   console.log(`matchingRewards: ${JSON.stringify(matchingRewards)}`)
-    //   return {
-    //     ...farm,
-    //     ...matchingRewards,
-    //   }
-    // })
-    const stakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP <= 0)
-    // .map((farm) => {
-    //   const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
-    //   return {
-    //     ...farm,
-    //     ...matchingRewards,
-    //   }
-    // })
+    const farmBotInfo: Record<string, FarmBotSummary & FarmBotRewards> = {}
+    for (let idx = 0; idx < underlyingFarmBotSummaries.length; idx++) {
+      const underlyingFarmBotSummary = underlyingFarmBotSummaries[idx]
+      const matchingRewards = underlyingFarmBotRewards.find(
+        (reward) => reward.address === underlyingFarmBotSummary.address
+      )
+      farmBotInfo[underlyingFarmBotSummary.address] = {
+        ...underlyingFarmBotSummary,
+        ...matchingRewards,
+      }
+    }
+    const metaFarmBotInfo: (FarmBotSummary & MetaFarmInfo)[] = metaFarmbotFarmSummaries.map((botSummary) => ({
+      ...botSummary,
+      underlyingFarmBotInfo: farmBotInfo[botSummary.address],
+    }))
+    const unstakedFarms = metaFarmBotInfo.filter((botsummary) => botsummary.amountUserLP > 0)
+
+    const stakedFarms = metaFarmBotInfo.filter((botsummary) => botsummary.amountUserLP <= 0)
 
     setStakedMetaFarms(unstakedFarms)
     setUnstakedMetaFarms(stakedFarms)
-  }, [metaFarmbotFarmSummaries])
+  }, [metaFarmbotFarmSummaries, underlyingFarmBotRewards, underlyingFarmBotSummaries])
 
   if (!isSupportedNetwork) {
     return <ChangeNetworkModal />
