@@ -2,7 +2,7 @@ import { ButtonPrimary } from 'components/Button'
 import Loader from 'components/Loader'
 import { RowBetween, RowFixed } from 'components/Row'
 import { useToken } from 'hooks/Tokens'
-import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
+import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
 import { useLPValue } from 'pages/Earn/useLPValue'
 import { PoolCard } from 'pages/Zap/PoolCard'
 import React, { useState } from 'react'
@@ -11,7 +11,8 @@ import styled from 'styled-components'
 import { TYPE } from 'theme'
 
 import { useCalcAPY, useCalculateMetaFarmAPY } from '../../utils/calcAPY'
-import { FarmBotRewards } from '../Compound/useFarmBotRewards'
+import { FarmBotRewards, useFarmBotRewards } from '../Compound/useFarmBotRewards'
+import { farmBotAddresses } from '../Zap/index'
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
 import RemoveLiquidityForm from './RemoveLiqudityForm'
@@ -25,48 +26,54 @@ const Container = styled.div<{ $expanded: boolean }>`
 `
 type ACTION_TYPE = 'add' | 'remove'
 
-export interface MetaFarmInfo {
-  underlyingFarmBotInfo: FarmBotSummary & FarmBotRewards
-}
-
 interface Props {
-  farmBotSummary: FarmBotSummary & MetaFarmInfo
+  farmBotSummary: FarmBotSummary
 }
 
-export default function LiquidityCard({ farmBotSummary: metaFarmBotSummary }: Props) {
+export default function LiquidityCard({ farmBotSummary }: Props) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [showConfirmAdd, setShowConfirmAdd] = useState<boolean>(false)
   const [showConfirmRemove, setShowConfirmRemove] = useState<boolean>(false)
   const [actionType, setActionType] = useState<ACTION_TYPE>('add')
+  const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
 
-  const farmTokenInfo: (FarmBotSummary & FarmBotRewards) | undefined = metaFarmBotSummary.underlyingFarmBotInfo
+  const farmTokenFarmSummary = farmbotFarmSummaries.find((farmSummary) => {
+    return farmSummary.address === farmBotSummary.token0Address || farmSummary.address === farmBotSummary.token1Address
+  }) // fixme this is pretty inefficient. we'll be getting the "farm summary" of every farm and then tossing all but 1, for every farm. instead, this should just be given as a prop.
+  const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
+  const farmTokenFarmRewards = farmbotFarmRewards.find(({ address }) => address === farmTokenFarmSummary?.address)
+  const farmTokenInfo: (FarmBotSummary & FarmBotRewards) | undefined =
+    farmTokenFarmSummary && farmTokenFarmRewards
+      ? {
+          ...farmTokenFarmSummary,
+          ...farmTokenFarmRewards,
+        }
+      : undefined
 
-  const farmTokenAddress = metaFarmBotSummary.underlyingFarmBotInfo?.address
+  const farmTokenAddress = farmTokenFarmSummary?.address
   const normalTokenAddress =
-    farmTokenAddress === metaFarmBotSummary.token0Address
-      ? metaFarmBotSummary.token1Address
-      : metaFarmBotSummary.token0Address
+    farmTokenAddress === farmBotSummary.token0Address ? farmBotSummary.token1Address : farmBotSummary.token0Address
 
-  const farmToken0 = useToken(farmTokenInfo?.token0Address)
-  const farmToken1 = useToken(farmTokenInfo?.token1Address)
+  const farmToken0 = useToken(farmTokenFarmSummary?.token0Address)
+  const farmToken1 = useToken(farmTokenFarmSummary?.token1Address)
 
-  const { userValueCUSD: tvlCUSD } = useLPValue(metaFarmBotSummary.totalLP ?? 0, {
-    token0Address: metaFarmBotSummary.token0Address,
-    token1Address: metaFarmBotSummary.token1Address,
-    lpAddress: metaFarmBotSummary.stakingTokenAddress,
+  const { userValueCUSD: tvlCUSD } = useLPValue(farmBotSummary.totalLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
-  const { userValueCUSD } = useLPValue(metaFarmBotSummary.amountUserLP ?? 0, {
-    token0Address: metaFarmBotSummary.token0Address,
-    token1Address: metaFarmBotSummary.token1Address,
-    lpAddress: metaFarmBotSummary.stakingTokenAddress,
+  const { userValueCUSD } = useLPValue(farmBotSummary.amountUserLP ?? 0, {
+    token0Address: farmBotSummary.token0Address,
+    token1Address: farmBotSummary.token1Address,
+    lpAddress: farmBotSummary.stakingTokenAddress,
   })
 
   const normalToken = useToken(normalTokenAddress)
   const farmToken = useToken(farmTokenAddress)
-  const rfpToken = useToken(metaFarmBotSummary.address)
-  const isStaking = metaFarmBotSummary.amountUserFP > 0
+  const rfpToken = useToken(farmBotSummary.address)
+  const isStaking = farmBotSummary.amountUserFP > 0
 
   const PoolDetails = (
     <>
@@ -91,7 +98,7 @@ export default function LiquidityCard({ farmBotSummary: metaFarmBotSummary }: Pr
     setActionType(type)
   }
   const underlyingFarmApy = useCalcAPY(farmTokenInfo)
-  const apy = useCalculateMetaFarmAPY(metaFarmBotSummary, underlyingFarmApy, normalTokenAddress)
+  const apy = useCalculateMetaFarmAPY(farmBotSummary, underlyingFarmApy, normalTokenAddress)
 
   if (!normalToken || !farmToken || !rfpToken || !farmToken0 || !farmToken1) {
     return <Loader centered size="24px" />
@@ -168,7 +175,7 @@ export default function LiquidityCard({ farmBotSummary: metaFarmBotSummary }: Pr
               onDismiss={() => {
                 setShowConfirmRemove(false)
               }}
-              userTotalRFPBalance={metaFarmBotSummary.amountUserFP}
+              userTotalRFPBalance={farmBotSummary.amountUserFP}
             />
             <RemoveLiquidityForm
               token0={normalToken}
@@ -177,7 +184,7 @@ export default function LiquidityCard({ farmBotSummary: metaFarmBotSummary }: Pr
               onConfirmRemoveLiquidity={() => {
                 setShowConfirmRemove(true)
               }}
-              userTotalRFPBalance={metaFarmBotSummary.amountUserFP}
+              userTotalRFPBalance={farmBotSummary.amountUserFP}
             />
           </>
         )}
