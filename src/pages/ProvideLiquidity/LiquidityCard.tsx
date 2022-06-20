@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { TYPE } from 'theme'
 
+import { useCalcAPY, useCalculateMetaFarmAPY } from '../../utils/calcAPY'
+import { FarmBotRewards, useFarmBotRewards } from '../Compound/useFarmBotRewards'
 import { farmBotAddresses } from '../Zap/index'
 import AddLiquidityConfirm from './AddLiquidityConfirm'
 import AddLiquidityForm from './AddLiquidityForm'
@@ -38,7 +40,17 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
 
   const farmTokenFarmSummary = farmbotFarmSummaries.find((farmSummary) => {
     return farmSummary.address === farmBotSummary.token0Address || farmSummary.address === farmBotSummary.token1Address
-  })
+  }) // fixme eventually: this is pretty inefficient. we'll be getting the "farm summary" of every farm and then tossing all but 1, for every farm. instead, this could just be given as a prop.
+  const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
+  const farmTokenFarmRewards = farmbotFarmRewards.find(({ address }) => address === farmTokenFarmSummary?.address)
+  const farmTokenInfo: (FarmBotSummary & FarmBotRewards) | undefined =
+    farmTokenFarmSummary && farmTokenFarmRewards
+      ? {
+          ...farmTokenFarmSummary,
+          ...farmTokenFarmRewards,
+        }
+      : undefined
+
   const farmTokenAddress = farmTokenFarmSummary?.address
   const normalTokenAddress =
     farmTokenAddress === farmBotSummary.token0Address ? farmBotSummary.token1Address : farmBotSummary.token0Address
@@ -85,8 +97,10 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
   const handleSetActionType = (type: ACTION_TYPE) => {
     setActionType(type)
   }
+  const underlyingFarmApy = useCalcAPY(farmTokenInfo)
+  const apy = useCalculateMetaFarmAPY(farmBotSummary, underlyingFarmApy, normalTokenAddress)
 
-  if (!normalToken || !farmToken || !rfpToken) {
+  if (!normalToken || !farmToken || !rfpToken || !farmToken0 || !farmToken1) {
     return <Loader centered size="24px" />
   }
 
@@ -100,6 +114,8 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
         farmToken0: farmToken0.symbol,
         farmToken1: farmToken1.symbol,
       })}
+      APY={apy ? `${apy.toFixed(2)}%` : '-'}
+      APYInfo={t('APYInfo')}
       buttonLabel={isStaking ? t('manage') : t('addLiquidity')}
       buttonOnPress={handleAddLiquidity}
       buttonActive={expanded}

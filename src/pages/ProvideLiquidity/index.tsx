@@ -15,6 +15,8 @@ import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { ExternalLink, TYPE } from '../../theme'
 import LiquidityCard from './LiquidityCard'
+// import { useFarmBotRewards } from '../Compound/useFarmBotRewards'
+// import { farmBotAddresses } from '../Zap'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -72,11 +74,28 @@ export default function ProvideLiquidity() {
   const [stakedMetaFarms, setStakedMetaFarms] = useState<FarmBotSummary[]>([])
   const [unstakedMetaFarms, setUnstakedMetaFarms] = useState<FarmBotSummary[]>([])
   const metaFarmbotFarmSummaries = useFarmBotRegistry(Object.values(metaFarmbotAddressMap))
+  // const farmbotFarmRewards = useFarmBotRewards(Object.values(metaFarmbotAddressMap))
+
   const showLegacyAddLiquidity = useShowLegacyAddLiquidity()
 
   useEffect(() => {
     const unstakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP > 0)
+    // .map((farm) => {
+    //   const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
+    //   console.log(`matchingRewards: ${JSON.stringify(matchingRewards)}`)
+    //   return {
+    //     ...farm,
+    //     ...matchingRewards,
+    //   }
+    // })
     const stakedFarms = metaFarmbotFarmSummaries.filter((botsummary) => botsummary.amountUserLP <= 0)
+    // .map((farm) => {
+    //   const matchingRewards = farmbotFarmRewards.find((reward) => reward.address === farm.address)
+    //   return {
+    //     ...farm,
+    //     ...matchingRewards,
+    //   }
+    // })
 
     setStakedMetaFarms(unstakedFarms)
     setUnstakedMetaFarms(stakedFarms)

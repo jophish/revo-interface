@@ -3,7 +3,7 @@ import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
 import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
-import { useFarmBotRewards } from 'pages/Compound/useFarmBotRewards'
+import { FarmBotRewards, useFarmBotRewards } from 'pages/Compound/useFarmBotRewards'
 import ZapCard from 'pages/Zap/ZapCard'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -71,8 +71,8 @@ export const RFP_TOKEN_LIST = {
 export default function Zap() {
   const { t } = useTranslation()
   const isSupportedNetwork = useIsSupportedNetwork()
-  const [stakedFarms, setStakedFarms] = useState<FarmBotSummary[]>([])
-  const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
+  const [stakedFarms, setStakedFarms] = useState<(FarmBotSummary & FarmBotRewards)[]>([])
+  const [unstakedFarms, setUnstakedFarms] = useState<(FarmBotSummary & FarmBotRewards)[]>([])
 
   const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
   const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)

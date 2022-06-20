@@ -28,6 +28,7 @@ import { toBN } from 'web3-utils'
 import { BLOCKED_PRICE_IMPACT_NON_EXPERT, ONE_BIPS } from '../../constants/'
 import { TYPE } from '../../theme'
 import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
+import { FarmBotRewards } from '../Compound/useFarmBotRewards'
 import { PoolCard } from './PoolCard'
 import { useZapFunctions } from './useZapFunctions'
 import { ZapDetails } from './ZapDetails'
@@ -84,7 +85,7 @@ const ZapDetailsContainer = styled.div<{ $expanded: boolean }>`
 `
 
 interface Props {
-  farmBotSummary: FarmBotSummary
+  farmBotSummary: FarmBotSummary & FarmBotRewards
 }
 
 type ZapType = 'zapIn' | 'zapOut' | 'zapBetween'
@@ -96,7 +97,7 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const theme = useContext(ThemeContext)
 
   const { v2Trade: trade, inputError: swapInputError } = useDerivedSwapInfo()
-  const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : {}
+  const { priceImpactWithoutFee } = trade ? computeTradePriceBreakdown(trade) : { priceImpactWithoutFee: null }
   const isPriceImpactTooHigh = !!priceImpactWithoutFee?.greaterThan(BLOCKED_PRICE_IMPACT_NON_EXPERT)
 
   const token0 = useToken(farmBotSummary.token0Address) || undefined
@@ -193,7 +194,7 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const zapOutPercentChangeCallback = useCallback(
     (value: number) => {
       const rawAmountZapOut = toBN(farmBotSummary.amountUserFP).mul(toBN(value)).div(toBN(100)).toString()
-      const adjustedAmountZapOut = new Fraction(toBN(rawAmountZapOut), toBN(10).pow(toBN(18))).toSignificant(100)
+      const adjustedAmountZapOut = new Fraction(rawAmountZapOut, toBN(10).pow(toBN(18)).toString()).toSignificant(100)
       setZapInAmount(rawAmountZapOut)
       onUserInput(Field.INPUT, adjustedAmountZapOut)
     },
@@ -232,7 +233,7 @@ export const ZapCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
       token0={token0}
       token1={token1}
       poolTitle={`${token0?.symbol}-${token1?.symbol}`}
-      APY={compoundedAPY}
+      APY={compoundedAPY ? `${Number(compoundedAPY).toFixed(2)}%` : `-`}
       APYInfo={t('APYInfo')}
       buttonLabel={isStaking ? t('manage') : t('zapIn')}
       buttonOnPress={handleToggleExpanded}
