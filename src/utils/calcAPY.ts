@@ -1,13 +1,16 @@
 import { gql, useQuery } from '@apollo/client'
 import { Fraction, Percent, TokenAmount } from '@ubeswap/sdk'
+import BigNumber from 'bignumber.js'
 import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { toBN, toWei } from 'web3-utils'
 
 import { usePair } from '../data/Reserves'
-import { useCurrency } from '../hooks/Tokens'
+import { useCurrency, useToken } from '../hooks/Tokens'
+import { useTokenContract } from '../hooks/useContract'
 import { FarmBotRewards } from '../pages/Compound/useFarmBotRewards'
+import { useSingleCallResult } from '../state/multicall/hooks'
 import { usePairStakingInfo } from '../state/stake/useStakingInfo'
-import { useCUSDPrices } from './useCUSDPrice'
+import { useCUSDPrice, useCUSDPrices } from './useCUSDPrice'
 
 const pairDataGql = gql`
   query getPairHourData($id: String!) {
@@ -64,7 +67,11 @@ export function useCalcAPY(farmBotSummary: (FarmBotRewards & FarmBotSummary) | u
 
 const SECONDS_PER_YEAR = BigInt(365.25 * 24 * 60 * 60)
 
-export function useCalculateMetaFarmAPY(metaFarmBotInfo: FarmBotSummary, underlyingFarmAPY: number | undefined) {
+export function useCalculateMetaFarmAPY(
+  metaFarmBotInfo: FarmBotSummary,
+  underlyingFarmAPY: number | undefined,
+  normalTokenAddress: string | undefined
+) {
   console.log(`farmBotInfo: ${JSON.stringify(metaFarmBotInfo)}`)
   const tokenA = useCurrency(metaFarmBotInfo.token0Address) ?? undefined
   const tokenB = useCurrency(metaFarmBotInfo.token1Address) ?? undefined
@@ -74,9 +81,19 @@ export function useCalculateMetaFarmAPY(metaFarmBotInfo: FarmBotSummary, underly
   }
   // console.log(`totalRewardRates: ${JSON.stringify(totalRewardRates)}`)
   const rewardsTokenPrices = useCUSDPrices(totalRewardRates?.map((tokenAmount: TokenAmount) => tokenAmount.token))
-  if (!rewardsTokenPrices || !totalRewardRates) {
+  const normalTokenContract = useTokenContract(normalTokenAddress)
+  const normalTokensInLP =
+    useSingleCallResult(normalTokenContract, 'balanceOf', [metaFarmBotInfo.stakingTokenAddress])?.result ?? '0'
+  const normalTokenPrice = useCUSDPrice(useToken(normalTokenAddress) ?? undefined)
+  if (!rewardsTokenPrices || !totalRewardRates || !normalTokensInLP || !normalTokenPrice) {
     return
   }
+  const normalTokenBalance = new BigNumber(normalTokensInLP as unknown as string)
+    .times(metaFarmBotInfo.totalLPInFarm)
+    .dividedToIntegerBy(metaFarmBotInfo.totalLPSupply)
+  // console.log(`normalTokenBalance: ${normalTokenBalance}, normalTokenPrice: ${normalTokenPrice.toFixed(2)}`)
+  const metaFarmTVL = normalTokenPrice.raw.multiply(normalTokenBalance.toString()).multiply('2') // multiplying by 2 since there is 1 other token in the pool with equal value
+  // console.log(`tvl: ${metaFarmTVL.toFixed(2)}`)
   let cUSDRewardsPerYear = new Fraction('0', '1')
   for (let idx = 0; idx < totalRewardRates.length; idx++) {
     const price = rewardsTokenPrices[idx]
@@ -85,10 +102,11 @@ export function useCalculateMetaFarmAPY(metaFarmBotInfo: FarmBotSummary, underly
     }
     cUSDRewardsPerYear = cUSDRewardsPerYear.add(price.raw.multiply(totalRewardRates[idx]).divide(SECONDS_PER_YEAR))
   }
-  const metaAPY = cUSDRewardsPerYear // TODO need to divide by TVL
-  if (!metaAPY) {
-    console.log('Undefined meta apy') // fixme this keeps happening :(
+  const metaFarmRewardsAPR = cUSDRewardsPerYear.divide(metaFarmTVL)
+  if (!metaFarmRewardsAPR) {
+    console.warn('Cannot calculate meta APY, leaving blank')
     return
   }
-  return Number(metaAPY.toFixed(2)) + 0.5 * (underlyingFarmAPY ?? 0)
+  const metaFarmRewardsAPY = Number(annualizedPercentageYield(metaFarmRewardsAPR, COMPOUNDS_PER_YEAR))
+  return metaFarmRewardsAPY + 0.5 * (underlyingFarmAPY ?? 0) // this probably isn't exactly right, since some rewards from the meta-farm will go into the underlying farm and gain interest. But it's a lower bound and good enough for now.
 }

@@ -98,7 +98,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
     setActionType(type)
   }
   const underlyingFarmApy = useCalcAPY(farmTokenInfo)
-  const apy = useCalculateMetaFarmAPY(farmBotSummary, underlyingFarmApy)
+  const apy = useCalculateMetaFarmAPY(farmBotSummary, underlyingFarmApy, normalTokenAddress)
 
   if (!normalToken || !farmToken || !rfpToken || !farmToken0 || !farmToken1) {
     return <Loader centered size="24px" />
