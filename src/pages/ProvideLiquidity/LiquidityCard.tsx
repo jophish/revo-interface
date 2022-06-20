@@ -40,7 +40,7 @@ export default function LiquidityCard({ farmBotSummary }: Props) {
 
   const farmTokenFarmSummary = farmbotFarmSummaries.find((farmSummary) => {
     return farmSummary.address === farmBotSummary.token0Address || farmSummary.address === farmBotSummary.token1Address
-  }) // fixme this is pretty inefficient. we'll be getting the "farm summary" of every farm and then tossing all but 1, for every farm. instead, this should just be given as a prop.
+  }) // fixme eventually: this is pretty inefficient. we'll be getting the "farm summary" of every farm and then tossing all but 1, for every farm. instead, this could just be given as a prop.
   const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
   const farmTokenFarmRewards = farmbotFarmRewards.find(({ address }) => address === farmTokenFarmSummary?.address)
   const farmTokenInfo: (FarmBotSummary & FarmBotRewards) | undefined =
