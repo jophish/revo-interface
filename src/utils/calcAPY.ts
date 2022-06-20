@@ -1,9 +1,13 @@
 import { gql, useQuery } from '@apollo/client'
-import { Percent } from '@ubeswap/sdk'
+import { Fraction, Percent, TokenAmount } from '@ubeswap/sdk'
 import { FarmBotSummary } from 'pages/Compound/useFarmBotRegistry'
 import { toBN, toWei } from 'web3-utils'
 
+import { usePair } from '../data/Reserves'
+import { useCurrency } from '../hooks/Tokens'
 import { FarmBotRewards } from '../pages/Compound/useFarmBotRewards'
+import { usePairStakingInfo } from '../state/stake/useStakingInfo'
+import { useCUSDPrices } from './useCUSDPrice'
 
 const pairDataGql = gql`
   query getPairHourData($id: String!) {
@@ -26,7 +30,7 @@ function annualizedPercentageYield(nominal: Percent, compounds: number) {
   return ((divideNominalByNAddOne ** compounds - ONE) * 100).toFixed(0)
 }
 
-export function useCalcAPY(farmBotSummary: FarmBotRewards & FarmBotSummary): number | undefined {
+export function useCalcAPY(farmBotSummary: (FarmBotRewards & FarmBotSummary) | undefined): number | undefined {
   const { data, loading, error } = useQuery(pairDataGql, {
     variables: { id: farmBotSummary?.stakingTokenAddress?.toLowerCase() },
   })
@@ -58,12 +62,33 @@ export function useCalcAPY(farmBotSummary: FarmBotRewards & FarmBotSummary): num
   return compoundedAPY ? Number(compoundedAPY) : undefined
 }
 
-export function useCalculateMetaFarmAPY(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _farmBotInfo: FarmBotRewards & FarmBotSummary,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _underlyingFarmAPY: number | undefined
-) {
-  // TODO
-  return '100%'
+const SECONDS_PER_YEAR = BigInt(365.25 * 24 * 60 * 60)
+
+export function useCalculateMetaFarmAPY(metaFarmBotInfo: FarmBotSummary, underlyingFarmAPY: number | undefined) {
+  console.log(`farmBotInfo: ${JSON.stringify(metaFarmBotInfo)}`)
+  const tokenA = useCurrency(metaFarmBotInfo.token0Address) ?? undefined
+  const tokenB = useCurrency(metaFarmBotInfo.token1Address) ?? undefined
+  const [, stakingTokenPair] = usePair(tokenA, tokenB)
+  const { totalRewardRates } = usePairStakingInfo(stakingTokenPair, metaFarmBotInfo.stakingRewardsAddress) ?? {
+    totalRewardRates: [],
+  }
+  // console.log(`totalRewardRates: ${JSON.stringify(totalRewardRates)}`)
+  const rewardsTokenPrices = useCUSDPrices(totalRewardRates?.map((tokenAmount: TokenAmount) => tokenAmount.token))
+  if (!rewardsTokenPrices || !totalRewardRates) {
+    return
+  }
+  let cUSDRewardsPerYear = new Fraction('0', '1')
+  for (let idx = 0; idx < totalRewardRates.length; idx++) {
+    const price = rewardsTokenPrices[idx]
+    if (!price) {
+      continue
+    }
+    cUSDRewardsPerYear = cUSDRewardsPerYear.add(price.raw.multiply(totalRewardRates[idx]).divide(SECONDS_PER_YEAR))
+  }
+  const metaAPY = cUSDRewardsPerYear // TODO need to divide by TVL
+  if (!metaAPY) {
+    console.log('Undefined meta apy') // fixme this keeps happening :(
+    return
+  }
+  return Number(metaAPY.toFixed(2)) + 0.5 * (underlyingFarmAPY ?? 0)
 }
