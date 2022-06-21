@@ -1,0 +1,548 @@
+[
+  {
+    "type": "event",
+    "name": "Deposit",
+    "inputs": [
+      { "type": "address", "name": "provider", "indexed": true },
+      { "type": "uint256", "name": "value", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Withdraw",
+    "inputs": [
+      { "type": "address", "name": "provider", "indexed": true },
+      { "type": "uint256", "name": "value", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UpdateLiquidityLimit",
+    "inputs": [
+      { "type": "address", "name": "user", "indexed": false },
+      { "type": "uint256", "name": "original_balance", "indexed": false },
+      { "type": "uint256", "name": "original_supply", "indexed": false },
+      { "type": "uint256", "name": "working_balance", "indexed": false },
+      { "type": "uint256", "name": "working_supply", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CommitOwnership",
+    "inputs": [{ "type": "address", "name": "admin", "indexed": false }],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ApplyOwnership",
+    "inputs": [{ "type": "address", "name": "admin", "indexed": false }],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Transfer",
+    "inputs": [
+      { "type": "address", "name": "_from", "indexed": true },
+      { "type": "address", "name": "_to", "indexed": true },
+      { "type": "uint256", "name": "_value", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Approval",
+    "inputs": [
+      { "type": "address", "name": "_owner", "indexed": true },
+      { "type": "address", "name": "_spender", "indexed": true },
+      { "type": "uint256", "name": "_value", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "constructor",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "inputs": [
+      { "type": "address", "name": "_lp_token" },
+      { "type": "address", "name": "_minter" },
+      { "type": "address", "name": "_admin" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "decimals",
+    "inputs": [],
+    "gas": 288
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "integrate_checkpoint",
+    "inputs": [],
+    "gas": 4624
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "user_checkpoint",
+    "inputs": [{ "type": "address", "name": "addr" }],
+    "gas": 3133638
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "claimable_tokens",
+    "inputs": [{ "type": "address", "name": "addr" }],
+    "gas": 3046705
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "reward_contract",
+    "inputs": [],
+    "gas": 2718
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "last_claim",
+    "inputs": [],
+    "gas": 2544
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "claimed_reward",
+    "inputs": [
+      { "type": "address", "name": "_addr" },
+      { "type": "address", "name": "_token" }
+    ],
+    "gas": 3066
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "claimable_reward",
+    "inputs": [
+      { "type": "address", "name": "_addr" },
+      { "type": "address", "name": "_token" }
+    ],
+    "gas": 3034
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "claimable_reward_write",
+    "inputs": [
+      { "type": "address", "name": "_addr" },
+      { "type": "address", "name": "_token" }
+    ],
+    "gas": 1211018
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "set_rewards_receiver",
+    "inputs": [{ "type": "address", "name": "_receiver" }],
+    "gas": 35733
+  },
+  { "type": "function", "stateMutability": "nonpayable", "outputs": [], "name": "claim_rewards", "inputs": [] },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "claim_rewards",
+    "inputs": [{ "type": "address", "name": "_addr" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "claim_rewards",
+    "inputs": [
+      { "type": "address", "name": "_addr" },
+      { "type": "address", "name": "_receiver" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "kick",
+    "inputs": [{ "type": "address", "name": "addr" }],
+    "gas": 3148229
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "deposit",
+    "inputs": [{ "type": "uint256", "name": "_value" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "deposit",
+    "inputs": [
+      { "type": "uint256", "name": "_value" },
+      { "type": "address", "name": "_addr" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "deposit",
+    "inputs": [
+      { "type": "uint256", "name": "_value" },
+      { "type": "address", "name": "_addr" },
+      { "type": "bool", "name": "_claim_rewards" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "withdraw",
+    "inputs": [{ "type": "uint256", "name": "_value" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "withdraw",
+    "inputs": [
+      { "type": "uint256", "name": "_value" },
+      { "type": "bool", "name": "_claim_rewards" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "transfer",
+    "inputs": [
+      { "type": "address", "name": "_to" },
+      { "type": "uint256", "name": "_value" }
+    ],
+    "gas": 17172316
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "transferFrom",
+    "inputs": [
+      { "type": "address", "name": "_from" },
+      { "type": "address", "name": "_to" },
+      { "type": "uint256", "name": "_value" }
+    ],
+    "gas": 17210266
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "approve",
+    "inputs": [
+      { "type": "address", "name": "_spender" },
+      { "type": "uint256", "name": "_value" }
+    ],
+    "gas": 38211
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "increaseAllowance",
+    "inputs": [
+      { "type": "address", "name": "_spender" },
+      { "type": "uint256", "name": "_added_value" }
+    ],
+    "gas": 40755
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "decreaseAllowance",
+    "inputs": [
+      { "type": "address", "name": "_spender" },
+      { "type": "uint256", "name": "_subtracted_value" }
+    ],
+    "gas": 40779
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "set_rewards",
+    "inputs": [
+      { "type": "address", "name": "_reward_contract" },
+      { "type": "bytes32", "name": "_sigs" },
+      { "type": "address[8]", "name": "_reward_tokens" }
+    ],
+    "gas": 2743591
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "set_killed",
+    "inputs": [{ "type": "bool", "name": "_is_killed" }],
+    "gas": 38145
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "commit_transfer_ownership",
+    "inputs": [{ "type": "address", "name": "addr" }],
+    "gas": 39525
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "accept_transfer_ownership",
+    "inputs": [],
+    "gas": 39470
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "minter",
+    "inputs": [],
+    "gas": 3078
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "crv_token",
+    "inputs": [],
+    "gas": 3108
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "lp_token",
+    "inputs": [],
+    "gas": 3138
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "controller",
+    "inputs": [],
+    "gas": 3168
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "voting_escrow",
+    "inputs": [],
+    "gas": 3198
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "future_epoch_time",
+    "inputs": [],
+    "gas": 3228
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "balanceOf",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3473
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "totalSupply",
+    "inputs": [],
+    "gas": 3288
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "allowance",
+    "inputs": [
+      { "type": "address", "name": "arg0" },
+      { "type": "address", "name": "arg1" }
+    ],
+    "gas": 3748
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "string", "name": "" }],
+    "name": "name",
+    "inputs": [],
+    "gas": 13650
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "string", "name": "" }],
+    "name": "symbol",
+    "inputs": [],
+    "gas": 11403
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "working_balances",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3623
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "working_supply",
+    "inputs": [],
+    "gas": 3438
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "int128", "name": "" }],
+    "name": "period",
+    "inputs": [],
+    "gas": 3468
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "period_timestamp",
+    "inputs": [{ "type": "uint256", "name": "arg0" }],
+    "gas": 3607
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "integrate_inv_supply",
+    "inputs": [{ "type": "uint256", "name": "arg0" }],
+    "gas": 3637
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "integrate_inv_supply_of",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3773
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "integrate_checkpoint_of",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3803
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "integrate_fraction",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3833
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "inflation_rate",
+    "inputs": [],
+    "gas": 3648
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "reward_tokens",
+    "inputs": [{ "type": "uint256", "name": "arg0" }],
+    "gas": 3787
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "rewards_receiver",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3923
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "reward_integral",
+    "inputs": [{ "type": "address", "name": "arg0" }],
+    "gas": 3953
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "name": "reward_integral_for",
+    "inputs": [
+      { "type": "address", "name": "arg0" },
+      { "type": "address", "name": "arg1" }
+    ],
+    "gas": 4198
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "admin",
+    "inputs": [],
+    "gas": 3798
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "" }],
+    "name": "future_admin",
+    "inputs": [],
+    "gas": 3828
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "bool", "name": "" }],
+    "name": "is_killed",
+    "inputs": [],
+    "gas": 3858
+  }
+]

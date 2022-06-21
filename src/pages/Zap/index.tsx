@@ -2,7 +2,7 @@ import { ErrorBoundary } from '@sentry/react'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
-import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
+import { FarmBotInfo, FarmBotSummary, FarmBotType, useFarmBotRegistry } from 'pages/Compound/useFarmBotRegistry'
 import { useFarmBotRewards } from 'pages/Compound/useFarmBotRewards'
 import ZapCard from 'pages/Zap/ZapCard'
 import React, { useEffect, useState } from 'react'
@@ -43,12 +43,27 @@ const Header: React.FC = ({ children }) => {
   )
 }
 
-export const farmBotAddresses = [
-  '0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81', // mcUSD-mcEUR
-  '0xec17fb85529a6a48cb6ed7e3c1d1a7cc57d742c1', // PACT-CELO
-  '0x1cEC3e5722CB0a2FFB78e299b9607ea7efA92090', // UBE-CELO
-  '0xC2402ADc740eFdC40C19fc384240481f11E35E8a', // CELO-mcUSD
-  '0x61e6b1C8AB35dcb7FE1B86f14D52A5A5820Be5d4', // cUSD-cUSDC
+export const farmBotAddresses: FarmBotInfo[] = [
+  {
+    address: '0xCB34fbfC3b9a73bc04D2eb43B62532c7918d9E81', // mcUSD-mcEUR
+    type: FarmBotType.Ubeswap,
+  },
+  {
+    address: '0xec17fb85529a6a48cb6ed7e3c1d1a7cc57d742c1', // PACT-CELO
+    type: FarmBotType.Ubeswap,
+  },
+  {
+    address: '0x1cEC3e5722CB0a2FFB78e299b9607ea7efA92090', // UBE-CELO
+    type: FarmBotType.Ubeswap,
+  },
+  {
+    address: '0xC2402ADc740eFdC40C19fc384240481f11E35E8a', // CELO-mcUSD
+    type: FarmBotType.Ubeswap,
+  },
+  {
+    address: '0x61e6b1C8AB35dcb7FE1B86f14D52A5A5820Be5d4', // cUSD-cUSDC
+    type: FarmBotType.Mobius,
+  },
 ]
 
 export const RFP_TOKEN_LIST = {
@@ -56,8 +71,8 @@ export const RFP_TOKEN_LIST = {
   logoURI: '',
   keywords: ['celo', 'ubeswap', 'defi'],
   timestamp: '2022-04-17T20:14:10.685Z',
-  tokens: farmBotAddresses.map((address) => ({
-    address,
+  tokens: farmBotAddresses.map((info) => ({
+    address: info.address,
     name: 'Revo Farm Point',
     symbol: 'RFP',
     chainId: 42220,
@@ -78,6 +93,7 @@ export default function Zap() {
   const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
 
   const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
+  console.log(farmbotFarmSummaries)
   const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
 
   useEffect(() => {
