@@ -93,7 +93,6 @@ export default function Zap() {
   const [unstakedFarms, setUnstakedFarms] = useState<FarmBotSummary[]>([])
 
   const farmbotFarmSummaries = useFarmBotRegistry(farmBotAddresses)
-  console.log(farmbotFarmSummaries)
   const farmbotFarmRewards = useFarmBotRewards(farmBotAddresses)
 
   useEffect(() => {
