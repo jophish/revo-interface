@@ -1,4 +1,5 @@
 import { useContractKit } from '@celo-tools/use-contractkit'
+import { FarmBotType } from 'pages/Compound/useFarmBotRegistry'
 import { useCallback, useEffect, useState } from 'react'
 import { AbiItem } from 'web3-utils'
 
@@ -12,16 +13,19 @@ export interface FarmBotRewards {
   tvlUSD?: string
 }
 
-export const useFarmBotRewards = (farmBotAddresses: string[]) => {
-  const { address, kit } = useContractKit()
+export const useFarmBotRewards = (farmBotInfoList) => {
+  const { kit } = useContractKit()
   const [rewardSummaries, setRewardSummaries] = useState<FarmBotRewards[]>([])
 
   const farmSummaries = useFarmRegistry()
 
   const call = useCallback(async () => {
     const botSummaries: FarmBotRewards[] = []
-    for (const farmBotAddress of farmBotAddresses) {
-      const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], farmBotAddress)
+    for (const farmBotInfo of farmBotInfoList) {
+      if (farmBotInfo.type !== FarmBotType.Ubeswap) {
+        continue
+      }
+      const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], farmBotInfo.address)
 
       const stakingRewardsAddress = await farmBot.methods.stakingRewards().call()
       const farmSummary = farmSummaries.find((farm) => farm.stakingAddress == stakingRewardsAddress)
@@ -30,7 +34,7 @@ export const useFarmBotRewards = (farmBotAddresses: string[]) => {
       const tvlUSD = farmSummary?.tvlUSD
 
       const botSummary: FarmBotRewards = {
-        address: farmBotAddress,
+        address: farmBotInfo.address,
         stakingRewardsAddress,
         rewardsUSDPerYear,
         tvlUSD,
@@ -38,7 +42,7 @@ export const useFarmBotRewards = (farmBotAddresses: string[]) => {
       botSummaries.push(botSummary)
     }
     setRewardSummaries(botSummaries)
-  }, [kit.web3.eth, address, farmSummaries])
+  }, [kit.web3.eth, farmSummaries, farmBotInfoList])
 
   useEffect(() => {
     call()
