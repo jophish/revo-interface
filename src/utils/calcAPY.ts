@@ -5,8 +5,8 @@ import { useAsyncState } from '../hooks/useAsyncState'
 
 export function useCalcAPY(farmBotSummary: FarmBotSummary) {
   const [apy] = useAsyncState('-', async () => {
-    const apy = await getFarmBotAPY(farmBotSummary.address)
-    return apy.toFixed(0)
+    const apyPercent = (await getFarmBotAPY(farmBotSummary.address)).multipliedBy(100, 10)
+    return apyPercent.toPrecision(3).toString()
   })
   return apy
 }
