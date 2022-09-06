@@ -2951,14 +2951,13 @@
     redux-thunk "^2.3.0"
     reselect "^4.0.0"
 
-"@revo-market/farm-bot-apy@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@revo-market/farm-bot-apy/-/farm-bot-apy-1.1.1.tgz#81c374b903c6f0a8a2036bcdf1f16ee12e1f92de"
-  integrity sha512-MyKND9FHWayIY5Or9Db4nKOK1MdDDHzNIAkFDfWwM4qBKQsEq+LPeUdfsb16DTrZ6bJgEoChfU6tPXXxf0V2/g==
+"@revo-market/farm-bot-apy@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@revo-market/farm-bot-apy/-/farm-bot-apy-1.1.4.tgz#2078ac20f7d8ec7b5135c8cff44b0d806758a90b"
+  integrity sha512-VM8kEQG9MSSduars9ztCFgDqbIhlep9MCZKpq1BZiV4UsrQ346tZqXUyWrmTaLYpJgEbMb63d7nX+/DHUdpq0w==
   dependencies:
     bignumber.js "^9.1.0"
     bunyan "^1.8.15"
-    bunyan-prettystream "^0.1.3"
     ethers "^5.7.0"
 
 "@rollup/plugin-node-resolve@^7.1.1":
@@ -5576,11 +5575,6 @@ builtin-status-codes@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
-
-bunyan-prettystream@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/bunyan-prettystream/-/bunyan-prettystream-0.1.3.tgz#6c3b713266f6ad32007c7b6ab1e998a245349d98"
-  integrity sha512-ovZoJY65kWByTUEDu1gMB89t+NGV9Ixm7azEhp2zXiGfSTvPGlu8+HFiVp6XuEQw0P6OS0oyi/Za6gknsl8Bwg==
 
 bunyan@^1.8.15:
   version "1.8.15"
