@@ -94,12 +94,6 @@ export default function App() {
         <HeaderWrapper>
           <Header />
         </HeaderWrapper>
-        <ConstructionBanner>
-          <p>
-            Zaps may not work normally due to an ongoing incident with Moola Market. Follow along on
-            <a href="https://discord.com/invite/TBHYqgBnRj"> Discord</a>.
-          </p>
-        </ConstructionBanner>
         <BodyWrapper>
           <Popups />
           <Polling />
