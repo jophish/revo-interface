@@ -1,4 +1,4 @@
-import { useContractKit, useGetConnectedSigner } from '@celo-tools/use-contractkit'
+import { useCelo, useGetConnectedSigner } from '@celo/react-celo'
 import { Token } from '@ubeswap/sdk'
 import AddressInputPanel from 'components/AddressInputPanel'
 import { ButtonLight, ButtonPrimary } from 'components/Button'
@@ -53,7 +53,7 @@ const ChainSelect = styled.div({
 
 export const Bridge: React.FC = () => {
   const { t } = useTranslation()
-  const { address, network, updateNetwork, connect } = useContractKit()
+  const { address, network, updateNetwork, connect } = useCelo()
   const getConnectedSigner = useGetConnectedSigner()
   const [homeChain, setHomeChain] = useState<Chain>(chains[0])
   const [destChain, setDestChain] = useState<Chain>(chains[1])
@@ -86,11 +86,14 @@ export const Bridge: React.FC = () => {
     if (!correctNetwork) {
       button = (
         <ButtonLight
-          onClick={() =>
-            connect()
-              .then(() => updateNetwork(homeChain.network))
-              .catch(console.warn)
-          }
+          onClick={async () => {
+            try {
+              await connect()
+              await updateNetwork(homeChain.network)
+            } catch (error) {
+              console.warn(error)
+            }
+          }}
         >
           {t('changeNetwork')} {homeChain.prettyName}
         </ButtonLight>

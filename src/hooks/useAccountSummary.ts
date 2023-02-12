@@ -1,5 +1,5 @@
 import { AccountsWrapper } from '@celo/contractkit/lib/wrappers/Accounts'
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { useEffect, useState } from 'react'
 
 type AsyncReturnType<T extends (...args: any) => any> = T extends (...args: any) => Promise<infer U>
@@ -15,7 +15,7 @@ type AccountSummary = AsyncReturnType<AccountsWrapper['getAccountSummary']>
  */
 export default function useAccountSummary(address?: string): { summary: AccountSummary | null; loading: boolean } {
   const [summary, setSummary] = useState<AccountSummary | null>(null)
-  const { kit } = useContractKit()
+  const { kit } = useCelo()
 
   useEffect(() => {
     ;(async () => {

@@ -1,4 +1,4 @@
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { Token } from '@ubeswap/sdk'
 import { ButtonPrimary } from 'components/Button'
 import { AutoColumn } from 'components/Column'
@@ -34,7 +34,7 @@ interface Props {
 
 export default function RemoveLiquidityConfirm({ token0, token1, isOpen, onDismiss, userTotalRFPBalance }: Props) {
   const theme = useContext(ThemeContext)
-  const { address: account, network, kit } = useContractKit()
+  const { address: account, network, kit } = useCelo()
   const library = useProvider()
   const doTransaction = useDoTransaction()
 

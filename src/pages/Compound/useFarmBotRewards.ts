@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { useCallback, useEffect, useState } from 'react'
 import { AbiItem } from 'web3-utils'
 
@@ -13,7 +13,7 @@ export interface FarmBotRewards {
 }
 
 export const useFarmBotRewards = (farmBotAddresses: string[]) => {
-  const { address, kit } = useContractKit()
+  const { address } = useCelo()
   const [rewardSummaries, setRewardSummaries] = useState<FarmBotRewards[]>([])
 
   const farmSummaries = useFarmRegistry()

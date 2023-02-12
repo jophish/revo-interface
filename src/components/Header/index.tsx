@@ -1,4 +1,4 @@
-import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
+import { ChainId, useCelo } from '@celo/react-celo'
 import { CELO, ChainId as UbeswapChainId } from '@ubeswap/sdk'
 import { NETWORK_CHAIN_ID } from 'connectors'
 import { darken } from 'polished'
@@ -213,7 +213,7 @@ const StyledNavLink = styled(NavLink).attrs({
 `
 
 const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
-  [ChainId.CeloMainnet]: 'Celo',
+  [ChainId.Mainnet]: 'Celo',
   [ChainId.Alfajores]: 'Alfajores',
   [ChainId.Baklava]: 'Baklava',
 }
@@ -221,7 +221,7 @@ const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
 const chainId = NETWORK_CHAIN_ID
 
 export default function Header() {
-  const { address: account } = useContractKit()
+  const { address: account } = useCelo()
   const { t } = useTranslation()
 
   const userCELOBalance = useTokenBalance(account ?? undefined, CELO[chainId as unknown as UbeswapChainId])

@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -28,7 +28,7 @@ export interface FarmBotSummary {
 }
 
 export const useFarmBotRegistry = (farmBotAddresses: string[]) => {
-  const { address, kit, network } = useContractKit()
+  const { address, kit, network } = useCelo()
   const [botSummaries, setBotSummaries] = useState<FarmBotSummary[]>([])
   const transactions = useSelector((state: AppState) => state.transactions[network.chainId])
 

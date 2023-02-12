@@ -1,4 +1,4 @@
-import { ChainId, useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { parseUnits } from '@ethersproject/units'
 import { CELO, cEUR, ChainId as UbeswapChainId, cUSD, JSBI, Token, TokenAmount, Trade } from '@ubeswap/sdk'
 import { useUbeswapTradeExactIn, useUbeswapTradeExactOut } from 'components/swap/routing/hooks/useTrade'
@@ -114,7 +114,7 @@ export function useDerivedSwapInfo(): {
   inputError?: string
   showRamp: boolean
 } {
-  const { address: account, network } = useContractKit()
+  const { address: account, network } = useCelo()
 
   const {
     independentField,
@@ -217,9 +217,6 @@ function parseCurrencyFromURLParameter(urlParam: any, chainId: UbeswapChainId): 
     if (urlParam.toUpperCase() === 'CUSD') return cUSD[chainId].address
     if (valid === false) return cUSD[chainId].address
   }
-  if ([ChainId.EthereumMainnet, ChainId.Kovan].includes(chainId as unknown as ChainId)) {
-    return ''
-  }
   return cUSD[chainId].address ?? ''
 }
 
@@ -272,7 +269,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs, chainId: UbeswapC
 export function useDefaultsFromURLSearch():
   | { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined }
   | undefined {
-  const { network } = useContractKit()
+  const { network } = useCelo()
   const chainId = network.chainId as unknown as UbeswapChainId
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()

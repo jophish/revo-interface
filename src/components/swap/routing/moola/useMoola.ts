@@ -1,5 +1,5 @@
 import { CeloContract } from '@celo/contractkit'
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { CELO, ChainId, currencyEquals, cUSD, Token } from '@ubeswap/sdk'
 import { CEUR, MCELO, MCEUR, MCUSD } from 'constants/index'
 import { useMemo } from 'react'
@@ -54,7 +54,7 @@ export type IMoolaChain = keyof typeof moolaLendingPools
 export type MoolaConfig = typeof moolaLendingPools[IMoolaChain]
 
 export const useMoolaConfig = () => {
-  const { network } = useContractKit()
+  const { network } = useCelo()
   const chainId = network.chainId as unknown as ChainId
   // TODO(igm): this breaks on baklava
   const chainCfg = moolaLendingPools[chainId as IMoolaChain]

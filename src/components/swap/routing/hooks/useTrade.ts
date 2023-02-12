@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { currencyEquals, Pair, Percent, Price, Token, TokenAmount, Trade, TradeType } from '@ubeswap/sdk'
 import {
   BASES_TO_CHECK_TRADES_AGAINST,
@@ -25,7 +25,7 @@ import { useDirectTradeExactIn, useDirectTradeExactOut } from './directTrades'
  * @returns
  */
 export function useAllCommonPairsWithMoolaDuals(tokenA?: Token, tokenB?: Token): readonly Pair[] {
-  const { network } = useContractKit()
+  const { network } = useCelo()
   const chainId = network.chainId
 
   const bases: readonly Token[] = useMemo(() => (chainId ? BASES_TO_CHECK_TRADES_AGAINST[chainId] : []), [chainId])

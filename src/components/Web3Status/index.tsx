@@ -1,4 +1,4 @@
-import { useContractKit, WalletTypes } from '@celo-tools/use-contractkit'
+import { useCelo, WalletTypes } from '@celo/react-celo'
 import * as Sentry from '@sentry/react'
 import useAccountSummary from 'hooks/useAccountSummary'
 import { darken, lighten } from 'polished'
@@ -111,7 +111,7 @@ function newTransactionsFirst(a: TransactionDetails, b: TransactionDetails) {
 }
 
 const StatusIcon: React.FC = () => {
-  const { walletType } = useContractKit()
+  const { walletType } = useCelo()
   if (
     walletType === WalletTypes.MetaMask ||
     walletType === WalletTypes.CeloExtensionWallet ||
@@ -124,7 +124,7 @@ const StatusIcon: React.FC = () => {
 
 function Web3StatusInner() {
   const { t } = useTranslation()
-  const { connect, address, account } = useContractKit()
+  const { connect, address, account } = useCelo()
   const error = null
 
   const allTransactions = useAllTransactions()
@@ -180,7 +180,7 @@ function Web3StatusInner() {
 }
 
 export default function Web3Status() {
-  const { address: account, walletType } = useContractKit()
+  const { address: account, walletType } = useCelo()
   const allTransactions = useAllTransactions()
 
   const sortedRecentTransactions = useMemo(() => {

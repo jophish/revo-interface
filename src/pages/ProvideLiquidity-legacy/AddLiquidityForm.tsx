@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { CELO, ChainId as UbeswapChainId, Token, TokenAmount } from '@ubeswap/sdk'
 import { ButtonError, ButtonPrimary } from 'components/Button'
 import { LightCard } from 'components/Card'
@@ -33,7 +33,7 @@ export default function AddLiquidityForm({ token0, token1, onConfirmAddLiquidity
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
 
-  const { network } = useContractKit()
+  const { network } = useCelo()
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
   const {
