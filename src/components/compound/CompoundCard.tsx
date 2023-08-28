@@ -1,4 +1,4 @@
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { Percent } from '@ubeswap/sdk'
 import BN from 'bn.js'
 import { useDoTransaction } from 'components/swap/routing'
@@ -112,7 +112,7 @@ const Wrapper = styled(AutoColumn)<{ showBackground: boolean; bgColor: any }>`
 
 export const CompoundCard: React.FC<Props> = ({ farmBotSummary }: Props) => {
   const { t } = useTranslation()
-  const { address: account } = useContractKit()
+  const { address: account } = useCelo()
   const [showDeposit, setShowDeposit] = useState<boolean>(false)
   const [showWithdraw, setShowWithdraw] = useState<boolean>(false)
 

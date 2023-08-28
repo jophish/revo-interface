@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { useDoTransaction } from 'components/swap/routing'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,7 @@ interface StakingModalProps {
 }
 
 export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
-  const { address: account } = useContractKit()
+  const { address: account } = useCelo()
 
   // monitor call to help UI loading state
   const doTransaction = useDoTransaction()

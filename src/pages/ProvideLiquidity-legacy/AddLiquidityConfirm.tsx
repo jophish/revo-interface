@@ -1,4 +1,4 @@
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { Token } from '@ubeswap/sdk'
 import { LightCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
@@ -34,7 +34,7 @@ export default function AddLiquidityConfirm({ token0, token1, isOpen, onDismiss 
   const [allowedSlippage] = useUserSlippageTolerance() // custom from users
   const [txHash, setTxHash] = useState('')
 
-  const { address: account, network } = useContractKit()
+  const { address: account, network } = useCelo()
   const library = useProvider()
 
   const { currencies, price, noLiquidity, poolTokenPercentage, parsedAmounts, currencyBalances, liquidityMinted } =

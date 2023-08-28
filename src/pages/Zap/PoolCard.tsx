@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { Token, TokenAmount } from '@ubeswap/sdk'
 import { ButtonPrimary } from 'components/Button'
 import { AutoColumn } from 'components/Column'
@@ -78,7 +78,7 @@ export const PoolCard: React.FC<Props> = ({
   PoolDetails,
 }: Props) => {
   const { t } = useTranslation()
-  const { address } = useContractKit()
+  const { address } = useCelo()
   const [showMore, setShowMore] = useState(false)
 
   const toggleExpanded = () => {

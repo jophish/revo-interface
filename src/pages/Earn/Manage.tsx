@@ -1,4 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
+import { useCelo } from '@celo/react-celo'
 import { ChainId as UbeswapChainId, cUSD, JSBI } from '@ubeswap/sdk'
 import QuestionHelper from 'components/QuestionHelper'
 import React, { useCallback, useState } from 'react'
@@ -94,7 +94,7 @@ export default function Manage({
   },
 }: RouteComponentProps<{ currencyIdA: string; currencyIdB: string; stakingAddress: string }>) {
   const { t } = useTranslation()
-  const { address: account, network } = useContractKit()
+  const { address: account, network } = useCelo()
   const { chainId } = network
 
   // get currencies and pair

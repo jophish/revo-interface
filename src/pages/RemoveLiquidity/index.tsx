@@ -1,4 +1,4 @@
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { Contract } from '@ethersproject/contracts'
 import { Percent, Token } from '@ubeswap/sdk'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
@@ -45,7 +45,7 @@ export default function RemoveLiquidity({
   },
 }: RouteComponentProps<{ currencyIdA: string; currencyIdB: string }>) {
   const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
-  const { address: account, network, connect } = useContractKit()
+  const { address: account, network, connect } = useCelo()
   const isSupportedNetwork = useIsSupportedNetwork()
   const library = useProvider()
   const chainId = network.chainId

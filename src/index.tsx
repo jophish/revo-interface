@@ -1,9 +1,9 @@
+import '@celo/react-celo/lib/styles.css'
 import './i18n'
-import '@celo-tools/use-contractkit/lib/styles.css'
 import './index.css'
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import { Alfajores, CeloMainnet, ContractKitProvider } from '@celo-tools/use-contractkit'
+import { Alfajores, CeloProvider, Mainnet } from '@celo/react-celo'
 import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import { ChainId } from '@ubeswap/sdk'
@@ -111,15 +111,15 @@ function Updaters() {
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <ContractKitProvider
+    <CeloProvider
       dapp={{
         name: 'Revo',
         description: 'The interface for Revo, a decentralized auto-compounding yield farming platform on Celo.',
         url: 'https://revo.market',
         icon: 'https://revo.market/favicon.png',
       }}
-      network={CeloMainnet}
-      networks={[CeloMainnet, Alfajores]}
+      network={Mainnet}
+      networks={[Mainnet, Alfajores]}
       connectModal={{
         reactModalProps: {
           style: {
@@ -153,7 +153,7 @@ ReactDOM.render(
           </ThemeProvider>
         </ApolloProvider>
       </Provider>
-    </ContractKitProvider>
+    </CeloProvider>
   </StrictMode>,
   document.getElementById('root')
 )

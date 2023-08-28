@@ -1,4 +1,4 @@
-import { useContractKit, useGetConnectedSigner } from '@celo-tools/use-contractkit'
+import { useCelo, useGetConnectedSigner } from '@celo/react-celo'
 import { TokenAmount } from '@ubeswap/sdk'
 import { ButtonEmpty, ButtonLight, ButtonPrimary, ButtonRadio } from 'components/Button'
 import { GreyCard, YellowCard } from 'components/Card'
@@ -59,7 +59,7 @@ const ube = new WrappedTokenInfo(
 
 export const Stake: React.FC = () => {
   const { t } = useTranslation()
-  const { address, connect } = useContractKit()
+  const { address, connect } = useCelo()
   const getConnectedSigner = useGetConnectedSigner()
   const [amount, setAmount] = useState('')
   const tokenAmount = tryParseAmount(amount === '' ? '0' : amount, ube)

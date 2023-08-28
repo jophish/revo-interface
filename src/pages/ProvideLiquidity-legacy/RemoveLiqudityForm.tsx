@@ -1,4 +1,4 @@
-import { useContractKit, useProvider } from '@celo-tools/use-contractkit'
+import { useCelo, useProvider } from '@celo/react-celo'
 import { Contract } from '@ethersproject/contracts'
 import { Percent, Token } from '@ubeswap/sdk'
 import { ButtonConfirmed, ButtonError, ButtonLight } from 'components/Button'
@@ -29,7 +29,7 @@ interface Props {
 
 export default function RemoveLiquidityForm({ token0, token1, onConfirmRemoveLiquidity }: Props) {
   const theme = useContext(ThemeContext)
-  const { address: account, network, connect } = useContractKit()
+  const { address: account, network, connect } = useCelo()
   const library = useProvider()
   const deadline = useTransactionDeadline()
 
