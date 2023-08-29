@@ -23,7 +23,8 @@
     "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
     "types": ["react-spring", "jest"],
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "skipDefaultLibCheck": true,
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts", "./src/**/*.tsx", "src/components/Confetti/index.js"]

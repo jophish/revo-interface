@@ -3,7 +3,6 @@ import './i18n'
 import './index.css'
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import { Alfajores, CeloProvider, Mainnet } from '@celo/react-celo'
 import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import { ChainId } from '@ubeswap/sdk'
@@ -23,6 +22,11 @@ import MulticallUpdater from './state/multicall/updater'
 import TransactionUpdater from './state/transactions/updater'
 import UserUpdater from './state/user/updater'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
+import celoGroups from '@celo/rainbowkit-celo/lists'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { configureChains, createConfig, WagmiConfig } from 'wagmi'
+import { celo, celoAlfajores } from 'wagmi/chains'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
 if (window.celo) {
   window.celo.autoRefreshOnNetworkChange = false
@@ -108,52 +112,39 @@ function Updaters() {
   )
 }
 
+const { chains, publicClient } = configureChains(
+  [celo, celoAlfajores],
+  [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }) })]
+)
+const connectors = celoGroups({
+  chains,
+  projectId: 'Revo',
+  appName: 'Revo',
+})
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient,
+})
+
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <CeloProvider
-      dapp={{
-        name: 'Revo',
-        description: 'The interface for Revo, a decentralized auto-compounding yield farming platform on Celo.',
-        url: 'https://revo.market',
-        icon: 'https://revo.market/favicon.png',
-      }}
-      network={Mainnet}
-      networks={[Mainnet, Alfajores]}
-      connectModal={{
-        reactModalProps: {
-          style: {
-            content: {
-              top: '50%',
-              left: '50%',
-              right: 'auto',
-              bottom: 'auto',
-              transform: 'translate(-50%, -50%)',
-              border: 'unset',
-              background: 'unset',
-              padding: 'unset',
-              color: 'black',
-            },
-            overlay: {
-              zIndex: 100,
-            },
-          },
-          overlayClassName: 'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
-        },
-      }}
-    >
-      <Provider store={store}>
-        <ApolloProvider client={client}>
-          <Updaters />
-          <ThemeProvider>
-            <ThemedGlobalStyle />
-            <HashRouter>
-              <App />
-            </HashRouter>
-          </ThemeProvider>
-        </ApolloProvider>
-      </Provider>
-    </CeloProvider>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider chains={chains}>
+        <Provider store={store}>
+          <ApolloProvider client={client}>
+            <Updaters />
+            <ThemeProvider>
+              <ThemedGlobalStyle />
+              <HashRouter>
+                <App />
+              </HashRouter>
+            </ThemeProvider>
+          </ApolloProvider>
+        </Provider>
+      </RainbowKitProvider>
+    </WagmiConfig>
   </StrictMode>,
   document.getElementById('root')
 )
