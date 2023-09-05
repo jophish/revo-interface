@@ -1,4 +1,4 @@
-import { useCelo, useProvider } from '@celo/react-celo'
+import { ChainId, useCelo, useProvider } from '@celo/react-celo'
 import { Contract } from '@ethersproject/contracts'
 import IUniswapV2PairABI from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import { ReleaseUbe } from 'generated/ReleaseUbe'
@@ -56,7 +56,7 @@ export function usePairContract(pairAddress?: string, withSignerIfPossible?: boo
 export function useMulticallContract(): Contract | null {
   const { network } = useCelo()
   const chainId = network.chainId
-  return useContract(chainId ? MULTICALL_NETWORKS[chainId] : undefined, MULTICALL_ABI, false)
+  return useContract(chainId ? MULTICALL_NETWORKS[chainId as ChainId] : undefined, MULTICALL_ABI, false)
 }
 
 export function useStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean): StakingRewards | null {

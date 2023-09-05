@@ -1,11 +1,13 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
 import { ethers } from 'ethers'
 import React, { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { AppState } from 'state'
-import { AbiItem, fromWei, toBN } from 'web3-utils'
+import { fromWei, toBN } from 'web3-utils'
 
 import farmRegistryAbi from '../../constants/abis/FarmRegistry.json'
+import { useBlockNumber, useNetwork, usePublicClient } from 'wagmi'
+import { getContract } from 'viem'
+import { FarmDataEventABI, FarmInfoEventABI, LPInfoEventABI } from '../../constants/abis/farmRegistry'
 
 type FarmData = {
   tvlUSD: string
@@ -26,64 +28,79 @@ const CREATION_BLOCK = 9840049
 const LAST_N_BLOCKS = 1440 // Last 2 hours
 
 export const useFarmRegistry = () => {
-  const { kit } = useContractKit()
   const [farmSummaries, setFarmSummaries] = React.useState<FarmSummary[]>([])
 
-  const { network } = useContractKit()
-  const chainId = network.chainId
+  const { chain } = useNetwork()
+  const chainId = chain?.id
   const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions)
   const transactions = useMemo(() => (chainId ? state[chainId] ?? {} : {}), [chainId, state])
 
   const call = React.useCallback(async () => {
-    const farmRegistry = new kit.web3.eth.Contract(
-      farmRegistryAbi as AbiItem[],
-      '0xa2bf67e12EeEDA23C7cA1e5a34ae2441a17789Ec'
-    )
-    const lastBlock = await kit.web3.eth.getBlockNumber()
+    const farmBotRegistryAddress = '0xa2bf67e12EeEDA23C7cA1e5a34ae2441a17789Ec'
+    const farmRegistryContract = getContract({
+      address: farmBotRegistryAddress,
+      abi: farmRegistryAbi,
+    })
+    const lastBlock = useBlockNumber()
+    const client = usePublicClient()
+
     const [farmInfoEvents, lpInfoEvents, farmDataEvents] = await Promise.all([
-      farmRegistry.getPastEvents('FarmInfo', {
-        fromBlock: CREATION_BLOCK,
-        toBlock: lastBlock,
+      client.getLogs({
+        address: farmBotRegistryAddress,
+        fromBlock: BigInt(CREATION_BLOCK),
+        toBlock: lastBlock.data,
+        event: FarmInfoEventABI,
       }),
-      farmRegistry.getPastEvents('LPInfo', { fromBlock: CREATION_BLOCK, toBlock: lastBlock }),
-      farmRegistry.getPastEvents('FarmData', {
-        fromBlock: lastBlock - LAST_N_BLOCKS,
-        toBlock: lastBlock,
+      client.getLogs({
+        address: farmBotRegistryAddress,
+        fromBlock: BigInt(CREATION_BLOCK),
+        toBlock: lastBlock.data,
+        event: LPInfoEventABI,
+      }),
+      client.getLogs({
+        address: farmBotRegistryAddress,
+        fromBlock: lastBlock.data ? lastBlock.data - BigInt(LAST_N_BLOCKS) : BigInt(CREATION_BLOCK),
+        toBlock: lastBlock.data,
+        event: FarmDataEventABI,
       }),
     ])
 
     const lps: Record<string, [string, string]> = {}
-    lpInfoEvents.forEach((e) => {
-      lps[e.returnValues.lpAddress] = [e.returnValues.token0Address, e.returnValues.token1Address]
+    lpInfoEvents.forEach(({ args: { lpAddress, token0Address, token1Address } }) => {
+      if (lpAddress && token0Address && token1Address) {
+        lps[lpAddress] = [token0Address, token1Address]
+      }
     })
     const farmData: Record<string, FarmData> = {}
-    farmDataEvents.forEach((e) => {
-      farmData[e.returnValues.stakingAddress] = {
-        tvlUSD: e.returnValues.tvlUSD,
-        rewardsUSDPerYear: e.returnValues.rewardsUSDPerYear,
+    farmDataEvents.forEach(({ args: { stakingAddress, tvlUSD, rewardsUSDPerYear } }) => {
+      if (stakingAddress) {
+        farmData[stakingAddress] = {
+          tvlUSD: tvlUSD?.toString() ?? '0',
+          rewardsUSDPerYear: rewardsUSDPerYear?.toString() ?? '0',
+        }
       }
     })
     const farmSummaries: FarmSummary[] = []
-    farmInfoEvents.forEach((e) => {
+    farmInfoEvents.forEach(({ args: { stakingAddress, farmName, lpAddress } }) => {
       // sometimes there is no farm data for the staking address return early to avoid crash
-      if (!farmData[e.returnValues.stakingAddress]) {
+      if (!stakingAddress || !lpAddress || !farmName || !farmData[stakingAddress]) {
         return
       }
       farmSummaries.push({
-        farmName: ethers.utils.parseBytes32String(e.returnValues.farmName),
-        stakingAddress: e.returnValues.stakingAddress,
-        lpAddress: e.returnValues.lpAddress,
-        token0Address: lps[e.returnValues.lpAddress][0],
-        token1Address: lps[e.returnValues.lpAddress][1],
-        tvlUSD: farmData[e.returnValues.stakingAddress].tvlUSD,
-        rewardsUSDPerYear: farmData[e.returnValues.stakingAddress].rewardsUSDPerYear,
+        farmName: ethers.utils.parseBytes32String(farmName),
+        stakingAddress: stakingAddress,
+        lpAddress: lpAddress,
+        token0Address: lps[lpAddress][0],
+        token1Address: lps[lpAddress][1],
+        tvlUSD: farmData[stakingAddress].tvlUSD,
+        rewardsUSDPerYear: farmData[stakingAddress].rewardsUSDPerYear,
       })
     })
     farmSummaries
       .sort((a, b) => Number(fromWei(toBN(b.rewardsUSDPerYear).sub(toBN(a.rewardsUSDPerYear)))))
       .sort((a, b) => Number(fromWei(toBN(b.tvlUSD).sub(toBN(a.tvlUSD)))))
     setFarmSummaries(farmSummaries)
-  }, [kit.web3.eth, transactions])
+  }, [chainId, transactions])
 
   useEffect(() => {
     call()
