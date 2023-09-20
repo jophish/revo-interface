@@ -1,6 +1,4 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
 import { ErrorBoundary } from '@sentry/react'
-import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import ChangeNetworkModal from 'components/ChangeNetworkModal'
 import Loader from 'components/Loader'
 import { useIsSupportedNetwork } from 'hooks/useIsSupportedNetwork'
@@ -8,13 +6,15 @@ import { FarmBotSummary, useFarmBotRegistry } from 'pages/Compound/useFarmBotReg
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { AbiItem } from 'web3-utils'
-
 import { AutoColumn, ColumnCenter } from '../../components/Column'
+
 import { CardNoise, CardSection, DataCard } from '../../components/earn/styled'
 import { RowBetween } from '../../components/Row'
 import { ExternalLink, TYPE } from '../../theme'
 import LiquidityCard from './LiquidityCard'
+import { useAccount, useContractRead } from 'wagmi'
+import { UNISWAP_V2_PAIR_ABI } from '../../constants/abis/uniswap-v2-pair'
+import { ZERO_ADDRESS } from '../../constants'
 
 const VoteCard = styled(DataCard)`
   overflow: hidden;
@@ -52,16 +52,20 @@ export const metaFarmbotAddressMap = {
 }
 
 function useShowLegacyAddLiquidity() {
-  const { kit, address: walletAddress } = useContractKit()
+  const { address: walletAddress } = useAccount()
   const [showLegacyAddLiquidity, setShowLegacyAddLiquidity] = useState<boolean>(false)
+  const { data: lpBalance } = useContractRead({
+    address: '0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA', // mcUSD / mcUSD_mcEUR_RFP pool
+    abi: UNISWAP_V2_PAIR_ABI,
+    functionName: 'balanceOf',
+    args: [walletAddress ?? ZERO_ADDRESS], // fixme find a better placeholder
+  })
+
   const call = async () => {
-    const liquidityPoolAddress = '0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA' // mcUSD / mcUSD_mcEUR_RFP pool
-    const uniswapV2Pair = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], liquidityPoolAddress)
-    const lpBalance = walletAddress ? await uniswapV2Pair.methods.balanceOf(walletAddress).call() : 0
-    setShowLegacyAddLiquidity(lpBalance > 0)
+    setShowLegacyAddLiquidity((lpBalance ?? 0) > 0)
   }
   useEffect(() => {
-    call()
+    void call()
   }, [call])
   return showLegacyAddLiquidity
 }

@@ -1,12 +1,12 @@
-import { useContractKit } from '@celo-tools/use-contractkit'
-import IUniswapV2Pair from '@ubeswap/core/build/abi/IUniswapV2Pair.json'
 import { useCallback, useEffect, useState } from 'react'
-import { AbiItem } from 'web3-utils'
 
 import { ERC20_ABI } from '../../constants/abis/erc20'
-import farmBotAbi from '../../constants/abis/FarmBot.json'
 import { useFarmRegistry } from '../Earn/useFarmRegistry'
 import { farmBotAddresses, FarmBotSummaryBase } from './useFarmBotRegistry'
+import { usePublicClient } from 'wagmi'
+import { getContract } from 'viem'
+import { UNISWAP_V2_PAIR_ABI } from '../../constants/abis/uniswap-v2-pair'
+import { FARM_BOT_ABI } from '../../constants/abis/farm-bot'
 
 export type LiquiditySummary = {
   tokenAddress: string
@@ -16,10 +16,11 @@ export type LiquiditySummary = {
 }
 
 // pools containing RFP
-const liquidityPoolAddresses = ['0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA']
+const liquidityPoolAddresses = ['0x25938830FBd7619bf6CFcFDf5C37A22AB15A93cA'] as const
 
 export const useLiquidityRegistry = () => {
-  const { address, kit } = useContractKit()
+  const publicClient = usePublicClient()
+  const address = publicClient.account
   const [summaries, setSummaries] = useState<LiquiditySummary[]>([])
 
   const farmSummaries = useFarmRegistry()
@@ -27,29 +28,55 @@ export const useLiquidityRegistry = () => {
   const call = useCallback(async () => {
     const liquidityPoolSummaries: LiquiditySummary[] = []
     for (const liquidityPoolAddress of liquidityPoolAddresses) {
-      const uniswapV2Pair = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], liquidityPoolAddress)
+      const uniswapV2Pair = getContract({
+        address: liquidityPoolAddress,
+        abi: UNISWAP_V2_PAIR_ABI,
+        publicClient,
+      })
 
-      const token0Address = await uniswapV2Pair.methods.token0().call()
-      const token1Address = await uniswapV2Pair.methods.token1().call()
-      const userBalance = address ? await uniswapV2Pair.methods.balanceOf(address).call() : 0
+      const token0Address = await uniswapV2Pair.read.token0()
+      const token1Address = await uniswapV2Pair.read.token1()
+      const userBalance = address ? await uniswapV2Pair.read.balanceOf(address) : 0
 
       // expect token0 or token1 to be RFP token
       const rfpTokenAddress = [token0Address, token1Address].find((address) => farmBotAddresses.includes(address))
       const tokenAddress = token0Address === rfpTokenAddress ? token1Address : token0Address
 
-      const farmBot = new kit.web3.eth.Contract(farmBotAbi.abi as AbiItem[], rfpTokenAddress)
-      const totalFP = await farmBot.methods.totalSupply().call()
-      const totalLP = await farmBot.methods.getLpAmount(totalFP).call()
-      const stakingTokenAddress = await farmBot.methods.stakingToken().call()
-      const stakingTokenContract = new kit.web3.eth.Contract(IUniswapV2Pair as AbiItem[], stakingTokenAddress)
+      if (!rfpTokenAddress) {
+        console.warn(`Liquidity pool ${liquidityPoolAddress} does not contain RFP token. Skipping it.`)
+        continue
+      }
+      const farmBot = getContract({
+        address: rfpTokenAddress,
+        abi: FARM_BOT_ABI,
+        publicClient,
+      })
+      const totalFP = await farmBot.read.totalSupply()
+      const totalLP = await farmBot.read.getLpAmount([totalFP])
+      const stakingTokenAddress = await farmBot.read.stakingToken()
 
-      const stakedToken0 = await stakingTokenContract.methods.token0().call()
-      const stakedToken0Contract = new kit.web3.eth.Contract(ERC20_ABI as AbiItem[], stakedToken0)
-      const stakedToken0Name = await stakedToken0Contract.methods.symbol().call()
+      const stakingTokenContract = getContract({
+        abi: UNISWAP_V2_PAIR_ABI,
+        address: stakingTokenAddress,
+        publicClient,
+      })
 
-      const stakedToken1 = await stakingTokenContract.methods.token1().call()
-      const stakedToken1Contract = new kit.web3.eth.Contract(ERC20_ABI as AbiItem[], stakedToken1)
-      const stakedToken1Name = await stakedToken1Contract.methods.symbol().call()
+      const stakedToken0 = await stakingTokenContract.read.token0()
+      const stakedToken0Contract = getContract({
+        abi: ERC20_ABI,
+        address: stakedToken0,
+        publicClient,
+      })
+      const stakedToken0Name = await stakedToken0Contract.read.symbol()
+
+      const stakedToken1 = await stakingTokenContract.read.token1()
+
+      const stakedToken1Contract = getContract({
+        address: stakedToken1,
+        abi: ERC20_ABI,
+        publicClient,
+      })
+      const stakedToken1Name = await stakedToken1Contract.read.symbol()
 
       liquidityPoolSummaries.push({
         tokenAddress,
@@ -60,13 +87,13 @@ export const useLiquidityRegistry = () => {
           token1Address: stakedToken1,
           token1Name: stakedToken1Name,
           stakingTokenAddress,
-          totalLP,
+          totalLP: Number(totalLP),
         },
-        userBalance,
+        userBalance: Number(userBalance),
       })
     }
     setSummaries(liquidityPoolSummaries)
-  }, [kit.web3.eth, address, farmSummaries])
+  }, [farmSummaries, address])
 
   useEffect(() => {
     call()
